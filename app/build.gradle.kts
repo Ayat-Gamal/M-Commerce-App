@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
+    id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     //apollo
@@ -85,6 +86,8 @@ dependencies {
     //apollo
     implementation("com.apollographql.apollo:apollo-runtime:4.3.0")
 
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
 }
 
 apollo {
