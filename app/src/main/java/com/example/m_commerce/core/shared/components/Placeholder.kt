@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -16,11 +18,15 @@ import androidx.compose.ui.unit.dp
 fun Placeholder(
     modifier: Modifier = Modifier,
     color: Color = Color.Gray,
-    strokeWidth: Dp = 2.dp
+    strokeWidth: Dp = 2.dp,
+    title: String = "Placeholder"
 ) {
     Box(
         modifier = modifier
             .background(color.copy(alpha = 0.1f))
-            .border(strokeWidth, color)
-    )
+            .border(strokeWidth, color),
+        contentAlignment = Alignment.Center
+    ){
+        Text(title)
+    }
 }
