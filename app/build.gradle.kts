@@ -8,7 +8,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     //apollo
-    id("com.apollographql.apollo") version "4.3.0"
+//    id("com.apollographql.apollo") version "4.3.0"
 }
 
 android {
@@ -77,7 +77,7 @@ dependencies {
 
     //!Network
     //*Apollo
-    implementation("com.apollographql.apollo:apollo-runtime:4.3.0")
+//    implementation("com.apollographql.apollo:apollo-runtime:4.3.0")
     //*Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -105,8 +105,8 @@ dependencies {
 
 }
 
-apollo {
-    service("service") {
-        packageName.set("com.example.m_commerce")
-    }
-}
+//apollo {
+//    service("service") {
+//        packageName.set("com.example.m_commerce")
+//    }
+//}

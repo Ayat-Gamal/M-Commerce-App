@@ -1,4 +1,4 @@
-package com.example.m_commerce
+package com.example.m_commerce.features.home.presentation.screen
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
