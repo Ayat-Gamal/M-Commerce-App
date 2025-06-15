@@ -8,7 +8,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.m_commerce.features.home.presentation.screens.Greeting
+import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
+import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
+import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
+import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 
 @Composable
 fun NavSetup(
@@ -24,18 +27,18 @@ fun NavSetup(
         modifier = modifier.padding(16.dp)
     ) {
         composable<AppRoutes.HomeScreen> {
-            Greeting(name = "HOME")
+            HomeScreenUI()
         }
 
         composable<AppRoutes.CategoryScreen> {
-            Greeting(name = "CATEG")
+            CategoryScreenUI()
         }
         composable<AppRoutes.CartScreen> {
-            Greeting(name = "CART")
+            CartScreenUI()
         }
 
         composable<AppRoutes.ProfileScreen> {
-            Greeting(name = "PROFILE")
+            ProfileScreenUI()
         }
     }
 }
