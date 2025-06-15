@@ -1,4 +1,3 @@
-// NavSetup.kt
 package com.example.m_commerce.config.routes
 
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,7 @@ import com.example.m_commerce.features.home.presentation.screens.Greeting
 @Composable
 fun NavSetup(
     navController: NavHostController,
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     val startingScreen = AppRoutes.HomeScreen

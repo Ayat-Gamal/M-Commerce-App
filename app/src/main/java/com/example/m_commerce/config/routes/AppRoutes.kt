@@ -1,4 +1,3 @@
-// AppRoutes.kt
 package com.example.m_commerce.config.routes
 
 import kotlinx.serialization.Serializable
