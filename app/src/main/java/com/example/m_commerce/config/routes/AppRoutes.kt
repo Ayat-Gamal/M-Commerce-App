@@ -15,4 +15,10 @@ sealed class AppRoutes {
 
     @Serializable
     object ProfileScreen : AppRoutes()
+
+    @Serializable
+    object RegisterScreen : AppRoutes()
+
+    @Serializable
+    object LoginScreen : AppRoutes()
 }
