@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,8 +40,7 @@ fun BottomNavBar(navController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 32.dp),
+            .fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 24.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(

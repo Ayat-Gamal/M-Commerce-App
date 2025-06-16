@@ -12,6 +12,6 @@ import com.example.m_commerce.core.shared.components.Placeholder
 fun BrandsSection(modifier: Modifier = Modifier) {
 
     SectionTemplate(title = "Brands", seeAllOnClick = { }) {
-        Placeholder(Modifier.fillMaxSize())
+        Placeholder(Modifier.fillMaxWidth().height(600.dp))
     }
 }
