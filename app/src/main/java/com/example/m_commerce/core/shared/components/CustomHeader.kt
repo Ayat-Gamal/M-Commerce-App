@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun CustomHeader(text: String, modifier: Modifier) {
+fun CustomHeader(text: String, modifier: Modifier = Modifier) {
     return Text(text,
         fontSize = 16.sp,
         fontWeight = FontWeight.SemiBold,

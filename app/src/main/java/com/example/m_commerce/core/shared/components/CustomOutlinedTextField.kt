@@ -15,12 +15,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CustomOutlinedTextField(name: MutableState<String>, hint: String, visualTransformation: VisualTransformation= VisualTransformation.None) {
+fun CustomOutlinedTextField(
+    modifier: Modifier = Modifier,
+    state: MutableState<String>,
+    hint: String,
+    visualTransformation: VisualTransformation= VisualTransformation.None,
+    trailingIcon: @Composable (() -> Unit)? = null) {
     return OutlinedTextField(
-        name.value,
-        { name.value = it},
+        state.value,
+        { state.value = it},
         placeholder = { Text(hint, color = Color(0xFFC4C4C4)) },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         visualTransformation = visualTransformation,
@@ -32,6 +37,7 @@ fun CustomOutlinedTextField(name: MutableState<String>, hint: String, visualTran
             focusedBorderColor = Color.Transparent,
         ),
         shape = RoundedCornerShape(16.dp),
-        maxLines = 1
+        maxLines = 1,
+        trailingIcon = trailingIcon
     )
 }

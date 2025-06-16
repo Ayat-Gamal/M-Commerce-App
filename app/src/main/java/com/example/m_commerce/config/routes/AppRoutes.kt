@@ -18,4 +18,7 @@ sealed class AppRoutes {
 
     @Serializable
     object RegisterScreen : AppRoutes()
+
+    @Serializable
+    object LoginScreen : AppRoutes()
 }

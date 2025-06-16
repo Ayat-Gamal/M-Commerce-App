@@ -113,8 +113,11 @@ dependencies {
 
 
 
-    //firebase
+    // firebase
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+
+    // extended icons
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 }
 
 //apollo {
