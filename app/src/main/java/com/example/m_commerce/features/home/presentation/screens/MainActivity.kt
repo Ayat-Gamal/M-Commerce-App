@@ -13,6 +13,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -22,12 +24,14 @@ import com.example.m_commerce.config.theme.MCommerceTheme
 import com.example.m_commerce.core.shared.components.bottom_nav_bar.BottomNavBar
 
 class MainActivity : ComponentActivity() {
+    lateinit var showBottomNavbar: MutableState<Boolean>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MCommerceTheme {
-                MainLayout()
+                showBottomNavbar = remember { mutableStateOf(false) }
+                MainLayout(showBottomNavbar = showBottomNavbar)
             }
         }
     }
@@ -43,15 +47,15 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MainLayout(navController: NavHostController = rememberNavController()) {
+fun MainLayout(navController: NavHostController = rememberNavController(), showBottomNavbar: MutableState<Boolean>) {
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
-        bottomBar = { BottomNavBar(navController) }
+        bottomBar = { if (showBottomNavbar.value)  { BottomNavBar(navController) } else null }
     ) { innerPadding  ->
-        NavSetup(navController, snackbarHostState, modifier = Modifier.padding(innerPadding))
+        NavSetup(navController, snackbarHostState, modifier = Modifier.padding(innerPadding),showBottomNavbar)
     }
 }
 
