@@ -31,7 +31,7 @@ fun NavSetup(
             HomeScreenUI(navigateToCategory = {
                 navController.navigateAndClear(AppRoutes.CategoryScreen)
             }, navigateToSpecialOffers = {
-
+                //TODO: @Tag - navigate to special offers here
             }, navigateToBrands = {
 
             })

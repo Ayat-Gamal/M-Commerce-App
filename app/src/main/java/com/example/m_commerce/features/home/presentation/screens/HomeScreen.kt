@@ -1,7 +1,5 @@
 package com.example.m_commerce.features.home.presentation.screens
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,37 +10,54 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.example.m_commerce.config.routes.AppRoutes
-import com.example.m_commerce.core.shared.components.Placeholder
 import com.example.m_commerce.features.home.presentation.components.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.CategorySection
+import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.SpecialOffersSection
 
 
 @Composable
-fun HomeScreenUI(modifier: Modifier = Modifier, navigateToCategory: () -> Unit, navigateToSpecialOffers: () -> Unit, navigateToBrands: () -> Unit) {
+fun HomeScreenUI(
+    modifier: Modifier = Modifier,
+    navigateToCategory: () -> Unit,
+    navigateToSpecialOffers: () -> Unit,
+    navigateToBrands: () -> Unit
+) {
 
     val scrollState = rememberScrollState()
 
-    Column(Modifier
-        .fillMaxSize()
-        .verticalScroll(scrollState)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    ) {
 
-        Placeholder(
-            modifier = Modifier
+        SearchSection(
+            Modifier
                 .fillMaxWidth()
-                .height(100.dp),
-            title = "Search"
+                .height(170.dp)
         )
-        SpecialOffersSection(Modifier.fillMaxWidth().height(200.dp), navigateToSpecialOffers)
-        CategorySection(Modifier.fillMaxWidth().height(90.dp), navigateToCategory)
-        BrandsSection(Modifier.fillMaxWidth().height(600.dp), navigateToBrands)
+        SpecialOffersSection(
+            Modifier
+                .fillMaxWidth()
+                .height(200.dp), navigateToSpecialOffers
+        )
+        CategorySection(
+            Modifier
+                .fillMaxWidth()
+                .height(90.dp), navigateToCategory
+        )
+        BrandsSection(
+            Modifier
+                .fillMaxWidth()
+                .height(600.dp), navigateToBrands
+        )
 
-        Spacer( Modifier.height(112.dp))
+        Spacer(Modifier.height(112.dp))
     }
 
 }
+
 
 
 
