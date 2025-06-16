@@ -37,7 +37,7 @@ fun HomeScreenUI(modifier: Modifier = Modifier) {
         CategorySection()
         BrandsSection()
 
-        Spacer( Modifier.height(96.dp))
+        Spacer( Modifier.height(112.dp))
     }
 
 }

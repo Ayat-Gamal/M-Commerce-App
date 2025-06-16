@@ -24,7 +24,7 @@ fun NavSetup(
     NavHost(
         navController = navController,
         startDestination = startingScreen,
-        modifier = modifier.padding(16.dp)
+        modifier = modifier.padding(0.dp)
     ) {
         composable<AppRoutes.HomeScreen> {
             HomeScreenUI()
