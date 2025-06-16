@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.m_commerce.features.auth.login.presentation.LoginScreen
 import com.example.m_commerce.features.auth.register.presentation.RegisterScreen
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
@@ -20,7 +21,7 @@ fun NavSetup(
     modifier: Modifier = Modifier,
     showBottomNavbar: MutableState<Boolean>
 ) {
-    val startingScreen = AppRoutes.HomeScreen
+    val startingScreen = AppRoutes.RegisterScreen
 
     NavHost(
         navController = navController,
@@ -44,7 +45,15 @@ fun NavSetup(
 
         composable<AppRoutes.RegisterScreen> {
             showBottomNavbar.value = false
-            RegisterScreen()
+            RegisterScreen {
+                navController.navigate(AppRoutes.LoginScreen)
+            }
+        }
+
+        composable<AppRoutes.LoginScreen> {
+            LoginScreen {
+                navController.navigate(it)
+            }
         }
     }
 }
