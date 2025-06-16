@@ -32,6 +32,7 @@ fun NavSetup(
         modifier = modifier.padding(0.dp)
     ) {
         composable<AppRoutes.HomeScreen> {
+            showBottomNavbar.value = true
             HomeScreenUI(navigateToCategory = {
                 navController.navigateAndClear(AppRoutes.CategoryScreen)
             }, navigateToSpecialOffers = {

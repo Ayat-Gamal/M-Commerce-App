@@ -58,7 +58,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         )
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainLayout(navController: NavHostController = rememberNavController(), showBottomNavbar: MutableState<Boolean>) {
