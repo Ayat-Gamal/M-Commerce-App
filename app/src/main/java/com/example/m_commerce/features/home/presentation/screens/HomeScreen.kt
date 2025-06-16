@@ -12,6 +12,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.Placeholder
 import com.example.m_commerce.features.home.presentation.components.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.CategorySection
@@ -19,7 +21,7 @@ import com.example.m_commerce.features.home.presentation.components.SpecialOffer
 
 
 @Composable
-fun HomeScreenUI(modifier: Modifier = Modifier) {
+fun HomeScreenUI(modifier: Modifier = Modifier, navigateToCategory: () -> Unit, navigateToSpecialOffers: () -> Unit, navigateToBrands: () -> Unit) {
 
     val scrollState = rememberScrollState()
 
@@ -33,9 +35,9 @@ fun HomeScreenUI(modifier: Modifier = Modifier) {
                 .height(100.dp),
             title = "Search"
         )
-        SpecialOffersSection()
-        CategorySection()
-        BrandsSection()
+        SpecialOffersSection(Modifier.fillMaxWidth().height(200.dp), navigateToSpecialOffers)
+        CategorySection(Modifier.fillMaxWidth().height(90.dp), navigateToCategory)
+        BrandsSection(Modifier.fillMaxWidth().height(600.dp), navigateToBrands)
 
         Spacer( Modifier.height(112.dp))
     }

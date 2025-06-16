@@ -26,6 +26,7 @@ import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.SvgImage
+import com.example.m_commerce.core.utils.extentions.navigateAndClear
 
 @Composable
 fun BottomNavBar(navController: NavHostController) {
@@ -76,7 +77,7 @@ fun BnbIcon(item: BottomNavItem, isSelected: Boolean, navController: NavHostCont
             .clip(CircleShape)
             .background(if (isSelected) White else Color.Transparent)
             .clickable {
-                navController.navigate(item.route)
+                navController.navigateAndClear(item.route)
             },
         contentAlignment = Alignment.Center
     ) {
