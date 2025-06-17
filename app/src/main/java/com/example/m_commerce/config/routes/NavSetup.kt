@@ -68,7 +68,10 @@ fun NavSetup(
         }
 
         composable<AppRoutes.CategoryScreen> {
-            CategoryScreenUI()
+            showBottomNavbar.value = true
+            CategoryScreenUI{ category ->
+                navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
+            }
         }
 
         composable<AppRoutes.CategoryDetailsScreen> {

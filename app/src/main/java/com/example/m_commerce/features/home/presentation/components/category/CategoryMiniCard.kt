@@ -26,8 +26,8 @@ import coil3.request.crossfade
 import com.example.m_commerce.features.home.domain.entity.Category
 
 @Composable
-fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
-    Column(modifier = modifier.clip( RoundedCornerShape(topStart = 100.dp, topEnd = 100.dp)).clickable {  onClick() }) {
+fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
+    Column(modifier = modifier.clip( RoundedCornerShape(topStart = 100.dp, topEnd = 100.dp, bottomStart = 12.dp, bottomEnd = 12.dp)).clickable {  onClick() }) {
         AsyncImage(
             modifier = Modifier
                 .weight(1f).clip(shape = CircleShape),

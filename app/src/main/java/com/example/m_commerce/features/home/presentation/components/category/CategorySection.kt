@@ -22,7 +22,7 @@ fun CategorySection(modifier: Modifier = Modifier, navigateToCategories: () -> U
         ) {
 
             items(categories.take(6).size) { index ->
-                CategoryCard(
+                CategoryMiniCard(
                     modifier = Modifier.width(95.dp),
                     category = categories[index],
                     onClick = {
