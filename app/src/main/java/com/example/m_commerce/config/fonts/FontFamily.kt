@@ -1,10 +1,10 @@
-package com.example.m_commerce.core.shared.components.bottom_nav_bar
+package com.example.m_commerce.config.fonts
 
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import com.example.m_commerce.R
 
-val interFontFamily = FontFamily(
+val InterFontFamily = FontFamily(
     Font(R.font.intervariablefontopszwght),
     Font(R.font.interltalicvariablefontopszwght)
 )

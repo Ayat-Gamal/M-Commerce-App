@@ -16,8 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.m_commerce.config.fonts.InterFontFamily
 import com.example.m_commerce.config.theme.Teal
-import com.example.m_commerce.core.shared.components.bottom_nav_bar.interFontFamily
 
 
 @Composable
@@ -33,11 +33,11 @@ fun AddNewAddressButton(onClick: () -> Unit) {
                 tileMode = TileMode.Repeated
             )
         ),
-        color = Color.White, // Background color
+        color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
             .padding(16.dp)
+            .clickable { onClick() }
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -47,7 +47,7 @@ fun AddNewAddressButton(onClick: () -> Unit) {
             Text(
                 text = "+ Add New Shipping Address",
                 color = Teal,
-                fontFamily = interFontFamily,
+                fontFamily = InterFontFamily,
                 fontWeight = FontWeight.Medium
             )
         }

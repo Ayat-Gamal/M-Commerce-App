@@ -16,24 +16,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.m_commerce.core.shared.components.bottom_nav_bar.interFontFamily
+import com.example.m_commerce.config.fonts.InterFontFamily
 
 @Composable
 fun TopBar(title: String, onBackClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .background(Color.Transparent)
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         IconButton(
             onClick = onBackClick,
             modifier = Modifier.align(Alignment.CenterStart)
         ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black )
         }
         Text(
             text = title,
-            fontFamily = interFontFamily,
+            fontFamily = InterFontFamily,
             fontWeight = FontWeight.Bold,
             fontSize = 17.3.sp,
             modifier = Modifier.align(Alignment.Center)

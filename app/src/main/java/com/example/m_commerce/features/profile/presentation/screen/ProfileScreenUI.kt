@@ -30,14 +30,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
-import com.example.m_commerce.config.theme.background
-import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.features.profile.presentation.components.ProfileOptionsList
+import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -50,7 +50,7 @@ fun ProfileScreenUI(
 
     Column(
         modifier = Modifier
-            .fillMaxSize().background(background)
+            .fillMaxSize().background(Background)
             .padding(16.dp)
     ) {
         Box(

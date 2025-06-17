@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Teal
-import com.example.m_commerce.core.shared.components.bottom_nav_bar.interFontFamily
+import com.example.m_commerce.config.fonts.InterFontFamily
 import com.example.m_commerce.features.profile.domain.model.AddressItem
 
 @Composable
@@ -43,8 +43,8 @@ fun AddressCard(item: AddressItem, isSelected: Boolean, onSelect: () -> Unit) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(item.title, fontWeight = FontWeight.Bold, fontFamily = interFontFamily)
-            Text(item.subtitle, fontSize = 12.sp, color = Color.Gray, fontFamily = interFontFamily)
+            Text(item.title, fontWeight = FontWeight.Bold, fontFamily = InterFontFamily)
+            Text(item.subtitle, fontSize = 12.sp, color = Color.Gray, fontFamily = InterFontFamily)
         }
         Spacer(modifier = Modifier.width(8.dp))
         RadioButton(

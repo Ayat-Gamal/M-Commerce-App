@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.m_commerce.core.shared.components.bottom_nav_bar.interFontFamily
+import com.example.m_commerce.config.fonts.InterFontFamily
 
 @Composable
 fun CustomButton(
@@ -32,7 +32,7 @@ fun CustomButton(
             contentColor = textColor
         ),
         onClick = {onClick()}) {
-        Text(text, fontSize = 24.sp,fontFamily = interFontFamily)
+        Text(text, fontSize = 24.sp,fontFamily = InterFontFamily)
          // what about if we add fontWeight = FontWeight.SemiBold
 
     }
