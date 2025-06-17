@@ -18,11 +18,11 @@ class ProfileViewModel : ViewModel() {
     val profileState: StateFlow<ProfileUiState> = _profileState.asStateFlow()
 
     init {
-        loadProfile()  // This will be called when ViewModel is created
+        loadProfile()
     }
 
     private fun loadProfile() {
-        _profileState.value = ProfileUiState(  // Create new state instead of copy
+        _profileState.value = ProfileUiState(
             profileName = "UserName",
             profileOptions = getProfileOptions()
         )
@@ -42,7 +42,6 @@ class ProfileViewModel : ViewModel() {
     }
 }
 
-// features/profile/presentation/state/ProfileUiState.kt
 data class ProfileUiState(
     val profileName: String = "",
     val profileOptions: List<ProfileOption> = emptyList()

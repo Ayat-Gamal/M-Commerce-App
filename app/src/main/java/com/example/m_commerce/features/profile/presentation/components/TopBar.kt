@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.m_commerce.config.fonts.InterFontFamily
+import com.example.m_commerce.config.theme.Black
 
 @Composable
 fun TopBar(title: String, onBackClick: () -> Unit) {
@@ -30,11 +30,10 @@ fun TopBar(title: String, onBackClick: () -> Unit) {
             onClick = onBackClick,
             modifier = Modifier.align(Alignment.CenterStart)
         ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black )
+            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Black )
         }
         Text(
             text = title,
-            fontFamily = InterFontFamily,
             fontWeight = FontWeight.Bold,
             fontSize = 17.3.sp,
             modifier = Modifier.align(Alignment.Center)

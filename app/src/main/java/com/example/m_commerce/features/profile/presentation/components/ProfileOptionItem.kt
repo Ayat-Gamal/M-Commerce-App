@@ -42,9 +42,6 @@ fun ProfileOptionItem(option: ProfileOption, onClick: () -> Unit = {}) {
             option.title,
             modifier = Modifier.weight(1f),
             fontSize = 16.sp,
-            fontFamily = FontFamily(
-                Font(R.font.intervariablefontopszwght)
-            )
         )
         Icon(
             Icons.Default.KeyboardArrowRight,

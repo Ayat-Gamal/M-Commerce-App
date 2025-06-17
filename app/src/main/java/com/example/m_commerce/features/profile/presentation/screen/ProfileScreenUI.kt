@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,12 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -60,9 +55,7 @@ fun ProfileScreenUI(
         ) {
             Text(
                 text = "Profile",
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.align(Alignment.Center), fontFamily = FontFamily( Font(R.font.interltalicvariablefontopszwght),
-                ) , fontSize = 17.3.sp
+                modifier = Modifier.align(Alignment.Center)
             )
         }
 
@@ -87,11 +80,7 @@ fun ProfileScreenUI(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                "Profile name",
-                style = MaterialTheme.typography.titleMedium,
-                fontFamily = FontFamily(
-                    Font(R.font.intervariablefontopszwght)
-                )
+                "Profile name"
             )
         }
 

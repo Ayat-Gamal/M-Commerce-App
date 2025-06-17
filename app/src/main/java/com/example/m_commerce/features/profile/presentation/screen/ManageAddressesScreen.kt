@@ -64,6 +64,7 @@ fun ManageAddressScreen(
             cornerRadius = 12,
             onClick = { }
         )
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 

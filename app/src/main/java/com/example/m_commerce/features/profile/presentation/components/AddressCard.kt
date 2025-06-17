@@ -43,8 +43,8 @@ fun AddressCard(item: AddressItem, isSelected: Boolean, onSelect: () -> Unit) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(item.title, fontWeight = FontWeight.Bold, fontFamily = InterFontFamily)
-            Text(item.subtitle, fontSize = 12.sp, color = Color.Gray, fontFamily = InterFontFamily)
+            Text(item.title, fontWeight = FontWeight.Bold)
+            Text(item.subtitle, fontSize = 12.sp, color = Color.Gray)
         }
         Spacer(modifier = Modifier.width(8.dp))
         RadioButton(

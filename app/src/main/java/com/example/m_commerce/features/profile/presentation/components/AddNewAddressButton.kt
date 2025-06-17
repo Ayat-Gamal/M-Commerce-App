@@ -47,7 +47,6 @@ fun AddNewAddressButton(onClick: () -> Unit) {
             Text(
                 text = "+ Add New Shipping Address",
                 color = Teal,
-                fontFamily = InterFontFamily,
                 fontWeight = FontWeight.Medium
             )
         }
