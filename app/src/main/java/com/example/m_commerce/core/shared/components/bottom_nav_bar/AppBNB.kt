@@ -41,7 +41,7 @@ fun BottomNavBar(navController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 24.dp),
+            .fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 24.dp).clickable(enabled = false, onClick = {}),
         contentAlignment = Alignment.Center
     ) {
         Row(
