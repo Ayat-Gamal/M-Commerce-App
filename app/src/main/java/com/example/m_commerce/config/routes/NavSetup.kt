@@ -7,8 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.m_commerce.features.auth.login.presentation.LoginScreen
-import com.example.m_commerce.features.auth.register.presentation.RegisterScreen
+import com.example.m_commerce.features.auth.presentation.login.LoginScreen
+import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
@@ -45,7 +45,7 @@ fun NavSetup(
 
         composable<AppRoutes.RegisterScreen> {
             showBottomNavbar.value = false
-            RegisterScreen {
+            RegisterScreen(snackBarHostState) {
                 navController.navigate(AppRoutes.LoginScreen)
             }
         }

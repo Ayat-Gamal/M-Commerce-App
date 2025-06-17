@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.auth.shared.presentation.components
+package com.example.m_commerce.features.auth.presentation.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
