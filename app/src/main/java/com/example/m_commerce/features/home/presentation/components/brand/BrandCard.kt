@@ -34,19 +34,16 @@ fun BrandCard(
     onClick: () -> Unit
 ) {
     Box(
-        modifier = modifier.clip(shape = RoundedCornerShape(topStart = 32.dp, bottomEnd = 32.dp)).clickable { onClick() },
+        modifier = modifier
+            .clip(shape = RoundedCornerShape(topStart = 32.dp, bottomEnd = 32.dp))
+            .clickable { onClick() },
         contentAlignment = Alignment.BottomCenter
     ) {
-        AsyncImage(
+        NetworkImage(
             modifier = Modifier
                 .height(190.dp)
                 .fillMaxWidth(),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(brand.image)
-                .crossfade(true)
-                .build(),
-            contentDescription = "Brand image",
-            contentScale = ContentScale.Crop
+            url = brand.image,
         )
         Text(
             modifier = Modifier
@@ -62,8 +59,10 @@ fun BrandCard(
 }
 
 
+
+
 @Preview(showBackground = true)
 @Composable
 private fun PrevCard() {
-    BrandCard(brand = brands[0]){}
+    BrandCard(brand = brands[0]) {}
 }
