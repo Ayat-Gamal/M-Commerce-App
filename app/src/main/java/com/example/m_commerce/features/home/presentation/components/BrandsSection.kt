@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import com.example.m_commerce.core.shared.components.Placeholder
 
 @Composable
-fun BrandsSection(modifier: Modifier = Modifier) {
+fun BrandsSection(modifier: Modifier = Modifier, navigateToBrands: () -> Unit) {
 
-    SectionTemplate(title = "Brands", seeAllOnClick = { }) {
-        Placeholder(Modifier.fillMaxSize())
+    SectionTemplate(title = "Brands", seeAllOnClick = navigateToBrands) {
+        Placeholder(modifier)
     }
 }

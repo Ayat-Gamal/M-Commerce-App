@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import com.example.m_commerce.core.shared.components.Placeholder
 
 @Composable
-fun SpecialOffersSection(modifier: Modifier = Modifier) {
+fun SpecialOffersSection(modifier: Modifier = Modifier, navigateToSpecialOffers: () -> Unit) {
 
-    SectionTemplate(title = "Special Offers", seeAllOnClick = { }) {
-        Placeholder(Modifier.fillMaxWidth().height(200.dp))
+    SectionTemplate(title = "Special Offers", seeAllOnClick = navigateToSpecialOffers) {
+        Placeholder(modifier)
     }
 }
