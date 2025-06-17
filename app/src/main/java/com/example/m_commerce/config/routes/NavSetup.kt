@@ -16,10 +16,10 @@ import com.example.m_commerce.core.utils.extentions.navigateAndClear
 import com.example.m_commerce.features.auth.presentation.login.LoginScreen
 import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
-import com.example.m_commerce.features.brands.presentation.screen.BrandsScreenUI
+import com.example.m_commerce.features.brand.presentation.screen.BrandsScreenUI
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
-import com.example.m_commerce.features.category_details.presentation.screen.CategoryDetailsScreenUI
+import com.example.m_commerce.features.categories.presentation.screen.CategoryDetailsScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI

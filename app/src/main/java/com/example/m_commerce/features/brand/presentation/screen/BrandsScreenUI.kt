@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.brands.presentation.screen
+package com.example.m_commerce.features.brand.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.example.m_commerce.features.home.presentation.components.brand.BrandCard
+import com.example.m_commerce.features.brand.presentation.components.BrandCard
 import com.example.m_commerce.features.home.presentation.components.brand.brands
 
 

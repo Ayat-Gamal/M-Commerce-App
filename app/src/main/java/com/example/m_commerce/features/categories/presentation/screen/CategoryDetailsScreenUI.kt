@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.category_details.presentation.screen
+package com.example.m_commerce.features.categories.presentation.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

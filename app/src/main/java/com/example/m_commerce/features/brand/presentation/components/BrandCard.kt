@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.home.presentation.components.brand
+package com.example.m_commerce.features.brand.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,21 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.features.home.domain.entity.Brand
+import com.example.m_commerce.features.home.presentation.components.brand.brands
 
 @Composable
 fun BrandCard(

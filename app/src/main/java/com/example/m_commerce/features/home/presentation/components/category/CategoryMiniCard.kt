@@ -44,8 +44,7 @@ fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, categor
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Yellow),
+            .fillMaxWidth(),
             style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center),
         )
     }
