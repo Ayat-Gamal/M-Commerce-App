@@ -1,10 +1,15 @@
 package com.example.m_commerce.features.home.presentation.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -24,19 +29,17 @@ fun HomeScreenUI(
     navigateToBrands: () -> Unit
 ) {
 
+
     val scrollState = rememberScrollState()
+    val activity = LocalActivity.current
+    BackHandler { activity?.finish() }
 
     Column(
         Modifier
-            .fillMaxSize()
             .verticalScroll(scrollState)
+            .wrapContentHeight()
     ) {
-
-        SearchSection(
-            Modifier
-                .fillMaxWidth()
-                .height(170.dp)
-        )
+        SearchSection()
         SpecialOffersSection(
             Modifier
                 .fillMaxWidth()
@@ -45,14 +48,8 @@ fun HomeScreenUI(
         CategorySection(
             Modifier
                 .fillMaxWidth()
-                .height(90.dp), navigateToCategory
-        )
-        BrandsSection(
-            Modifier
-                .fillMaxWidth()
-                .height(600.dp), navigateToBrands
-        )
-
+                .height(90.dp), navigateToCategory)
+        BrandsSection(Modifier.fillMaxWidth(), navigateToBrands)
         Spacer(Modifier.height(112.dp))
     }
 
