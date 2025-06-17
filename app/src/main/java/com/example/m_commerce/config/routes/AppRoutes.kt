@@ -1,4 +1,3 @@
-// AppRoutes.kt
 package com.example.m_commerce.config.routes
 
 import kotlinx.serialization.Serializable
@@ -16,4 +15,18 @@ sealed class AppRoutes {
 
     @Serializable
     object ProfileScreen : AppRoutes()
+
+    @Serializable
+    object RegisterScreen : AppRoutes()
+
+    @Serializable
+    object LoginScreen : AppRoutes()
+
+    @Serializable
+    object ManageAddressScreen : AppRoutes()
+
+    @Serializable
+    object AddAddressScreen : AppRoutes()
+
+
 }

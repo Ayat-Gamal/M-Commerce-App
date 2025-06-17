@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
+    id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization") version "2.1.10"
@@ -100,8 +101,8 @@ dependencies {
 
     //!Dependency Injection
     //*hilt
-    implementation("com.google.dagger:hilt-android:2.49")
-    ksp("com.google.dagger:hilt-android-compiler:2.49")
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
 
     //!Navigation
@@ -111,6 +112,16 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
 
+
+    // firebase auth
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-auth")
+
+    // extended icons
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+
+    // view model
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
 }
 

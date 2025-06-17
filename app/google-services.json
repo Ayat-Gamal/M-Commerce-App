@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "757548828616",
+    "project_id": "m-commerce-user",
+    "storage_bucket": "m-commerce-user.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757548828616:android:453f686c40f3b34d6ae2fd",
+        "android_client_info": {
+          "package_name": "com.example.m_commerce"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6JzHlCbxzUrEZsjn0Os3wL_IxdPrOfqk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

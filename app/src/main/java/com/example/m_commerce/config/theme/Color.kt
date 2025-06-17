@@ -13,5 +13,8 @@ val Pink40 = Color(0xFF7D5260)
 
 val Teal = Color(0xFF008b86)
 val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)
 val Gray = Color(0xFF8a8a8a)
 val DarkestGray = Color(0xFF242424)
+val Background = Color(0xfff6f6f6)
+val dividerGray = Color(0xFFeeeeee)
