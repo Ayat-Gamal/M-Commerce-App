@@ -1,5 +1,7 @@
 package com.example.m_commerce.config.routes
 
+import AddAddressScreen
+import ManageAddressScreen
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -40,7 +42,7 @@ fun NavSetup(
         }
 
         composable<AppRoutes.ProfileScreen> {
-            ProfileScreenUI()
+            ProfileScreenUI(navController)
         }
 
         composable<AppRoutes.RegisterScreen> {
@@ -55,5 +57,14 @@ fun NavSetup(
                 navController.navigate(it)
             }
         }
+        composable<AppRoutes.ManageAddressScreen> {
+             ManageAddressScreen(navController)
+        }
+        composable<AppRoutes.AddAddressScreen> {
+            AddAddressScreen {
+                navController.popBackStack()
+            }
+        }
+
     }
 }

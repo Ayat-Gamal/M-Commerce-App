@@ -21,4 +21,12 @@ sealed class AppRoutes {
 
     @Serializable
     object LoginScreen : AppRoutes()
+
+    @Serializable
+    object ManageAddressScreen : AppRoutes()
+
+    @Serializable
+    object AddAddressScreen : AppRoutes()
+
+
 }
