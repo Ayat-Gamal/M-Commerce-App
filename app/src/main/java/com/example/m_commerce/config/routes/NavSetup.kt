@@ -1,5 +1,7 @@
 package com.example.m_commerce.config.routes
 
+import AddAddressScreen
+import ManageAddressScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -9,9 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.m_commerce.core.utils.extentions.navigateAndClear
 import com.example.m_commerce.features.auth.presentation.login.LoginScreen
 import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
-import com.example.m_commerce.core.utils.extentions.navigateAndClear
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
@@ -51,7 +53,8 @@ fun NavSetup(
         }
 
         composable<AppRoutes.ProfileScreen> {
-            ProfileScreenUI()
+            showBottomNavbar.value = true
+            ProfileScreenUI(navController)
         }
 
         composable<AppRoutes.RegisterScreen> {
@@ -66,5 +69,15 @@ fun NavSetup(
                 navController.navigate(it)
             }
         }
+        composable<AppRoutes.ManageAddressScreen> {
+            showBottomNavbar.value = false
+            ManageAddressScreen(navController)
+        }
+        composable<AppRoutes.AddAddressScreen> {
+            AddAddressScreen {
+                navController.popBackStack()
+            }
+        }
+
     }
 }
