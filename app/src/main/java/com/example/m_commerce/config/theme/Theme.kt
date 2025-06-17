@@ -35,7 +35,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun MCommerceTheme(
     //TODO: Remove the "!"
-    darkTheme: Boolean = !isSystemInDarkTheme(),
+    darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
