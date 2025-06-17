@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.features.brand.domain.entity.ProductCardModel
 import com.example.m_commerce.features.product.presentation.components.ProductCard
+import com.example.m_commerce.features.product.presentation.components.ProductsGridView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -46,25 +47,13 @@ fun BrandScreenUI(modifier: Modifier = Modifier, brandId: String, navController:
 
         )
     }) { padding ->
-        LazyVerticalGrid(
-            modifier = Modifier.padding(padding),
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
-            items(products.size) {
-                ProductCard(
-                    product = products[it],
-                    navigateToProductDetails = {
-                        navController.navigate(AppRoutes.ProductDetailsScreen(products[it].id))
-                    }
-                )
-            }
+        ProductsGridView( modifier = Modifier.padding(padding), products = products) { product ->
+            navController.navigate(AppRoutes.ProductDetailsScreen(product.id))
         }
     }
 
 }
+
 
 
 val img = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg"

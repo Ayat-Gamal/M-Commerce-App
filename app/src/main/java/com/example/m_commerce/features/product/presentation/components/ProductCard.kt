@@ -25,7 +25,7 @@ import com.example.m_commerce.features.brand.domain.entity.ProductCardModel
 
 
 @Composable
-fun ProductCard(modifier: Modifier = Modifier, navigateToProductDetails: () -> Unit, product: ProductCardModel) {
+fun ProductCard(modifier: Modifier = Modifier, onClick: () -> Unit, product: ProductCardModel) {
 
     val formattedPrice = String.format("%.2f", product.price)
     val parts = formattedPrice.split(".")
@@ -35,7 +35,7 @@ fun ProductCard(modifier: Modifier = Modifier, navigateToProductDetails: () -> U
     Log.d("TAG", "ProductCard: int=$intPrice, dec=$decPrice")
 
 
-    Column(modifier = modifier.clip(shape = RoundedCornerShape(8.dp)).clickable {  navigateToProductDetails() }) {
+    Column(modifier = modifier.clip(shape = RoundedCornerShape(8.dp)).clickable {  onClick() }) {
         NetworkImage(url = product.image, modifier = Modifier.height(200.dp))
         if (product.offer != null) Text("${product.offer}% off",modifier = Modifier.background(OfferColor).padding(vertical = 4.dp, horizontal = 8.dp), color = White)
 
