@@ -6,7 +6,6 @@ import com.example.m_commerce.features.auth.domain.usecases.RegisterUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.SendEmailVerificationUseCase
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -25,7 +24,6 @@ class RegisterViewModel @Inject constructor(
     fun register(email: String, password: String) {
         viewModelScope.launch {
             _registerState.emit(RegisterState.Loading)
-            delay(2000)
             registerUser.invoke(email, password).catch { e ->
                 _registerState.emit(
                     RegisterState.Error(

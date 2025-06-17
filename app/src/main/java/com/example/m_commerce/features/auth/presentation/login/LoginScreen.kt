@@ -49,6 +49,13 @@ fun LoginScreen(navigate: (AppRoutes) -> Unit) {
                 ) { navigate(AppRoutes.RegisterScreen) }
             }
 
+            item {
+                AuthFooterSection(
+                    questionText = "Or, Login as a",
+                    actionText = "Guest"
+                ) { navigate(AppRoutes.HomeScreen) }
+            }
+
         }
     }
 }

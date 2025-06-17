@@ -19,7 +19,7 @@ fun RegisterDividerSection() {
     ) {
         HorizontalDivider(Modifier.weight(1f))
         Text(
-            "Or sign up with",
+            "  Or sign up with  ",
             color = Color(0xFF797979),
             fontSize = 12.sp
         )
