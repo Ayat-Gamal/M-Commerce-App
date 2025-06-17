@@ -1,16 +1,19 @@
 package com.example.m_commerce.config.routes
 
+import androidx.compose.foundation.layout.padding
 import AddAddressScreen
 import ManageAddressScreen
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.m_commerce.features.auth.login.presentation.LoginScreen
-import com.example.m_commerce.features.auth.register.presentation.RegisterScreen
+import com.example.m_commerce.features.auth.presentation.login.LoginScreen
+import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
+import com.example.m_commerce.core.utils.extentions.navigateAndClear
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
@@ -28,10 +31,17 @@ fun NavSetup(
     NavHost(
         navController = navController,
         startDestination = startingScreen,
-        //modifier = modifier.padding(16.dp)
+        modifier = modifier.padding(0.dp)
     ) {
         composable<AppRoutes.HomeScreen> {
-            HomeScreenUI()
+            showBottomNavbar.value = true
+            HomeScreenUI(navigateToCategory = {
+                navController.navigateAndClear(AppRoutes.CategoryScreen)
+            }, navigateToSpecialOffers = {
+                //TODO: @Tag - navigate to special offers here
+            }, navigateToBrands = {
+
+            })
         }
 
         composable<AppRoutes.CategoryScreen> {
@@ -47,7 +57,7 @@ fun NavSetup(
 
         composable<AppRoutes.RegisterScreen> {
             showBottomNavbar.value = false
-            RegisterScreen {
+            RegisterScreen(snackBarHostState) {
                 navController.navigate(AppRoutes.LoginScreen)
             }
         }

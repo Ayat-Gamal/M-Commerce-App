@@ -1,9 +1,7 @@
-package com.example.m_commerce.features.auth.shared.presentation.components
+package com.example.m_commerce.features.auth.presentation.components
 
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
