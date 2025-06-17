@@ -2,6 +2,8 @@ package com.example.m_commerce.features.auth.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,4 +39,5 @@ fun AuthFooterSection(
                 }
         )
     }
+    Spacer(Modifier.height(16.dp))
 }

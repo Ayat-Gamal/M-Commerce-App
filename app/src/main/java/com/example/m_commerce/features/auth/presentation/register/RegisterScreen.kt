@@ -20,14 +20,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.m_commerce.features.auth.presentation.components.AuthFooterSection
+import com.example.m_commerce.features.auth.presentation.components.AuthSocialSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterDividerSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterFormSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterHeaderSection
-import com.example.m_commerce.features.auth.presentation.components.AuthFooterSection
-import com.example.m_commerce.features.auth.presentation.components.AuthSocialSection
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,7 +37,6 @@ fun RegisterScreen(
 ) {
     val activity = LocalActivity.current
     val state by viewModel.registerState.collectAsState()
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     when (state) {
