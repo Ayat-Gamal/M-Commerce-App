@@ -35,7 +35,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.config.routes.NavSetup
 import com.example.m_commerce.config.theme.MCommerceTheme
 import com.example.m_commerce.core.shared.components.bottom_nav_bar.BottomNavBar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     lateinit var showBottomNavbar: MutableState<Boolean>
     override fun onCreate(savedInstanceState: Bundle?) {

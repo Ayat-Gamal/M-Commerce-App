@@ -101,8 +101,8 @@ dependencies {
 
     //!Dependency Injection
     //*hilt
-    implementation("com.google.dagger:hilt-android:2.49")
-    ksp("com.google.dagger:hilt-android-compiler:2.49")
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
 
     //!Navigation
@@ -113,8 +113,9 @@ dependencies {
 
 
 
-    // firebase
+    // firebase auth
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-auth")
 
     // extended icons
     implementation("androidx.compose.material:material-icons-extended:1.6.1")

@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.auth.login.presentation.components
+package com.example.m_commerce.features.auth.presentation.login.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
