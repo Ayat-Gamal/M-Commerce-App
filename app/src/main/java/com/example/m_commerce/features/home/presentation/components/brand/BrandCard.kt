@@ -25,6 +25,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.White
+import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.features.home.domain.entity.Brand
 
 @Composable
@@ -57,9 +58,6 @@ fun BrandCard(
         )
     }
 }
-
-
-
 
 @Preview(showBackground = true)
 @Composable

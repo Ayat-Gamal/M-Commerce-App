@@ -1,7 +1,9 @@
 package com.example.m_commerce.features.brand.presentation.screen
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
@@ -14,12 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.m_commerce.features.brand.domain.entity.ProductCardModel
+import com.example.m_commerce.features.product.presentation.components.ProductCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun BrandScreenUI(modifier: Modifier = Modifier, brandId: String, navController : NavHostController) {
+fun BrandScreenUI(modifier: Modifier = Modifier, brandId: String, navController: NavHostController) {
 
     Scaffold(modifier = modifier, topBar = {
         TopAppBar(
@@ -40,7 +45,13 @@ fun BrandScreenUI(modifier: Modifier = Modifier, brandId: String, navController 
 
         )
     }) { padding ->
-        LazyVerticalGrid(columns = GridCells.Fixed(3)) {
+        LazyVerticalGrid(
+            modifier = Modifier.padding(padding),
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp)
+        ) {
             items(products.size) {
                 ProductCard(
                     product = products[it],
@@ -51,29 +62,19 @@ fun BrandScreenUI(modifier: Modifier = Modifier, brandId: String, navController 
 
 }
 
-@Composable
-fun ProductCard(modifier: Modifier = Modifier) {
-    Column (modifier = modifier) {
 
+val img = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg"
 
-    }
-}
 
 val products = listOf(
-    ProductCardModel(1,"Product 1",10.00, 9.2),
-    ProductCardModel(1,"Product 2",10.00, 9.2),
-    ProductCardModel(1,"Product 3",10.00, 9.2),
-    ProductCardModel(1,"Product 4",10.00, 9.2),
-    ProductCardModel(1,"Product 5",10.00, 9.2),
-    ProductCardModel(1,"Product 6",10.00, 9.2),
-    ProductCardModel(1,"Product 7",10.00, 9.2),
-    ProductCardModel(1,"Product 8",10.00, 9.2),
-    ProductCardModel(1,"Product 9",10.00, 9.2)
+    ProductCardModel(1, "Product 1", img, 10.00, 9.2),
+    ProductCardModel(1, "Product 2", img, 10.00),
+    ProductCardModel(1, "Product 3", img, 10.00, 9.2),
+    ProductCardModel(1, "Product 4", img, 10.00, 9.2),
+    ProductCardModel(1, "Product 5", img, 10.00),
+    ProductCardModel(1, "Product 6", img, 10.00),
+    ProductCardModel(1, "Product 7", img, 10.00, 9.2),
+    ProductCardModel(1, "Product 8", img, 10.00),
+    ProductCardModel(1, "Product 9", img, 10.00, 9.2)
 )
 
-data class ProductCardModel(
-    val id: Int,
-    val name: String,
-    val price: Double,
-    val offer: Double
-)
