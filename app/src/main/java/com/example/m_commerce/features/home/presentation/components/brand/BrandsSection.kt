@@ -16,7 +16,8 @@ import com.example.m_commerce.features.home.presentation.components.SectionTempl
 @Composable
 fun BrandsSection(
     modifier: Modifier = Modifier,
-    navigateToBrands: () -> Unit
+    navigateToBrands: () -> Unit,
+    navigateToBrand: (Brand) -> Unit
 ) {
     SectionTemplate(title = "Brands", seeAllOnClick = navigateToBrands) {
         Column(modifier = modifier) {
@@ -31,7 +32,8 @@ fun BrandsSection(
                     brandRow.forEach { brand ->
                         BrandCard(
                             brand = brand,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            onClick = {navigateToBrand(brand)}
                         )
                     }
 
@@ -48,17 +50,17 @@ fun BrandsSection(
 
 val img = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg"
 val brands = listOf<Brand>(
-    Brand(1, img, "Brand 1"),
-    Brand(1, img, "Brand 2"),
-    Brand(1, img, "Brand 3"),
-    Brand(1, img, "Brand 4"),
-    Brand(1, img, "Brand 5"),
-    Brand(1, img, "Brand 6"),
-    Brand(1, img, "Brand 7"),
-    Brand(1, img, "Brand 8"),
-    Brand(1, img, "Brand 9"),
-    Brand(1, img, "Brand 10"),
-    Brand(1, img, "Brand 11"),
-    Brand(1, img, "Brand 12"),
-    Brand(1, img, "Brand 13")
+    Brand("1", img, "Brand 1"),
+    Brand("1", img, "Brand 2"),
+    Brand("1", img, "Brand 3"),
+    Brand("1", img, "Brand 4"),
+    Brand("1", img, "Brand 5"),
+    Brand("1", img, "Brand 6"),
+    Brand("1", img, "Brand 7"),
+    Brand("1", img, "Brand 8"),
+    Brand("1", img, "Brand 9"),
+    Brand("1", img, "Brand 10"),
+    Brand("1", img, "Brand 11"),
+    Brand("1", img, "Brand 12"),
+    Brand("1", img, "Brand 13")
 )

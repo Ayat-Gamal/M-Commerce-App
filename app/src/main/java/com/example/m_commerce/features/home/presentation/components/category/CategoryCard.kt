@@ -2,18 +2,23 @@ package com.example.m_commerce.features.home.presentation.components.category
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -26,8 +31,8 @@ fun CategoryCard(modifier: Modifier = Modifier, category: Category) {
     Column(modifier = modifier) {
         AsyncImage(
             modifier = Modifier
-                .width(120.dp)
-                .weight(1f),
+//                .width(120.dp)
+                .weight(1f).clip(shape = CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(category.image)
                 .crossfade(true)
@@ -36,10 +41,14 @@ fun CategoryCard(modifier: Modifier = Modifier, category: Category) {
             contentScale = ContentScale.Crop
         )
 
-        Text(category.name, modifier = Modifier
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(category.name,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+            modifier = Modifier
             .fillMaxWidth()
             .background(Color.Yellow),
-            style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center)
+            style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center),
         )
     }
 }

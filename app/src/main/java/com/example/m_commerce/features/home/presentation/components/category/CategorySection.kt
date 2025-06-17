@@ -23,7 +23,7 @@ fun CategorySection(modifier: Modifier = Modifier, navigateToCategory: () -> Uni
 
             items(categories.size) { index ->
                 CategoryCard(
-                    modifier = Modifier.width(120.dp),
+                    modifier = Modifier.width(95.dp),
                     category = categories[index],
                 )
             }
@@ -39,7 +39,7 @@ val categories = listOf(
     Category(1, img, "Category 2"),
     Category(1, img, "Category 3"),
     Category(1, img, "Category 4"),
-    Category(1, img, "Category 5"),
+    Category(1, img, "Categorasdy 5"),
     Category(1, img, "Category 6"),
     Category(1, img, "Category 7"),
     Category(1, img, "Category 8"),

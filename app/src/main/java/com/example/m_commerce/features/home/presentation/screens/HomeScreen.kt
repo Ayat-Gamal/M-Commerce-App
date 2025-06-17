@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.m_commerce.features.home.domain.entity.Brand
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.category.CategorySection
 import com.example.m_commerce.features.home.presentation.components.SearchSection
@@ -23,7 +24,8 @@ fun HomeScreenUI(
     modifier: Modifier = Modifier,
     navigateToCategory: () -> Unit,
     navigateToSpecialOffers: () -> Unit,
-    navigateToBrands: () -> Unit
+    navigateToBrands: () -> Unit,
+    navigateToBrand: (Brand) -> Unit
 ) {
 
 
@@ -46,7 +48,7 @@ fun HomeScreenUI(
             Modifier
                 .fillMaxWidth()
                 .height(120.dp), navigateToCategory)
-        BrandsSection(Modifier.fillMaxWidth(), navigateToBrands)
+        BrandsSection(Modifier.fillMaxWidth(), navigateToBrands, navigateToBrand)
         Spacer(Modifier.height(112.dp))
     }
 
