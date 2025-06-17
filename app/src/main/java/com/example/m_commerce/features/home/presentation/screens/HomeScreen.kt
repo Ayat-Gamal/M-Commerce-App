@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.features.home.domain.entity.Brand
+import com.example.m_commerce.features.home.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.category.CategorySection
 import com.example.m_commerce.features.home.presentation.components.SearchSection
@@ -22,7 +23,8 @@ import com.example.m_commerce.features.home.presentation.components.SpecialOffer
 @Composable
 fun HomeScreenUI(
     modifier: Modifier = Modifier,
-    navigateToCategory: () -> Unit,
+    navigateToCategories: () -> Unit,
+    navigateToCategory: (Category) -> Unit,
     navigateToSpecialOffers: () -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit
@@ -47,7 +49,7 @@ fun HomeScreenUI(
         CategorySection(
             Modifier
                 .fillMaxWidth()
-                .height(120.dp), navigateToCategory)
+                .height(120.dp), navigateToCategories, navigateToCategory)
         BrandsSection(Modifier.fillMaxWidth(), navigateToBrands, navigateToBrand)
         Spacer(Modifier.height(112.dp))
     }

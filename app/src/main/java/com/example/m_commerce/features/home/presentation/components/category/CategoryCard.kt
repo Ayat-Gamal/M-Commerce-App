@@ -1,14 +1,13 @@
 package com.example.m_commerce.features.home.presentation.components.category
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -27,11 +26,10 @@ import coil3.request.crossfade
 import com.example.m_commerce.features.home.domain.entity.Category
 
 @Composable
-fun CategoryCard(modifier: Modifier = Modifier, category: Category) {
-    Column(modifier = modifier) {
+fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
+    Column(modifier = modifier.clip( RoundedCornerShape(topStart = 100.dp, topEnd = 100.dp)).clickable {  onClick() }) {
         AsyncImage(
             modifier = Modifier
-//                .width(120.dp)
                 .weight(1f).clip(shape = CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(category.image)

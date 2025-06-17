@@ -1,3 +1,3 @@
 package com.example.m_commerce.features.home.data.dto
 
-data class CategoryDto(val id: Int, val name: String, val image: String)
+data class CategoryDto(val id: String, val name: String, val image: String)

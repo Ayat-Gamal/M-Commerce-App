@@ -2,7 +2,6 @@ package com.example.m_commerce.config.routes
 
 import AddAddressScreen
 import ManageAddressScreen
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -19,6 +18,7 @@ import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
+import com.example.m_commerce.features.category_details.presentation.screen.CategoryDetailsScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
@@ -40,7 +40,7 @@ fun NavSetup(
 
         composable<AppRoutes.HomeScreen> {
             showBottomNavbar.value = true
-            HomeScreenUI(navigateToCategory = {
+            HomeScreenUI(navigateToCategories = {
                 navController.navigateAndClear(AppRoutes.CategoryScreen)
             }, navigateToSpecialOffers = {
                 //TODO: @Tag - navigate to special offers here
@@ -48,7 +48,10 @@ fun NavSetup(
 
             }, navigateToBrand = { brand ->
                 navController.navigate(AppRoutes.BrandScreen(brand.id))
-            }
+            },
+                navigateToCategory = {category ->
+                    navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
+                }
             )
         }
 
@@ -67,6 +70,13 @@ fun NavSetup(
         composable<AppRoutes.CategoryScreen> {
             CategoryScreenUI()
         }
+
+        composable<AppRoutes.CategoryDetailsScreen> {
+            showBottomNavbar.value = false
+            val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
+            CategoryDetailsScreenUI(categoryId = categoryArgs.categoryId, navController = navController)
+        }
+
         composable<AppRoutes.CartScreen> {
             CartScreenUI()
         }

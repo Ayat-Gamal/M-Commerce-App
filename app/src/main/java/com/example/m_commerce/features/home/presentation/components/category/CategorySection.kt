@@ -12,19 +12,22 @@ import com.example.m_commerce.features.home.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.SectionTemplate
 
 @Composable
-fun CategorySection(modifier: Modifier = Modifier, navigateToCategory: () -> Unit) {
+fun CategorySection(modifier: Modifier = Modifier, navigateToCategories: () -> Unit, navigateToCategory: (Category) -> Unit) {
 
-    SectionTemplate(title = "Categories", seeAllOnClick = navigateToCategory) {
+    SectionTemplate(title = "Categories", seeAllOnClick = navigateToCategories) {
         LazyRow(
             modifier = modifier,
             contentPadding = PaddingValues(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            items(categories.size) { index ->
+            items(categories.take(6).size) { index ->
                 CategoryCard(
                     modifier = Modifier.width(95.dp),
                     category = categories[index],
+                    onClick = {
+                        navigateToCategory(categories[index])
+                    }
                 )
             }
 
@@ -35,12 +38,12 @@ fun CategorySection(modifier: Modifier = Modifier, navigateToCategory: () -> Uni
 val img = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg"
 
 val categories = listOf(
-    Category(1, img, "Category 1"),
-    Category(1, img, "Category 2"),
-    Category(1, img, "Category 3"),
-    Category(1, img, "Category 4"),
-    Category(1, img, "Categorasdy 5"),
-    Category(1, img, "Category 6"),
-    Category(1, img, "Category 7"),
-    Category(1, img, "Category 8"),
+    Category("1", img, "Category 1"),
+    Category("2", img, "Category 2"),
+    Category("3", img, "Category 3"),
+    Category("4", img, "Category 4"),
+    Category("5", img, "Categorasdy 5"),
+    Category("6", img, "Category 6"),
+    Category("7", img, "Category 7"),
+    Category("8", img, "Category 8"),
 )

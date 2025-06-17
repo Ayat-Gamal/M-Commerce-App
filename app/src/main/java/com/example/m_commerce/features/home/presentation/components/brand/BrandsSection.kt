@@ -22,7 +22,7 @@ fun BrandsSection(
     SectionTemplate(title = "Brands", seeAllOnClick = navigateToBrands) {
         Column(modifier = modifier) {
 
-            brands.chunked(2).forEach { brandRow ->
+            filteredBrands.chunked(2).forEach { brandRow ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -64,3 +64,4 @@ val brands = listOf<Brand>(
     Brand("1", img, "Brand 12"),
     Brand("1", img, "Brand 13")
 )
+val filteredBrands = brands.take(6)
