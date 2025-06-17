@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,6 +33,7 @@ fun SearchSection(modifier: Modifier = Modifier) {
         modifier
             .clip(shape = RoundedCornerShape(bottomEnd = 18.dp, bottomStart = 18.dp))
             .background(Color.Gray)
+            .height(170.dp)
             .padding(16.dp),
         verticalArrangement =  Arrangement.SpaceBetween
     ) {
