@@ -20,6 +20,7 @@ import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
+import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 
 @Composable
@@ -54,8 +55,13 @@ fun NavSetup(
         composable<AppRoutes.BrandScreen> {
             showBottomNavbar.value = false
             val brandArgs = it.toRoute<AppRoutes.BrandScreen>()
-            Log.i("TAG", "NavSetup:  ${brandArgs.brandId}")
             BrandScreenUI(brandId = brandArgs.brandId, navController = navController)
+        }
+
+        composable<AppRoutes.ProductDetailsScreen> {
+            showBottomNavbar.value = false
+            val productArgs = it.toRoute<AppRoutes.ProductDetailsScreen>()
+            ProductDetailsScreenUI(productId = productArgs.productId, navController = navController)
         }
 
         composable<AppRoutes.CategoryScreen> {
