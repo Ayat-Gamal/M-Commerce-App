@@ -14,7 +14,10 @@ sealed class AppRoutes {
     class  CategoryDetailsScreen(val categoryId: String) : AppRoutes()
 
     @Serializable
-    data class BrandScreen(val brandId: String) : AppRoutes()
+    object BrandsScreen : AppRoutes()
+
+    @Serializable
+    data class BrandDetailsScreen(val brandId: String) : AppRoutes()
 
     @Serializable
     data class ProductDetailsScreen(val productId: String) : AppRoutes()

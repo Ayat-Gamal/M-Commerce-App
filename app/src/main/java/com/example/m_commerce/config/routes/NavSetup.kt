@@ -16,6 +16,7 @@ import com.example.m_commerce.core.utils.extentions.navigateAndClear
 import com.example.m_commerce.features.auth.presentation.login.LoginScreen
 import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
+import com.example.m_commerce.features.brands.presentation.screen.BrandsScreenUI
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.category_details.presentation.screen.CategoryDetailsScreenUI
@@ -45,9 +46,9 @@ fun NavSetup(
             }, navigateToSpecialOffers = {
                 //TODO: @Tag - navigate to special offers here
             }, navigateToBrands = {
-
+                navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->
-                navController.navigate(AppRoutes.BrandScreen(brand.id))
+                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id))
             },
                 navigateToCategory = {category ->
                     navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
@@ -55,9 +56,13 @@ fun NavSetup(
             )
         }
 
-        composable<AppRoutes.BrandScreen> {
+        composable<AppRoutes.BrandsScreen> {
             showBottomNavbar.value = false
-            val brandArgs = it.toRoute<AppRoutes.BrandScreen>()
+            BrandsScreenUI(navController = navController)
+        }
+        composable<AppRoutes.BrandDetailsScreen> {
+            showBottomNavbar.value = false
+            val brandArgs = it.toRoute<AppRoutes.BrandDetailsScreen>()
             BrandScreenUI(brandId = brandArgs.brandId, navController = navController)
         }
 
