@@ -11,9 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.m_commerce.core.shared.components.bottom_nav_bar.interFontFamily
 
 @Composable
 fun CustomButton(
+    modifier: Modifier = Modifier,
     text: String,
     height: Int=56,
     cornerRadius: Int=24,
@@ -21,7 +23,7 @@ fun CustomButton(
     textColor: Color = Color.Unspecified,
     onClick: () -> Unit = {}) {
     return Button(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(height.dp),
         shape = RoundedCornerShape(cornerRadius.dp),
@@ -30,6 +32,8 @@ fun CustomButton(
             contentColor = textColor
         ),
         onClick = {onClick()}) {
-        Text(text, fontSize = 24.sp)
+        Text(text, fontSize = 24.sp,fontFamily = interFontFamily)
+         // what about if we add fontWeight = FontWeight.SemiBold
+
     }
 }
