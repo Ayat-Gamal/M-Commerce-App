@@ -9,6 +9,7 @@ import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
 import com.example.m_commerce.features.auth.domain.validation.ValidateName
 import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
 import com.example.m_commerce.features.auth.domain.validation.ValidationResult
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,8 +30,8 @@ class RegisterViewModel @Inject constructor(
     private val validateConfirmPassword: ValidateConfirmPassword
 ) : ViewModel() {
 
-    private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
-    val registerState = _registerState.asStateFlow()
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
+    val registerState = _authState.asStateFlow()
 
     private val _messageState = MutableSharedFlow<String>()
     val messageState = _messageState.asSharedFlow()
@@ -44,18 +45,18 @@ class RegisterViewModel @Inject constructor(
         val result = validate(name, email, password, confirmPassword)
         viewModelScope.launch {
             if (result.successful) {
-                _registerState.emit(RegisterState.Loading)
+                _authState.emit(AuthState.Loading)
                 registerUser.invoke(email, password).catch { e ->
-                    _registerState.emit(
-                        RegisterState.Error(
+                    _authState.emit(
+                        AuthState.Error(
                             e, "Registration failed: ${e.localizedMessage} ?: Unknown error"
                         )
                     )
                 }.collect { result ->
-                    if (result is RegisterState.Success) {
+                    if (result is AuthState.Success) {
                         sendEmailVerification(result.user)
-                    } else if (result is RegisterState.Error) {
-                        _registerState.emit(RegisterState.Error(result.error, result.message))
+                    } else if (result is AuthState.Error) {
+                        _authState.emit(AuthState.Error(result.error, result.message))
                     }
                 }
             } else _messageState.emit(result.errorMessage!!)
@@ -65,13 +66,11 @@ class RegisterViewModel @Inject constructor(
     private suspend fun sendEmailVerification(user: FirebaseUser?) {
         user?.let {
             sendEmailVerification.invoke(it).collect { result ->
-                if (result is RegisterState.Success) _registerState.emit(
-                    RegisterState.Success(
-                        result.user
-                    )
-                )
-                else if (result is RegisterState.Error) _registerState.emit(
-                    RegisterState.Error(
+                if (result is AuthState.Success) {
+                    _authState.emit(AuthState.Success(result.user))
+                    FirebaseAuth.getInstance().signOut()
+                } else if (result is AuthState.Error) _authState.emit(
+                    AuthState.Error(
                         result.error, result.message
                     )
                 )

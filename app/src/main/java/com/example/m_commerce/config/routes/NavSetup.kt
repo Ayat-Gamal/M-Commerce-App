@@ -98,12 +98,12 @@ fun NavSetup(
         composable<AppRoutes.RegisterScreen> {
             showBottomNavbar.value = false
             RegisterScreen(snackBarHostState) {
-                navController.navigate(AppRoutes.LoginScreen)
+                navController.navigateUp()
             }
         }
 
         composable<AppRoutes.LoginScreen> {
-            LoginScreen {
+            LoginScreen(snackBarHostState = snackBarHostState) {
                 navController.navigate(it)
             }
         }

@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.auth.di
 
 import com.example.m_commerce.features.auth.domain.repo.AuthRepository
+import com.example.m_commerce.features.auth.domain.usecases.LoginUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.RegisterUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.SendEmailVerificationUseCase
 import com.google.firebase.auth.FirebaseAuth
@@ -26,5 +27,10 @@ object AuthModule {
     @Provides
     fun provideSendEmailVerificationUseCase(repo: AuthRepository): SendEmailVerificationUseCase {
         return SendEmailVerificationUseCase(repo)
+    }
+
+    @Provides
+    fun provideLoginUserUseCase(repo: AuthRepository): LoginUserUseCase {
+        return LoginUserUseCase(repo)
     }
 }
