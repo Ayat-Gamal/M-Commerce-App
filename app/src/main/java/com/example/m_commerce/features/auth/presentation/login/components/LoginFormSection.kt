@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
@@ -24,7 +23,6 @@ import com.example.m_commerce.features.auth.presentation.login.LoginViewModel
 fun LoginFormSection(
     isLoading: MutableState<Boolean>,
     viewModel: LoginViewModel = hiltViewModel(),
-    navigate: (AppRoutes) -> Unit
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -59,7 +57,6 @@ fun LoginFormSection(
                 isLoading.value = true
                 viewModel.login(email.value, password.value)
             }
-//            navigate(AppRoutes.HomeScreen)
         }
     )
     Spacer(Modifier.height(24.dp))
