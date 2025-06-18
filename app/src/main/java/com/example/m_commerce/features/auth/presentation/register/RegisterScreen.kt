@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.auth.presentation.register
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
@@ -14,14 +13,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.m_commerce.features.auth.presentation.components.AuthFooterSection
 import com.example.m_commerce.features.auth.presentation.components.AuthSocialSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterDividerSection
@@ -36,11 +37,14 @@ fun RegisterScreen(
     navigateToSignIn: () -> Unit
 ) {
     val activity = LocalActivity.current
-    val state by viewModel.registerState.collectAsState()
+    val state by viewModel.registerState.collectAsStateWithLifecycle()
+    val isLoading = remember { mutableStateOf(false) }
+    val clearFields = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     when (state) {
         is RegisterState.Error -> {
+            isLoading.value = false
             LaunchedEffect(Unit) {
                 snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
@@ -49,13 +53,17 @@ fun RegisterScreen(
             }
         }
 
-        is RegisterState.Idle -> {}
-        is RegisterState.Loading -> {
-            Log.d("TAG", "RegisterScreen: RegisterState.Loading")
+        is RegisterState.Idle -> {
+            isLoading.value = false
+        }
 
+        is RegisterState.Loading -> {
+            isLoading.value = true
         }
 
         is RegisterState.Success -> {
+            clearFields.value = true
+            isLoading.value = false
             LaunchedEffect(Unit) {
                 snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
@@ -65,6 +73,18 @@ fun RegisterScreen(
                     if (result == SnackbarResult.Dismissed) navigateToSignIn()
                 }
 
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.messageState.collect {
+            if (it.isNotBlank()) {
+                isLoading.value = false
+                snackBarHostState.currentSnackbarData?.dismiss()
+                scope.launch {
+                    snackBarHostState.showSnackbar(it)
+                }
             }
         }
     }
@@ -90,7 +110,7 @@ fun RegisterScreen(
 
             ) {
             item { RegisterHeaderSection() }
-            item { RegisterFormSection() }
+            item { RegisterFormSection(isLoading = isLoading, clearFields = clearFields) }
             item { RegisterDividerSection() }
             item { AuthSocialSection() }
             item {

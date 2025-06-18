@@ -18,7 +18,7 @@ import com.example.m_commerce.core.shared.components.CustomOutlinedTextField
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun AuthPasswordTextField(state: MutableState<String>, hint: String) {
+fun AuthPasswordTextField(state: MutableState<String>, hint: String, isLoading: Boolean = true) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     CustomOutlinedTextField(
         state = state,
@@ -33,6 +33,7 @@ fun AuthPasswordTextField(state: MutableState<String>, hint: String) {
                     contentDescription = "Toggle password visibility"
                 )
             }
-        }
+        },
+        isLoading = isLoading
     )
 }
