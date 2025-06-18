@@ -4,9 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.auth.domain.usecases.RegisterUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.SendEmailVerificationUseCase
+import com.example.m_commerce.features.auth.domain.validation.ValidateConfirmPassword
+import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
+import com.example.m_commerce.features.auth.domain.validation.ValidateName
+import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
+import com.example.m_commerce.features.auth.domain.validation.ValidationResult
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
@@ -15,28 +22,43 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerUser: RegisterUserUseCase,
-    private val sendEmailVerification: SendEmailVerificationUseCase
+    private val sendEmailVerification: SendEmailVerificationUseCase,
+    private val validateName: ValidateName,
+    private val validateEmail: ValidateEmail,
+    private val validatePassword: ValidatePassword,
+    private val validateConfirmPassword: ValidateConfirmPassword
 ) : ViewModel() {
 
     private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
     val registerState = _registerState.asStateFlow()
 
-    fun register(email: String, password: String) {
+    private val _messageState = MutableSharedFlow<String>()
+    val messageState = _messageState.asSharedFlow()
+
+    fun register(
+        name: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ) {
+        val result = validate(name, email, password, confirmPassword)
         viewModelScope.launch {
-            _registerState.emit(RegisterState.Loading)
-            registerUser.invoke(email, password).catch { e ->
-                _registerState.emit(
-                    RegisterState.Error(
-                        e, "Registration failed: ${e.localizedMessage} ?: Unknown error"
+            if (result.successful) {
+                _registerState.emit(RegisterState.Loading)
+                registerUser.invoke(email, password).catch { e ->
+                    _registerState.emit(
+                        RegisterState.Error(
+                            e, "Registration failed: ${e.localizedMessage} ?: Unknown error"
+                        )
                     )
-                )
-            }.collect { result ->
-                if (result is RegisterState.Success) {
-                    sendEmailVerification(result.user)
-                } else if (result is RegisterState.Error) {
-                    _registerState.emit(RegisterState.Error(result.error, result.message))
+                }.collect { result ->
+                    if (result is RegisterState.Success) {
+                        sendEmailVerification(result.user)
+                    } else if (result is RegisterState.Error) {
+                        _registerState.emit(RegisterState.Error(result.error, result.message))
+                    }
                 }
-            }
+            } else _messageState.emit(result.errorMessage!!)
         }
     }
 
@@ -55,5 +77,26 @@ class RegisterViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun validate(
+        name: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ): ValidationResult {
+        val nameResult = validateName(name)
+        if (!nameResult.successful) return nameResult
+
+        val emailResult = validateEmail(email)
+        if (!emailResult.successful) return emailResult
+
+        val passwordResult = validatePassword(password)
+        if (!passwordResult.successful) return passwordResult
+
+        val confirmPasswordResult = validateConfirmPassword(password, confirmPassword)
+        if (!confirmPasswordResult.successful) return confirmPasswordResult
+
+        return ValidationResult(true)
     }
 }

@@ -19,11 +19,17 @@ fun CustomOutlinedTextField(
     modifier: Modifier = Modifier,
     state: MutableState<String>,
     hint: String,
-    visualTransformation: VisualTransformation= VisualTransformation.None,
-    trailingIcon: @Composable (() -> Unit)? = null) {
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    isLoading: Boolean = false,
+    trailingIcon: @Composable (() -> Unit)? = null
+) {
     return OutlinedTextField(
         state.value,
-        { state.value = it},
+        {
+            if (!isLoading) {
+                state.value = it
+            }
+        },
         placeholder = { Text(hint, color = Color(0xFFC4C4C4)) },
         modifier = modifier
             .fillMaxWidth(),
@@ -38,6 +44,6 @@ fun CustomOutlinedTextField(
         ),
         shape = RoundedCornerShape(16.dp),
         maxLines = 1,
-        trailingIcon = trailingIcon
+        trailingIcon = trailingIcon,
     )
 }

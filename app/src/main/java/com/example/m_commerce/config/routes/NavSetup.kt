@@ -24,7 +24,7 @@ fun NavSetup(
     modifier: Modifier = Modifier,
     showBottomNavbar: MutableState<Boolean>
 ) {
-    val startingScreen = AppRoutes.RegisterScreen
+    val startingScreen = AppRoutes.LoginScreen
 
     NavHost(
         navController = navController,
