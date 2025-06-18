@@ -8,9 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.config.routes.AppRoutes
+import com.example.m_commerce.config.theme.Teal
+import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.CustomHeader
 import com.example.m_commerce.core.shared.components.CustomOutlinedTextField
@@ -44,8 +45,8 @@ fun LoginFormSection(
 
     CustomButton(
         text = "Sign In",
-        backgroundColor = Color(0xFF008B86),
-        textColor = Color.White,
+        backgroundColor = Teal,
+        textColor = White,
         onClick = { navigate(AppRoutes.HomeScreen) }
     )
     Spacer(Modifier.height(24.dp))

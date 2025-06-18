@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import com.example.m_commerce.config.theme.White
 
 @Composable
 fun CustomButton(
+    modifier: Modifier = Modifier,
     text: String,
     height: Int = 56,
     cornerRadius: Int = 24,
@@ -24,9 +26,11 @@ fun CustomButton(
     textColor: Color = Color.Unspecified,
     isLoading: Boolean = false,
     onClick: () -> Unit = {}
+    fontSize: Int = 24,
+    onClick: () -> Unit
 ) {
     return Button(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(height.dp),
         shape = RoundedCornerShape(cornerRadius.dp),
@@ -36,17 +40,17 @@ fun CustomButton(
             contentColor = textColor,
             disabledContainerColor = backgroundColor.copy(alpha = 0.7f)
         ),
-        onClick = { onClick() }) {
 
-        if (isLoading) {
+        onClick = onClick
+    ) {
+      if (isLoading) {
             CircularProgressIndicator(
                 color = White,
                 strokeWidth = 2.dp,
                 modifier = Modifier.size(20.dp)
             )
         } else {
-            Text(text, fontSize = 24.sp)
+            Text(text, fontSize = fontSize.sp, style = MaterialTheme.typography.bodyLarge)
         }
-
     }
 }

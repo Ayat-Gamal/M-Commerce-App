@@ -9,6 +9,18 @@ sealed class AppRoutes {
 
     @Serializable
     object CategoryScreen : AppRoutes()
+    
+    @Serializable
+    class  CategoryDetailsScreen(val categoryId: String) : AppRoutes()
+
+    @Serializable
+    object BrandsScreen : AppRoutes()
+
+    @Serializable
+    data class BrandDetailsScreen(val brandId: String) : AppRoutes()
+
+    @Serializable
+    data class ProductDetailsScreen(val productId: String) : AppRoutes()
 
     @Serializable
     object CartScreen : AppRoutes()
@@ -21,4 +33,12 @@ sealed class AppRoutes {
 
     @Serializable
     object LoginScreen : AppRoutes()
+
+    @Serializable
+    object ManageAddressScreen : AppRoutes()
+
+    @Serializable
+    object AddAddressScreen : AppRoutes()
+
+
 }

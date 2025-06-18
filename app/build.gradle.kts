@@ -119,6 +119,10 @@ dependencies {
 
     // extended icons
     implementation("androidx.compose.material:material-icons-extended:1.6.1")
+
+    // view model
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
 }
 
 //apollo {

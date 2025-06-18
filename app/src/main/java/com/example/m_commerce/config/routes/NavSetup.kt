@@ -1,5 +1,7 @@
 package com.example.m_commerce.config.routes
 
+import AddAddressScreen
+import ManageAddressScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -9,12 +11,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.example.m_commerce.core.utils.extentions.navigateAndClear
 import com.example.m_commerce.features.auth.presentation.login.LoginScreen
 import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
-import com.example.m_commerce.core.utils.extentions.navigateAndClear
+import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
+import com.example.m_commerce.features.brand.presentation.screen.BrandsScreenUI
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
+import com.example.m_commerce.features.categories.presentation.screen.CategoryDetailsScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
+import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 
 @Composable
@@ -26,31 +33,66 @@ fun NavSetup(
 ) {
     val startingScreen = AppRoutes.LoginScreen
 
+
     NavHost(
         navController = navController,
         startDestination = startingScreen,
         modifier = modifier.padding(0.dp)
     ) {
+
         composable<AppRoutes.HomeScreen> {
             showBottomNavbar.value = true
-            HomeScreenUI(navigateToCategory = {
+            HomeScreenUI(navigateToCategories = {
                 navController.navigateAndClear(AppRoutes.CategoryScreen)
             }, navigateToSpecialOffers = {
                 //TODO: @Tag - navigate to special offers here
             }, navigateToBrands = {
+                navController.navigate(AppRoutes.BrandsScreen)
+            }, navigateToBrand = { brand ->
+                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id))
+            },
+                navigateToCategory = {category ->
+                    navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
+                }
+            )
+        }
 
-            })
+        composable<AppRoutes.BrandsScreen> {
+            showBottomNavbar.value = false
+            BrandsScreenUI(navController = navController)
+        }
+        composable<AppRoutes.BrandDetailsScreen> {
+            showBottomNavbar.value = false
+            val brandArgs = it.toRoute<AppRoutes.BrandDetailsScreen>()
+            BrandScreenUI(brandId = brandArgs.brandId, navController = navController)
+        }
+
+        composable<AppRoutes.ProductDetailsScreen> {
+            showBottomNavbar.value = false
+            val productArgs = it.toRoute<AppRoutes.ProductDetailsScreen>()
+            ProductDetailsScreenUI(productId = productArgs.productId, navController = navController)
         }
 
         composable<AppRoutes.CategoryScreen> {
-            CategoryScreenUI()
+            showBottomNavbar.value = true
+            CategoryScreenUI{ category ->
+                navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
+            }
         }
+
+        composable<AppRoutes.CategoryDetailsScreen> {
+            showBottomNavbar.value = false
+            val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
+            CategoryDetailsScreenUI(categoryId = categoryArgs.categoryId, navController = navController)
+        }
+
         composable<AppRoutes.CartScreen> {
             CartScreenUI()
         }
 
         composable<AppRoutes.ProfileScreen> {
-            ProfileScreenUI()
+            showBottomNavbar.value = true
+            ProfileScreenUI(navController)
         }
 
         composable<AppRoutes.RegisterScreen> {
@@ -65,5 +107,13 @@ fun NavSetup(
                 navController.navigate(it)
             }
         }
+        composable<AppRoutes.ManageAddressScreen> {
+            showBottomNavbar.value = false
+            ManageAddressScreen(navController)
+        }
+        composable<AppRoutes.AddAddressScreen> {
+            AddAddressScreen(navController)
+        }
+
     }
 }

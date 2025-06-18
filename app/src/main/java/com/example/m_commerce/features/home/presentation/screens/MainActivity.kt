@@ -75,7 +75,7 @@ fun MainLayout(navController: NavHostController = rememberNavController(), showB
             start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
             top = innerPadding.calculateTopPadding(),
             end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-            bottom = 0.dp
+            bottom = 16.dp
         )
         NavSetup(navController, snackBarHostState, modifier = noBottomPadding ,showBottomNavbar)
     }
