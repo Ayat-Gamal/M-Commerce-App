@@ -105,7 +105,7 @@ fun LoginScreen(
         ) {
             item { LoginHeaderSection() }
 
-            item { LoginFormSection(isLoading = isLoading, navigate = navigate) }
+            item { LoginFormSection(isLoading = isLoading) }
             item { LoginDividerSection() }
             item { AuthSocialSection() }
             item {
