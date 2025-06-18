@@ -25,7 +25,6 @@ fun CustomButton(
     backgroundColor: Color = Color.LightGray,
     textColor: Color = Color.Unspecified,
     isLoading: Boolean = false,
-    onClick: () -> Unit = {}
     fontSize: Int = 24,
     onClick: () -> Unit
 ) {
@@ -43,7 +42,7 @@ fun CustomButton(
 
         onClick = onClick
     ) {
-      if (isLoading) {
+        if (isLoading) {
             CircularProgressIndicator(
                 color = White,
                 strokeWidth = 2.dp,
