@@ -24,7 +24,7 @@ import com.example.m_commerce.config.theme.Black
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DefaultTopBar(modifier: Modifier = Modifier, title: String, navController : NavHostController?) {
+fun DefaultTopBar(modifier: Modifier = Modifier, title: String, navController : NavHostController? = null) {
     TopAppBar(title =  { Text(title)}, navigationIcon = {
         if (navController != null) BackButton(navController)
     }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))

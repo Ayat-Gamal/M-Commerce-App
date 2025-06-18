@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.m_commerce.config.theme.DarkestGray
 import com.example.m_commerce.config.theme.Gray
+import androidx.compose.foundation.layout.navigationBarsPadding
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.SvgImage
@@ -41,7 +41,10 @@ fun BottomNavBar(navController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 24.dp).clickable(enabled = false, onClick = {}),
+            .fillMaxWidth()
+            .padding(start = 32.dp, end = 32.dp, bottom = 12.dp)
+            .navigationBarsPadding()
+            .clickable(enabled = false, onClick = {}),
         contentAlignment = Alignment.Center
     ) {
         Row(
