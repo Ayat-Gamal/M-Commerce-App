@@ -1,7 +1,5 @@
 package com.example.m_commerce.features.auth.presentation.register
 
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +25,9 @@ import com.example.m_commerce.features.auth.presentation.components.AuthSocialSe
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterDividerSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterFormSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterHeaderSection
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun RegisterScreen(
@@ -36,41 +35,40 @@ fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     navigateToSignIn: () -> Unit
 ) {
-    val activity = LocalActivity.current
     val state by viewModel.registerState.collectAsStateWithLifecycle()
     val isLoading = remember { mutableStateOf(false) }
-    val clearFields = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     when (state) {
-        is RegisterState.Error -> {
+        is AuthState.Error -> {
             isLoading.value = false
             LaunchedEffect(Unit) {
                 snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
-                    snackBarHostState.showSnackbar((state as RegisterState.Error).message)
+                    snackBarHostState.showSnackbar((state as AuthState.Error).message)
                 }
             }
         }
 
-        is RegisterState.Idle -> {
+        is AuthState.Idle -> {
             isLoading.value = false
         }
 
-        is RegisterState.Loading -> {
+        is AuthState.Loading -> {
             isLoading.value = true
         }
 
-        is RegisterState.Success -> {
-            clearFields.value = true
-            isLoading.value = false
+        is AuthState.Success -> {
+            isLoading.value = true
             LaunchedEffect(Unit) {
                 snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
-                    val result = snackBarHostState.showSnackbar(
+                    snackBarHostState.showSnackbar(
                         message = "Check your email for verification",
                     )
-                    if (result == SnackbarResult.Dismissed) navigateToSignIn()
+                    withContext(Dispatchers.Main) {
+                        navigateToSignIn()
+                    }
                 }
 
             }
@@ -87,10 +85,6 @@ fun RegisterScreen(
                 }
             }
         }
-    }
-
-    BackHandler {
-        activity?.finish()
     }
 
     Box(
@@ -110,7 +104,7 @@ fun RegisterScreen(
 
             ) {
             item { RegisterHeaderSection() }
-            item { RegisterFormSection(isLoading = isLoading, clearFields = clearFields) }
+            item { RegisterFormSection(isLoading = isLoading) }
             item { RegisterDividerSection() }
             item { AuthSocialSection() }
             item {

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,20 +23,11 @@ import com.example.m_commerce.features.auth.presentation.register.RegisterViewMo
 fun RegisterFormSection(
     viewModel: RegisterViewModel = hiltViewModel(),
     isLoading: MutableState<Boolean>,
-    clearFields: MutableState<Boolean>
 ) {
     val name = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
-
-    if (clearFields.value) {
-        name.value = ""
-        email.value = ""
-        password.value = ""
-        confirmPassword.value = ""
-        clearFields.value = false
-    }
 
     // Name Field
     CustomHeader(
