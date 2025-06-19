@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.config.theme.Teal
-import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,8 +31,8 @@ fun PromoCodeInput(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(TextBackground, RoundedCornerShape(24.dp))
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .background(White, RoundedCornerShape(24.dp))
+            .padding(horizontal = 8.dp, vertical = 0.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
@@ -47,7 +46,7 @@ fun PromoCodeInput(
             ),
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 8.dp),
+                .padding(end = 16.dp),
             singleLine = true
         )
 
@@ -58,7 +57,7 @@ fun PromoCodeInput(
                 containerColor = Teal,
                 contentColor = White
             ),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
         ) {
             Text("Apply")
         }

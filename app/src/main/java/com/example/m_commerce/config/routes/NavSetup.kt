@@ -2,6 +2,7 @@ package com.example.m_commerce.config.routes
 
 import AddAddressScreen
 import ManageAddressScreenUi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -34,6 +35,7 @@ fun NavSetup(
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     showBottomNavbar: MutableState<Boolean>,
+    paddingValues: PaddingValues
 
 ) {
     val startingScreen = AppRoutes.LoginScreen
@@ -92,7 +94,7 @@ fun NavSetup(
         }
 
         composable<AppRoutes.CartScreen> {
-            CartScreenUI()
+            CartScreenUI(paddingValues)
         }
 
         composable<AppRoutes.ProfileScreen> {
