@@ -24,7 +24,8 @@ fun ProductsGridView(modifier: Modifier, products: List<ProductCardModel>, navig
                 product = products[it],
                 onClick = {
                     navigateToProduct(products[it])
-                }
+                },
+                addToWishList = {}
             )
         }
     }
