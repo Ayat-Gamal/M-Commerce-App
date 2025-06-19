@@ -112,8 +112,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
-
-
     // firebase auth
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-auth")
@@ -124,6 +122,8 @@ dependencies {
     // view model
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
+    // Material3 Pager
+    implementation("androidx.compose.foundation:foundation:1.8.2")
 }
 
 //apollo {

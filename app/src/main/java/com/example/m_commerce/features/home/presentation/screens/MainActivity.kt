@@ -25,8 +25,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.config.routes.NavSetup
 import com.example.m_commerce.config.theme.MCommerceTheme
 import com.example.m_commerce.core.shared.components.bottom_nav_bar.BottomNavBar
+import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
