@@ -48,4 +48,11 @@ sealed class AppRoutes {
 
     @Serializable
     object WishListScreen : AppRoutes()
+
+    @Serializable
+    object CreditCardDetails : AppRoutes()
+
+
+
+
 }

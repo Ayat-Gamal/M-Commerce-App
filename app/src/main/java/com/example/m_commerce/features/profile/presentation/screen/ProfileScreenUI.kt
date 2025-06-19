@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
+import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.profile.presentation.components.ProfileOptionsList
 import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
@@ -55,19 +55,6 @@ fun ProfileScreenUI(
                 .background(Background)
                 .padding(16.dp)
         ) {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 16.dp)
-//        ) {
-//            Text(
-//                text = "Profile",
-//                modifier = Modifier.align(Alignment.Center)
-//            )
-//        }
-
-//        Spacer(modifier = Modifier.height(39.dp))
-
             Column(modifier = Modifier.padding(padding), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -79,7 +66,7 @@ fun ProfileScreenUI(
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
-                            .border(2.dp, Color.Gray, CircleShape),
+                            .border(2.dp, Gray, CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -99,7 +86,7 @@ fun ProfileScreenUI(
                 when (option.title) {
                     "Manage Address" -> navController.navigate(AppRoutes.ManageAddressScreen)
 //                "Your profile" -> navController.navigate("your_profile")
-//                "Payment Methods" -> navController.navigate("payment_methods")
+                "Payment Methods" -> navController.navigate(AppRoutes.CreditCardDetails)
 //                "My Orders" -> navController.navigate("my_orders")
 //                "My Wishlist" -> navController.navigate("my_wishlist")
 //                "My Coupons" -> navController.navigate("my_coupons")

@@ -28,6 +28,7 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
+import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 
@@ -106,8 +107,6 @@ fun AddAddressScreen(navController: NavHostController) {
             )
 
             Spacer(Modifier.height(12.dp))
-
-            // Landmark
             OutlinedTextField(
                 value = landmark,
                 onValueChange = { landmark = it },
@@ -125,7 +124,7 @@ fun AddAddressScreen(navController: NavHostController) {
                     .height(50.dp),
                 text = "Save address",
                 backgroundColor = Teal,
-                textColor = Color.White,
+                textColor = White,
                 height = 50,
                 cornerRadius = 12,
                 onClick = { /* save action */ }
