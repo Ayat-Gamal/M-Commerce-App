@@ -99,7 +99,7 @@ fun ProfileScreenUI(
                 when (option.title) {
                     "Manage Address" -> navController.navigate(AppRoutes.ManageAddressScreen)
 //                "Your profile" -> navController.navigate("your_profile")
-//                "Payment Methods" -> navController.navigate("payment_methods")
+                "Payment Methods" -> navController.navigate(AppRoutes.CreditCardDetails)
 //                "My Orders" -> navController.navigate("my_orders")
 //                "My Wishlist" -> navController.navigate("my_wishlist")
 //                "My Coupons" -> navController.navigate("my_coupons")

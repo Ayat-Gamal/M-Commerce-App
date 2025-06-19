@@ -1,7 +1,7 @@
 package com.example.m_commerce.config.routes
 
 import AddAddressScreen
-import ManageAddressScreen
+import ManageAddressScreenUi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -18,9 +18,10 @@ import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
 import com.example.m_commerce.features.brand.presentation.screen.BrandsScreenUI
 import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
-import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryDetailsScreenUI
+import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
+import com.example.m_commerce.features.payment.prsentation.screen.CreditCardDetailsUiLayout
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 
@@ -31,7 +32,7 @@ fun NavSetup(
     modifier: Modifier = Modifier,
     showBottomNavbar: MutableState<Boolean>
 ) {
-    val startingScreen = AppRoutes.LoginScreen
+    val startingScreen = AppRoutes.HomeScreen
 
 
     NavHost(
@@ -109,10 +110,14 @@ fun NavSetup(
         }
         composable<AppRoutes.ManageAddressScreen> {
             showBottomNavbar.value = false
-            ManageAddressScreen(navController)
+            ManageAddressScreenUi(navController)
         }
         composable<AppRoutes.AddAddressScreen> {
             AddAddressScreen(navController)
+        }
+        composable<AppRoutes.CreditCardDetails> {
+            showBottomNavbar.value = false
+            CreditCardDetailsUiLayout(navController)
         }
 
     }
