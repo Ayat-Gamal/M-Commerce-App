@@ -45,6 +45,4 @@ sealed class AppRoutes {
 
     @Serializable
     object AddAddressScreen : AppRoutes()
-
-
 }
