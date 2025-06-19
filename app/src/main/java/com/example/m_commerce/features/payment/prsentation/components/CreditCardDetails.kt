@@ -20,11 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,12 +34,12 @@ import com.example.m_commerce.core.shared.components.CustomButton
 
 @Composable
 fun CreditCardDetailsUi() {
-    var name by remember { mutableStateOf("") }
-    var cardNumber by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
-    var checked by remember { mutableStateOf(true) }
-    var selectedMonth by remember { mutableStateOf("") }
-    var selectedYear by remember { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var cardNumber by rememberSaveable { mutableStateOf("") }
+    var cvv by rememberSaveable { mutableStateOf("") }
+    var checked by rememberSaveable { mutableStateOf(true) }
+    var selectedMonth by rememberSaveable { mutableStateOf("") }
+    var selectedYear by rememberSaveable { mutableStateOf("") }
 
     val monthOptions = (1..12).map { it.toString().padStart(2, '0') }
     val yearOptions = (25..55).map { it.toString() }
