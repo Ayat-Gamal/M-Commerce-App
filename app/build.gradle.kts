@@ -53,6 +53,7 @@ android {
 
 dependencies {
     implementation(libs.volley)
+    implementation(libs.androidx.foundation.android)
     val room_version = "2.6.1"
     val nav_version = "2.8.8"
 
