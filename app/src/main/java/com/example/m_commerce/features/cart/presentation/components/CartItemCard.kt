@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -97,7 +96,7 @@ fun CartItemCard(
                 Box(
                     modifier = Modifier
                         .size(20.dp)
-                        .background(Color.White, RoundedCornerShape(4.dp))
+                        .background(White, RoundedCornerShape(4.dp))
                         .border(1.dp, Color.LightGray, RoundedCornerShape(4.dp))
                         .clickable(onClick = onDecrease),
                     contentAlignment = Alignment.Center
@@ -138,7 +137,7 @@ fun CartItemCard(
          imageVector = Icons.Default.Close
         ,
         contentDescription = "Delete",
-        tint = Red,
+        tint = Color.Red,
         modifier = Modifier
             .align(Alignment.TopEnd).padding(4.dp)
             .padding(8.dp).size(20.dp)

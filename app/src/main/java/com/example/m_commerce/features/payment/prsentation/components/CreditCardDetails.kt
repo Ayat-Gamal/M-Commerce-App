@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
@@ -74,25 +75,25 @@ fun CreditCardDetailsUi() {
                     Column {
                         Text(
                             "Card holder name",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = White.copy(alpha = 0.7f),
                             fontSize = 12.sp
                         )
                         Text(
                             if (name.isBlank()) "UserName" else name,
-                            color = Color.White,
+                            color = White,
                             fontSize = 14.sp
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             "Expiry date",
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = White.copy(alpha = 0.7f),
                             fontSize = 12.sp
                         )
                         Text(
                             if (selectedMonth.isBlank() || selectedYear.isBlank()) "MM/YY"
                             else "$selectedMonth/$selectedYear",
-                            color = Color.White,
+                            color = White,
                             fontSize = 14.sp
                         )
                     }
@@ -137,7 +138,7 @@ fun CreditCardDetailsUi() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Exp Month", fontSize = 12.sp, color = Color.Gray)
+                Text("Exp Month", fontSize = 12.sp, color = Gray)
                 DropdownMenuBox(
                     options = monthOptions,
                     selectedValue = selectedMonth,
@@ -146,7 +147,7 @@ fun CreditCardDetailsUi() {
             }
 
             Column(modifier = Modifier.weight(1f)) {
-                Text("Exp Year", fontSize = 12.sp, color = Color.Gray)
+                Text("Exp Year", fontSize = 12.sp, color = Gray)
                 DropdownMenuBox(
                     options = yearOptions,
                     selectedValue = selectedYear,
@@ -154,7 +155,7 @@ fun CreditCardDetailsUi() {
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
-                Text("CVV", fontSize = 12.sp, color = Color.Gray)
+                Text("CVV", fontSize = 12.sp, color = Gray)
                 OutlinedTextField(
                     value = cvv,
                     onValueChange = { cvv = it.filter { it.isDigit() }.take(3) },
@@ -165,7 +166,7 @@ fun CreditCardDetailsUi() {
                         focusedBorderColor = Teal,
                         focusedLabelColor = Teal
                     ),
-                    placeholder = { Text("CVV", fontSize = 12.sp, color = Color.Gray) }
+                    placeholder = { Text("CVV", fontSize = 12.sp, color = Gray) }
                 )
             }
         }
@@ -189,7 +190,7 @@ fun CreditCardDetailsUi() {
                 .height(50.dp),
             text = "Add Card",
             backgroundColor = Teal,
-            textColor = Color.White,
+            textColor = White,
             height = 50,
             cornerRadius = 12,
             onClick = {

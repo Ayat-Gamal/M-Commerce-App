@@ -69,7 +69,7 @@ fun ManageAddressScreenUi(
                     .height(50.dp),
                 text = "Apply",
                 backgroundColor = Teal,
-                textColor = Color.White,
+                textColor = White,
                 height = 50,
                 cornerRadius = 12,
                 onClick = { }

@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
+import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.profile.presentation.components.ProfileOptionsList
 import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
@@ -66,7 +67,7 @@ fun ProfileScreenUI(
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
-                            .border(2.dp, Color.Gray, CircleShape),
+                            .border(2.dp, Gray, CircleShape),
                         contentScale = ContentScale.Crop
                     )
                 }
