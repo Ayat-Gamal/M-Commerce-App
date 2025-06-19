@@ -106,8 +106,6 @@ fun AddAddressScreen(navController: NavHostController) {
             )
 
             Spacer(Modifier.height(12.dp))
-
-            // Landmark
             OutlinedTextField(
                 value = landmark,
                 onValueChange = { landmark = it },

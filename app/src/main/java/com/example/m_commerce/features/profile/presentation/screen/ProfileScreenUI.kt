@@ -55,19 +55,6 @@ fun ProfileScreenUI(
                 .background(Background)
                 .padding(16.dp)
         ) {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 16.dp)
-//        ) {
-//            Text(
-//                text = "Profile",
-//                modifier = Modifier.align(Alignment.Center)
-//            )
-//        }
-
-//        Spacer(modifier = Modifier.height(39.dp))
-
             Column(modifier = Modifier.padding(padding), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),

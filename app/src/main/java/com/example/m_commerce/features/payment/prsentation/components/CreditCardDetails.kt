@@ -1,4 +1,3 @@
-//
 package com.example.m_commerce.features.payment.prsentation.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -137,7 +136,6 @@ fun CreditCardDetailsUi() {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Expiration Month
             Column(modifier = Modifier.weight(1f)) {
                 Text("Exp Month", fontSize = 12.sp, color = Color.Gray)
                 DropdownMenuBox(
@@ -147,7 +145,6 @@ fun CreditCardDetailsUi() {
                 )
             }
 
-            // Expiration Year
             Column(modifier = Modifier.weight(1f)) {
                 Text("Exp Year", fontSize = 12.sp, color = Color.Gray)
                 DropdownMenuBox(
@@ -156,8 +153,6 @@ fun CreditCardDetailsUi() {
                     onValueSelected = { selectedYear = it }
                 )
             }
-
-            // CVV Field
             Column(modifier = Modifier.weight(1f)) {
                 Text("CVV", fontSize = 12.sp, color = Color.Gray)
                 OutlinedTextField(

@@ -33,14 +33,14 @@ fun SpecialOfferCard(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize() // Take all available space
+            .fillMaxSize()
             .padding(horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp), // Adjust height as needed
+                .height(150.dp),
             colors = CardDefaults.cardColors(
                 containerColor = TextBackground
             )
@@ -48,7 +48,7 @@ fun SpecialOfferCard(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp), // Inner padding inside the Card
+                    .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text("Special Offer", color = Teal)

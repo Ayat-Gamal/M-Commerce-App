@@ -35,10 +35,4 @@ fun DefaultTopBar(
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
     )}
-//fun DefaultTopBar(modifier: Modifier = Modifier, title: String, navController : NavHostController?) {
-//    TopAppBar(title =  { Text(title)}, navigationIcon = {
-//        if (navController != null) BackButton(navController)
-//    }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
-//}
-/* <<<<<<<<<<  16473226-8c9f-48f3-affa-1d78bfc8e116  >>>>>>>>>>> */
 

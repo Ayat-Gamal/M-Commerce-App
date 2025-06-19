@@ -32,7 +32,7 @@ fun PromoCodeInput(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(TextBackground, RoundedCornerShape(24.dp)) // Rounded background
+            .background(TextBackground, RoundedCornerShape(24.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
