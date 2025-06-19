@@ -1,7 +1,7 @@
 package com.example.m_commerce.config.routes
 
 import AddAddressScreen
-import ManageAddressScreen
+import ManageAddressScreenUi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -23,6 +23,7 @@ import com.example.m_commerce.features.categories.presentation.screen.CategorySc
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
 import com.example.m_commerce.features.orders.presentation.screen.CheckoutScreenUI
 import com.example.m_commerce.features.payment.presentation.screen.PaymentScreenUI
+import com.example.m_commerce.features.payment.prsentation.screen.CreditCardDetailsUiLayout
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 
