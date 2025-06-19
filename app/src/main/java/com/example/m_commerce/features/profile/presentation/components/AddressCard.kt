@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -89,7 +88,7 @@ fun AddressCard(
             Icon(
                 imageVector = Icons.Default.Delete,
                 contentDescription = "Delete address",
-                tint = Red,
+                tint = Color.Red,
                 modifier = Modifier.size(20.dp)
             )
         }
