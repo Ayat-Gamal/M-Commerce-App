@@ -17,7 +17,7 @@ import com.example.m_commerce.features.home.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.category.CategorySection
 import com.example.m_commerce.features.home.presentation.components.SearchSection
-import com.example.m_commerce.features.home.presentation.components.SpecialOffersSection
+import com.example.m_commerce.features.home.presentation.components.specialoffer.SpecialOffersSection
 
 
 @Composable
