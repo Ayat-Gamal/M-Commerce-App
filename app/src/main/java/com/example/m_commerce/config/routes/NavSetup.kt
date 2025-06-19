@@ -25,6 +25,7 @@ import com.example.m_commerce.features.orders.presentation.screen.CheckoutScreen
 import com.example.m_commerce.features.payment.presentation.screen.PaymentScreenUI
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
+import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 
 @Composable
 fun NavSetup(
@@ -127,6 +128,10 @@ fun NavSetup(
         }
         composable<AppRoutes.AddAddressScreen> {
             AddAddressScreen(navController)
+        }
+
+        composable<AppRoutes.WishListScreen> {
+            WishListScreen(navController)
         }
 
     }
