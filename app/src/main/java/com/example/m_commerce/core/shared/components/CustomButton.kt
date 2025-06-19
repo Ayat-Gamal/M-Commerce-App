@@ -1,7 +1,9 @@
 package com.example.m_commerce.core.shared.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 
 @Composable
@@ -22,7 +25,7 @@ fun CustomButton(
     text: String,
     height: Int = 56,
     cornerRadius: Int = 24,
-    backgroundColor: Color = Color.LightGray,
+    backgroundColor: Color = Teal,
     textColor: Color = Color.Unspecified,
     isLoading: Boolean = false,
     fontSize: Int = 24,
@@ -30,16 +33,15 @@ fun CustomButton(
 ) {
     return Button(
         modifier = modifier
-            .fillMaxWidth()
+            //.fillMaxWidth()
             .height(height.dp),
-        shape = RoundedCornerShape(cornerRadius.dp),
+        //shape = RoundedCornerShape(cornerRadius.dp),
         enabled = !isLoading,
         colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor,
             contentColor = textColor,
-            disabledContainerColor = backgroundColor.copy(alpha = 0.7f)
+            disabledContainerColor = backgroundColor.copy(alpha = 0.7f),
         ),
-
         onClick = onClick
     ) {
         if (isLoading) {
