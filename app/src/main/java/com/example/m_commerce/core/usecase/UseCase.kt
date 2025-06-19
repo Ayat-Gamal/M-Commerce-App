@@ -1,5 +1,6 @@
 package com.example.m_commerce.core.usecase
 
-interface UseCase {
-      operator fun invoke()
+interface UseCase <in Params, out Result>{
+      operator fun invoke(params: Params) : Result
 }
+

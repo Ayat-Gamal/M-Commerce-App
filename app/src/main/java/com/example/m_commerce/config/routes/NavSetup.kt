@@ -31,9 +31,10 @@ fun NavSetup(
     navController: NavHostController,
     snackBarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    showBottomNavbar: MutableState<Boolean>
+    showBottomNavbar: MutableState<Boolean>,
+
 ) {
-    val startingScreen = AppRoutes.CheckoutScreen
+    val startingScreen = AppRoutes.LoginScreen
 
 
     NavHost(
