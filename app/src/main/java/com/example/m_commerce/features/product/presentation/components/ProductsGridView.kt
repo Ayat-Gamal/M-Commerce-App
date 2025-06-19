@@ -11,7 +11,7 @@ import com.example.m_commerce.features.brand.domain.entity.ProductCardModel
 
 
 @Composable
-fun ProductsGridView(modifier: Modifier, products: List<ProductCardModel>, navigateToProduct: (ProductCardModel) -> Unit ) {
+fun ProductsGridView(modifier: Modifier, products: List<ProductCardModel>, addToWishList: ((ProductCardModel) -> Unit)? = null, navigateToProduct: (ProductCardModel) -> Unit ) {
     LazyVerticalGrid(
         modifier  = modifier,
         columns = GridCells.Fixed(2),
@@ -25,7 +25,7 @@ fun ProductsGridView(modifier: Modifier, products: List<ProductCardModel>, navig
                 onClick = {
                     navigateToProduct(products[it])
                 },
-                addToWishList = {}
+                addToWishList = if (addToWishList != null) { { addToWishList(products[it]) } } else null
             )
         }
     }
