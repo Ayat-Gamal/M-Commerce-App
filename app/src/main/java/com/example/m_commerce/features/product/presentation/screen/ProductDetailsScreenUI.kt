@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.product.presentation.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,19 +38,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -58,17 +57,29 @@ import com.example.m_commerce.config.theme.DarkestGray
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.features.product.data.remote.ProductRemoteDataSourceImpl
 import com.example.m_commerce.features.product.presentation.components.VariantHeaderText
 import com.example.m_commerce.features.product.presentation.components.VariantValueText
+import kotlinx.coroutines.launch
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun ProductDetailsScreenUI(
     modifier: Modifier = Modifier,
     productId: String,
     navController: NavHostController
 ) {
+    val scope = rememberCoroutineScope()
+    val ctx = LocalContext.current
+    scope.launch {
+        ProductRemoteDataSourceImpl(ctx).getProductById().collect {
+
+        }
+    }
+    Log.i("TAG", "ProductDetailsScreenUI: $productId")
+
+
     val images = listOf(
         "https://cdn.shopify.com/s/files/1/0755/0271/5129/files/product_21_image1.jpg?v=1749927945",
         "https://cdn.shopify.com/s/files/1/0755/0271/5129/files/product_21_image2.jpg?v=1749927945",
@@ -137,7 +148,7 @@ fun ProductDetailsScreenUI(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal =  16.dp),
+                    .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 DotsIndicator(
@@ -288,7 +299,10 @@ fun ProductDetailsScreenUI(
         HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 2.dp)
 
         Row(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(horizontal = 20.dp ,vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 20.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -297,11 +311,16 @@ fun ProductDetailsScreenUI(
             ) {
                 Text("Total Price", color = Color.Gray)
                 Spacer(Modifier.height(4.dp))
-                Text("$30.00", color = Color.DarkGray, fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
+                Text(
+                    "$30.00",
+                    color = Color.DarkGray,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 24.sp
+                )
             }
 
             CustomButton(
-                onClick = { isLoading.value = true},
+                onClick = { isLoading.value = true },
                 text = "Add to Cart",
                 modifier = Modifier.weight(1f),
                 isLoading = isLoading.value
