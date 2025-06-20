@@ -31,7 +31,7 @@ fun BrandsScreenUI(modifier: Modifier = Modifier, navController: NavHostControll
         ) {
             items(brands.size) { index ->
                 BrandCard(brand = brands[index]) {
-                    navController.navigate(AppRoutes.BrandDetailsScreen(brands[index].id))
+                    navController.navigate(AppRoutes.BrandDetailsScreen(brands[index].id !!))
                 }
             }
 

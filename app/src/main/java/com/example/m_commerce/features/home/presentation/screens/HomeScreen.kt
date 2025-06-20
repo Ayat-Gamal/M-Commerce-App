@@ -12,12 +12,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.m_commerce.features.home.domain.entity.Brand
 import com.example.m_commerce.features.home.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.category.CategorySection
 import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.specialoffer.SpecialOffersSection
+import com.example.m_commerce.features.home.presentation.viewmodel.HomeViewModel
 
 
 @Composable
@@ -27,10 +29,13 @@ fun HomeScreenUI(
     navigateToCategory: (Category) -> Unit,
     navigateToSpecialOffers: () -> Unit,
     navigateToBrands: () -> Unit,
-    navigateToBrand: (Brand) -> Unit
+    navigateToBrand: (Brand) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
 
 
+    viewModel.hamada()
+    
     val scrollState = rememberScrollState()
     val activity = LocalActivity.current
     BackHandler { activity?.finish() }

@@ -36,22 +36,26 @@ fun BrandCard(
             .clickable { onClick() },
         contentAlignment = Alignment.BottomCenter
     ) {
-        NetworkImage(
-            modifier = Modifier
-                .height(190.dp)
-                .fillMaxWidth(),
-            url = brand.image,
-        )
-        Text(
-            modifier = Modifier
-                .background(Black.copy(alpha = 0.5f))
-                .padding(vertical = 8.dp, horizontal = 12.dp)
-                .fillMaxWidth(),
-            text = brand.name,
-            style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = White),
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
+        brand.image?.let {
+            NetworkImage(
+                modifier = Modifier
+                    .height(190.dp)
+                    .fillMaxWidth(),
+                url = it,
+            )
+        }
+        brand.name?.let {
+            Text(
+                modifier = Modifier
+                    .background(Black.copy(alpha = 0.5f))
+                    .padding(vertical = 8.dp, horizontal = 12.dp)
+                    .fillMaxWidth(),
+                text = it,
+                style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center, color = White),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        }
     }
 }
 
