@@ -38,7 +38,7 @@ fun NavSetup(
     paddingValues: PaddingValues
 
 ) {
-    val startingScreen = AppRoutes.LoginScreen
+    val startingScreen = AppRoutes.HomeScreen
 
 
     NavHost(

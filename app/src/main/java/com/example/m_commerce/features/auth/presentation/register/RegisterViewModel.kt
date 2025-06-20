@@ -12,6 +12,8 @@ import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
 import com.example.m_commerce.features.auth.domain.validation.ValidateName
 import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
 import com.example.m_commerce.features.auth.domain.validation.ValidationResult
+import com.example.m_commerce.features.product.data.remote.ProductRemoteDataSource
+import com.example.m_commerce.features.product.data.remote.ProductRemoteDataSourceImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel

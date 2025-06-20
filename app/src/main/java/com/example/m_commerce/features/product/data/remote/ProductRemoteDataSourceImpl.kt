@@ -1,58 +1,67 @@
 package com.example.m_commerce.features.product.data.remote
 
-import android.content.Context
-import android.util.Log
+import com.example.m_commerce.features.product.data.mapper.toDomain
+import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.shopify.buy3.GraphCallResult
 import com.shopify.buy3.GraphClient
 import com.shopify.buy3.Storefront
 import com.shopify.graphql.support.ID
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
+import javax.inject.Inject
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
-class ProductRemoteDataSourceImpl(val context: Context) : ProductRemoteDataSource {
-    suspend fun getProductById() = flow {
-
-        val graphClient =  GraphClient.build(
-            context = context,
-            shopDomain = "mad45-alex-and02.myshopify.com",
-            accessToken = "cf0390c1a174351fc5092b6f62d71a32"
-        )
-        val product = suspendCoroutine { cont ->
-            Log.i("TAG", "getProductById: called")
+class ProductRemoteDataSourceImpl @Inject constructor(private val graphClient: GraphClient) :
+    ProductRemoteDataSource {
+    override fun getProductById(productId: String) = flow {
+        val uiState = suspendCancellableCoroutine { cont ->
             val query = Storefront.query { rootQuery ->
                 rootQuery.product({ args ->
                     args.id(ID("gid://shopify/Product/8845369016569"))
                 }) { product ->
-                    product
-                        .title()
-                        .vendor()
+                    product.title().description().productType()
+                        .variants({ args -> args.first(10) }) { variants ->
+                            variants.edges { edges ->
+                                edges.node { node ->
+                                    node.price { price ->
+                                        price.amount().currencyCode()
+                                    }
+                                        .title()
+                                        .selectedOptions { it.name().value() }
+                                }
+                            }
+                        }
+                        .images({ args -> args.first(10) }) { images -> images.edges { edges -> edges.node { it.url() } } }
+//                        .vendor()
+//                        .images {
+//                            it.edges {}
+//                        }
                 }
             }
 
             graphClient.queryGraph(query).enqueue { result ->
                 when (result) {
                     is GraphCallResult.Success -> {
-                        val title = result.response.data
-                            ?.product
-                            ?.vendor
+                        val graphQlProduct = result.response.data?.product
 
-                        if (title != null) {
-                            Log.i("TAG", "product title: $title")
-                            cont.resume(title)
+                        if (graphQlProduct != null) {
+                            val product = graphQlProduct.toDomain()
+                            cont.resume(ProductUiState.Success(product))
                         } else {
-                            Log.e("TAG", "title is null")
-                            cont.resume(Unit)
+                            cont.resume(ProductUiState.Error("Couldn't fetch Product"))
                         }
                     }
 
                     is GraphCallResult.Failure -> {
-                        Log.e("TAG", "Failure")
-                        cont.resumeWith(Result.failure(result.error))
+                        cont.resume(
+                            ProductUiState.Error(
+                                result.error.message ?: "Couldn't fetch Product"
+                            )
+                        )
                     }
                 }
             }
         }
-        emit(Unit)
+        emit(uiState)
     }
 }
