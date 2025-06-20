@@ -63,13 +63,4 @@ object AuthModule {
         return CreateCartUseCase(repo)
     }
 
-    @Provides
-    fun provideGraphClient(@ApplicationContext context: Context): GraphClient {
-        return GraphClient.build(
-            context = context,
-            shopDomain = "mad45-alex-and02.myshopify.com",
-            accessToken = "cf0390c1a174351fc5092b6f62d71a32"
-        )
-
-    }
 }

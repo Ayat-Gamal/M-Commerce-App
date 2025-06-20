@@ -56,7 +56,7 @@ fun NavSetup(
             }, navigateToBrands = {
                 navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->
-                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id))
+                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id !!))
             },
                 navigateToCategory = { category ->
                     navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
