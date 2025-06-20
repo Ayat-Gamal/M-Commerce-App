@@ -112,9 +112,10 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
-    // firebase auth
+    // firebase services
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 
     // extended icons
     implementation("androidx.compose.material:material-icons-extended:1.6.1")

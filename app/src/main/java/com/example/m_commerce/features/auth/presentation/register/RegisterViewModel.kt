@@ -2,8 +2,11 @@ package com.example.m_commerce.features.auth.presentation.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.features.auth.domain.usecases.CreateCartUseCase
+import com.example.m_commerce.features.auth.domain.usecases.CreateCustomerTokenUseCase
 import com.example.m_commerce.features.auth.domain.usecases.RegisterUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.SendEmailVerificationUseCase
+import com.example.m_commerce.features.auth.domain.usecases.StoreTokenAndCartIdUseCase
 import com.example.m_commerce.features.auth.domain.validation.ValidateConfirmPassword
 import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
 import com.example.m_commerce.features.auth.domain.validation.ValidateName
@@ -17,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,7 +31,10 @@ class RegisterViewModel @Inject constructor(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
-    private val validateConfirmPassword: ValidateConfirmPassword
+    private val validateConfirmPassword: ValidateConfirmPassword,
+    private val createCustomerToken: CreateCustomerTokenUseCase,
+    private val createCart: CreateCartUseCase,
+    private val storeTokenAndCartId: StoreTokenAndCartIdUseCase,
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -45,23 +52,37 @@ class RegisterViewModel @Inject constructor(
         val result = validate(name, email, password, confirmPassword)
         viewModelScope.launch {
             if (result.successful) {
-                _authState.emit(AuthState.Loading)
-                registerUser.invoke(email, password).catch { e ->
-                    _authState.emit(
-                        AuthState.Error(
-                            e, "Registration failed: ${e.localizedMessage} ?: Unknown error"
-                        )
-                    )
-                }.collect { result ->
-                    if (result is AuthState.Success) {
-                        sendEmailVerification(result.user)
-                    } else if (result is AuthState.Error) {
-                        _authState.emit(AuthState.Error(result.error, result.message))
-                    }
-                }
+                registerUserInFirebase(email, password, name)
             } else _messageState.emit(result.errorMessage!!)
         }
     }
+
+    private suspend fun registerUserInFirebase(email: String, password: String, name: String) {
+        _authState.emit(AuthState.Loading)
+        registerUser.invoke(email, password)
+            .catch { e ->
+                _authState.emit(
+                    AuthState.Error(
+                        e, "Registration failed: ${e.localizedMessage} ?: Unknown error"
+                    )
+                )
+            }.collect { result ->
+                if (result is AuthState.Success) {
+                    val user = result.user
+                    user?.let { setupUser(email, password, name, it) }
+                } else if (result is AuthState.Error) {
+                    _authState.emit(AuthState.Error(result.error, result.message))
+                }
+            }
+    }
+
+    private fun setupUser(email: String, password: String, name: String, user: FirebaseUser) =
+        viewModelScope.launch {
+            sendEmailVerification(user)
+            val token = createCustomerToken(email, password, name).first()
+            val cartId = createCart(token).first()
+            storeTokenAndCartId(token, cartId, user.uid)
+        }
 
     private suspend fun sendEmailVerification(user: FirebaseUser?) {
         user?.let {
