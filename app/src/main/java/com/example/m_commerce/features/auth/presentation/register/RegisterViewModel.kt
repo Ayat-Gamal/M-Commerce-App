@@ -2,6 +2,7 @@ package com.example.m_commerce.features.auth.presentation.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.features.auth.domain.usecases.CreateCustomerTokenUseCase
 import com.example.m_commerce.features.auth.domain.usecases.RegisterUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.SendEmailVerificationUseCase
 import com.example.m_commerce.features.auth.domain.validation.ValidateConfirmPassword
@@ -27,7 +28,8 @@ class RegisterViewModel @Inject constructor(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
-    private val validateConfirmPassword: ValidateConfirmPassword
+    private val validateConfirmPassword: ValidateConfirmPassword,
+    private val createCustomerToken: CreateCustomerTokenUseCase
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -54,7 +56,13 @@ class RegisterViewModel @Inject constructor(
                     )
                 }.collect { result ->
                     if (result is AuthState.Success) {
-                        sendEmailVerification(result.user)
+                        val user = result.user
+                        user?.let {
+                            sendEmailVerification(user)
+                            createCustomerToken(email, password, name)
+                                .catch { }
+                                .collect { storeToken(it, user) }
+                        }
                     } else if (result is AuthState.Error) {
                         _authState.emit(AuthState.Error(result.error, result.message))
                     }
@@ -76,6 +84,10 @@ class RegisterViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun storeToken(token: String, user: FirebaseUser) {
+
     }
 
     private fun validate(

@@ -1,5 +1,7 @@
 package com.example.m_commerce.features.auth.di
 
+import com.example.m_commerce.features.auth.data.remote.CustomersRemoteDataSource
+import com.example.m_commerce.features.auth.data.remote.CustomersRemoteDataSourceImpl
 import com.example.m_commerce.features.auth.data.remote.UsersRemoteDataSource
 import com.example.m_commerce.features.auth.data.remote.UsersRemoteDataSourceImpl
 import com.example.m_commerce.features.auth.data.repo.AuthRepositoryImpl
@@ -20,4 +22,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindUsersRemoteDataSource(impl: UsersRemoteDataSourceImpl): UsersRemoteDataSource
+
+    @Binds
+    abstract fun bindCustomersRemoteDataSource(impl: CustomersRemoteDataSourceImpl): CustomersRemoteDataSource
 }
