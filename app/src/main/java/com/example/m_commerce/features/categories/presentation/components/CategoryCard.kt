@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.core.shared.components.NetworkImage
-import com.example.m_commerce.features.home.domain.entity.Category
+import com.example.m_commerce.features.categories.domain.entity.Category
 
 @Composable
 fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {

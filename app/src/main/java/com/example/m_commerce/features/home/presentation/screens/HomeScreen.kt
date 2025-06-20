@@ -10,14 +10,15 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.m_commerce.features.home.domain.entity.Brand
-import com.example.m_commerce.features.home.domain.entity.Category
+import com.example.m_commerce.features.brand.domain.entity.Brand
+import com.example.m_commerce.features.categories.domain.entity.Category
+import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.category.CategorySection
-import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.specialoffer.SpecialOffersSection
 import com.example.m_commerce.features.home.presentation.viewmodel.HomeViewModel
 
@@ -33,12 +34,15 @@ fun HomeScreenUI(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
-
-    viewModel.hamada()
-    
     val scrollState = rememberScrollState()
     val activity = LocalActivity.current
+
+    LaunchedEffect(Unit) {
+        viewModel.getHomeData()
+    }
+
     BackHandler { activity?.finish() }
+
 
     Column(
         Modifier
@@ -46,16 +50,21 @@ fun HomeScreenUI(
             .wrapContentHeight()
     ) {
         SearchSection()
+
         SpecialOffersSection(
             Modifier
                 .fillMaxWidth()
                 .height(200.dp), navigateToSpecialOffers
         )
+
         CategorySection(
             Modifier
                 .fillMaxWidth()
-                .height(120.dp), navigateToCategories, navigateToCategory)
-        BrandsSection(Modifier.fillMaxWidth(), navigateToBrands, navigateToBrand)
+                .height(120.dp), emptyList(), navigateToCategories, navigateToCategory
+        )
+
+        BrandsSection(Modifier.fillMaxWidth(), emptyList(), navigateToBrands, navigateToBrand)
+
         Spacer(Modifier.height(112.dp))
     }
 

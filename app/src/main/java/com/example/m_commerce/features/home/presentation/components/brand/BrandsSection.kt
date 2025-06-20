@@ -11,12 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.features.brand.presentation.components.BrandCard
-import com.example.m_commerce.features.home.domain.entity.Brand
+import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.home.presentation.components.SectionTemplate
 
 @Composable
 fun BrandsSection(
     modifier: Modifier = Modifier,
+    brands: List<Brand>,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit
 ) {
