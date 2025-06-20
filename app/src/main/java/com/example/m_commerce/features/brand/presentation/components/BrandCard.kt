@@ -22,7 +22,6 @@ import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.features.brand.domain.entity.Brand
-import com.example.m_commerce.features.home.presentation.components.brand.brands
 
 @Composable
 fun BrandCard(
@@ -59,8 +58,3 @@ fun BrandCard(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun PrevCard() {
-    BrandCard(brand = brands[0]) {}
-}

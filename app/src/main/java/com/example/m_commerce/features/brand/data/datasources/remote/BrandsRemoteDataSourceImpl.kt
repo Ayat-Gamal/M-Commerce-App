@@ -21,7 +21,6 @@ class BrandsRemoteDataSourceImpl @Inject constructor(private val shopifyClient: 
                 }
             }
         }
-//        1200
         shopifyClient.queryGraph(query).enqueue { result ->
             when (result) {
                 is GraphCallResult.Success -> {

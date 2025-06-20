@@ -21,6 +21,9 @@ fun BrandsSection(
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit
 ) {
+
+    val filteredBrands = brands.drop(1).take(6)
+
     SectionTemplate(title = "Brands", seeAllOnClick = navigateToBrands) {
         Column(modifier = modifier) {
 
@@ -51,19 +54,3 @@ fun BrandsSection(
 
 
 val img = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg"
-val brands = listOf<Brand>(
-    Brand("1", img, "Brand 1"),
-    Brand("1", img, "Brand 2"),
-    Brand("1", img, "Brand 3"),
-    Brand("1", img, "Brand 4"),
-    Brand("1", img, "Brand 5"),
-    Brand("1", img, "Brand 6"),
-    Brand("1", img, "Brand 7"),
-    Brand("1", img, "Brand 8"),
-    Brand("1", img, "Brand 9"),
-    Brand("1", img, "Brand 10"),
-    Brand("1", img, "Brand 11"),
-    Brand("1", img, "Brand 12"),
-    Brand("1", img, "Brand 13")
-)
-val filteredBrands = brands.take(6)
