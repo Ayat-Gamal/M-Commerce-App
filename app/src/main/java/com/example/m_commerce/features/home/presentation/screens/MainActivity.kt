@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.config.routes.NavSetup
 import com.example.m_commerce.config.theme.MCommerceTheme
+
 import com.example.m_commerce.core.shared.components.bottom_nav_bar.BottomNavBar
 
 class MainActivity : ComponentActivity() {
