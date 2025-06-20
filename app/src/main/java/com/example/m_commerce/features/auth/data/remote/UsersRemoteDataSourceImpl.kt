@@ -8,12 +8,16 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class UsersRemoteDataSourceImpl @Inject constructor(private val auth: FirebaseAuth) :
+class UsersRemoteDataSourceImpl @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val db: FirebaseFirestore
+) :
     UsersRemoteDataSource {
     override suspend fun registerWithEmail(email: String, password: String): Flow<AuthState> =
         flow {
@@ -76,5 +80,16 @@ class UsersRemoteDataSourceImpl @Inject constructor(private val auth: FirebaseAu
                 else -> emit(AuthState.Error(e, "Login failed: ${e.localizedMessage}"))
             }
         }
+    }
+
+    override suspend fun storeTokenAndCartId(token: String, cartId: String, uid: String) {
+        val data = hashMapOf(
+            "shopifyToken" to token,
+            "cartId" to cartId,
+        )
+        db.collection("users")
+            .document(uid)
+            .set(data)
+            .await()
     }
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import com.shopify.buy3.GraphCallResult
 import com.shopify.buy3.GraphClient
 import com.shopify.buy3.Storefront
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -16,7 +17,7 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
         email: String,
         name: String,
         password: String
-    ) = suspendCoroutine{ cont ->
+    ) = suspendCoroutine { cont ->
         val input = Storefront.CustomerCreateInput(email, password)
             .setFirstName(name)
 
@@ -30,11 +31,7 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
         graphClient.mutateGraph(mutation).enqueue { result ->
             when (result) {
                 is GraphCallResult.Success -> {
-                    val customer = result.response.data?.customerCreate?.customer
-                    Log.i(
-                        "TAG",
-                        "createCustomer: email: ${customer?.email}, name: ${customer?.displayName},id: ${customer?.id}"
-                    )
+                    result.response.data?.customerCreate?.customer
                 }
 
                 is GraphCallResult.Failure -> {
@@ -46,9 +43,8 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun createCustomerToken(email: String, password: String, name: String) = flow {
-        createCustomer(email, name , password)
+        createCustomer(email, name, password)
         val token = suspendCoroutine { cont ->
-            Log.i("TAG", "createCustomerToken: called")
             val input = Storefront.CustomerAccessTokenCreateInput(email, password)
             val mutation = Storefront.mutation { mutationQuery ->
                 mutationQuery.customerAccessTokenCreate(input) { customerAccessTokenCreate ->
@@ -68,7 +64,6 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
 
                         if (token != null) {
                             cont.resume(token)
-                            Log.i("TAG", "createCustomerToken: $token")
                         } else {
                             cont.resumeWith(Result.failure(IllegalStateException("Token is null")))
                         }
@@ -81,7 +76,7 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
             }
         }
         emit(token)
-    }
+    }.catch { }
 
     override suspend fun createCustomerCart() = flow {
         val token = "3488af256e67f99519ac442366714cf6"
@@ -94,23 +89,18 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
 
             val mutation = Storefront.mutation { mutationQuery ->
                 mutationQuery.cartCreate({ it.input(input) }) { cartCreate ->
-                    cartCreate.cart { cart ->
-                        //cart.id
-                    }
+                    cartCreate.cart {}
                 }
             }
 
             graphClient.mutateGraph(mutation).enqueue { result ->
                 when (result) {
                     is GraphCallResult.Success -> {
-                        val cartId = result.response.data
-
-
+                        val cartId = result.response.data?.cartCreate?.cart?.id
                         if (cartId != null) {
-                            cont.resume(token)
-                            Log.i("TAG", "createCustomerToken: $cartId")
+                            cont.resume(cartId.toString())
                         } else {
-                            cont.resumeWith(Result.failure(IllegalStateException("Token is null")))
+                            cont.resumeWith(Result.failure(IllegalStateException("CartId is null")))
                         }
                     }
 

@@ -2,11 +2,16 @@ package com.example.m_commerce.features.auth.di
 
 import android.content.Context
 import com.example.m_commerce.features.auth.domain.repo.AuthRepository
+import com.example.m_commerce.features.auth.domain.usecases.CreateCartUseCase
 import com.example.m_commerce.features.auth.domain.usecases.CreateCustomerTokenUseCase
 import com.example.m_commerce.features.auth.domain.usecases.LoginUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.RegisterUserUseCase
 import com.example.m_commerce.features.auth.domain.usecases.SendEmailVerificationUseCase
+import com.example.m_commerce.features.auth.domain.usecases.StoreTokenAndCartIdUseCase
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.shopify.buy3.GraphClient
 import dagger.Module
 import dagger.Provides
@@ -21,6 +26,11 @@ object AuthModule {
     @Provides
     fun provideAuth(): FirebaseAuth {
         return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return Firebase.firestore
     }
 
     @Provides
@@ -41,6 +51,16 @@ object AuthModule {
     @Provides
     fun provideCreateCustomerTokenUseCase(repo: AuthRepository): CreateCustomerTokenUseCase {
         return CreateCustomerTokenUseCase(repo)
+    }
+
+    @Provides
+    fun provideStoreTokenAndCartIdUseCase(repo: AuthRepository): StoreTokenAndCartIdUseCase {
+        return StoreTokenAndCartIdUseCase(repo)
+    }
+
+    @Provides
+    fun provideCreateCartUseCase(repo: AuthRepository): CreateCartUseCase {
+        return CreateCartUseCase(repo)
     }
 
     @Provides

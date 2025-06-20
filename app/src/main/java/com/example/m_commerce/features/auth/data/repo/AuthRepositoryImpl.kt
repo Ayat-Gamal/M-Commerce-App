@@ -9,20 +9,21 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val remote: UsersRemoteDataSource,
-    private val shopify: CustomersRemoteDataSource,
+    private val userDataSource: UsersRemoteDataSource,
+    private val shopifyDataSource
+    : CustomersRemoteDataSource,
 ) :
     AuthRepository {
     override suspend fun registerUser(email: String, password: String): Flow<AuthState> {
-        return remote.registerWithEmail(email, password)
+        return userDataSource.registerWithEmail(email, password)
     }
 
     override suspend fun loginUser(email: String, password: String): Flow<AuthState> {
-        return remote.loginUser(email, password)
+        return userDataSource.loginUser(email, password)
     }
 
     override suspend fun sendEmailVerification(user: FirebaseUser): Flow<AuthState> {
-        return remote.sendEmailVerification(user)
+        return userDataSource.sendEmailVerification(user)
     }
 
     override suspend fun createCustomerToken(
@@ -30,7 +31,17 @@ class AuthRepositoryImpl @Inject constructor(
         password: String,
         name: String
     ): Flow<String> {
-        return shopify.createCustomerToken(email, password, name)
+        return shopifyDataSource
+            .createCustomerToken(email, password, name)
+    }
+
+    override suspend fun createCart(token: String): Flow<String> {
+        return shopifyDataSource
+            .createCustomerCart()
+    }
+
+    override suspend fun storeTokenAndCartId(token: String, cartId: String, uid: String) {
+        userDataSource.storeTokenAndCartId(token, cartId,uid)
     }
 
 
