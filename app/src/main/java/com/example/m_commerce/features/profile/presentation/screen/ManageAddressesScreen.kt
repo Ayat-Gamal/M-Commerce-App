@@ -57,7 +57,7 @@ fun ManageAddressScreenUi(
             }
 
             AddNewAddressButton(onClick = {
-                navController.navigate(AppRoutes.AddAddressScreen)
+                navController.navigate(AppRoutes.MapScreen)
             })
 
             Spacer(modifier = Modifier.weight(1f))
