@@ -1,7 +1,7 @@
 package com.example.m_commerce.features.product.data.remote
 
+import android.util.Log
 import com.example.m_commerce.features.product.data.mapper.toDomain
-import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.shopify.buy3.GraphCallResult
 import com.shopify.buy3.GraphClient
 import com.shopify.buy3.Storefront
@@ -10,16 +10,20 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class ProductRemoteDataSourceImpl @Inject constructor(private val graphClient: GraphClient) :
     ProductRemoteDataSource {
     override fun getProductById(productId: String) = flow {
-        val uiState = suspendCancellableCoroutine { cont ->
+        val product = suspendCancellableCoroutine { cont ->
             val query = Storefront.query { rootQuery ->
                 rootQuery.product({ args ->
-                    args.id(ID("gid://shopify/Product/8845369016569"))
+                    args.id(ID(productId)) // TODO
                 }) { product ->
-                    product.title().description().productType()
+                    product
+                        .title()
+                        .description()
+                        .productType()
                         .variants({ args -> args.first(10) }) { variants ->
                             variants.edges { edges ->
                                 edges.node { node ->
@@ -32,10 +36,6 @@ class ProductRemoteDataSourceImpl @Inject constructor(private val graphClient: G
                             }
                         }
                         .images({ args -> args.first(10) }) { images -> images.edges { edges -> edges.node { it.url() } } }
-//                        .vendor()
-//                        .images {
-//                            it.edges {}
-//                        }
                 }
             }
 
@@ -45,23 +45,18 @@ class ProductRemoteDataSourceImpl @Inject constructor(private val graphClient: G
                         val graphQlProduct = result.response.data?.product
 
                         if (graphQlProduct != null) {
-                            val product = graphQlProduct.toDomain()
-                            cont.resume(ProductUiState.Success(product))
+                            cont.resume(graphQlProduct.toDomain())
                         } else {
-                            cont.resume(ProductUiState.Error("Couldn't fetch Product"))
+                            cont.resumeWithException(Exception("Product not found"))
                         }
                     }
 
                     is GraphCallResult.Failure -> {
-                        cont.resume(
-                            ProductUiState.Error(
-                                result.error.message ?: "Couldn't fetch Product"
-                            )
-                        )
+                        cont.resumeWithException(result.error)
                     }
                 }
             }
         }
-        emit(uiState)
+        emit(product)
     }
 }

@@ -74,7 +74,7 @@ fun ProfileScreenUI(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Profile name"
+                    "Welcome name"
                 )
             }
 
@@ -87,8 +87,8 @@ fun ProfileScreenUI(
                     "Manage Address" -> navController.navigate(AppRoutes.ManageAddressScreen)
 //                "Your profile" -> navController.navigate("your_profile")
                 "Payment Methods" -> navController.navigate(AppRoutes.CreditCardDetails)
+                "My Wishlist" -> navController.navigate(AppRoutes.WishListScreen)
                 "My Orders" -> navController.navigate(AppRoutes.UserOrdersScreen)
-//                "My Wishlist" -> navController.navigate("my_wishlist")
 //                "My Coupons" -> navController.navigate("my_coupons")
 //                "Settings" -> navController.navigate("settings")
 //                "Help Center" -> navController.navigate("help_center")

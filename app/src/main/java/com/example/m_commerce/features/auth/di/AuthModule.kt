@@ -62,5 +62,4 @@ object AuthModule {
     fun provideCreateCartUseCase(repo: AuthRepository): CreateCartUseCase {
         return CreateCartUseCase(repo)
     }
-
 }

@@ -12,10 +12,9 @@ import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
 import com.example.m_commerce.features.auth.domain.validation.ValidateName
 import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
 import com.example.m_commerce.features.auth.domain.validation.ValidationResult
-import com.example.m_commerce.features.product.data.remote.ProductRemoteDataSource
-import com.example.m_commerce.features.product.data.remote.ProductRemoteDataSourceImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,7 +68,8 @@ class RegisterViewModel @Inject constructor(
                         e, "Registration failed: ${e.localizedMessage} ?: Unknown error"
                     )
                 )
-            }.collect { result ->
+            }
+            .collect { result ->
                 if (result is AuthState.Success) {
                     val user = result.user
                     user?.let { setupUser(email, password, name, it) }
@@ -84,7 +85,17 @@ class RegisterViewModel @Inject constructor(
             val token = createCustomerToken(email, password, name).first()
             val cartId = createCart(token).first()
             storeTokenAndCartId(token, cartId, user.uid)
+            updateDisplayName(name, user)
         }
+
+    private suspend fun updateDisplayName(name: String, user: FirebaseUser) {
+        val profileUpdates = UserProfileChangeRequest.Builder()
+            .setDisplayName(name)
+            .build()
+
+        user.updateProfile(profileUpdates).await()
+        FirebaseAuth.getInstance().signOut()
+    }
 
     private suspend fun sendEmailVerification(user: FirebaseUser?) {
         user?.let {

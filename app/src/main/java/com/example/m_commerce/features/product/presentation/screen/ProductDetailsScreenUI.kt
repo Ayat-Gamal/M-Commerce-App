@@ -1,9 +1,11 @@
 package com.example.m_commerce.features.product.presentation.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,41 +76,16 @@ fun ProductDetailsScreenUI(
     viewModel: ProductViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
+        val productId = "gid://shopify/Product/8845369016569"
         viewModel.getProductById(productId)
     }
 
-    /*val images = listOf(
-        "https://cdn.shopify.com/s/files/1/0755/0271/5129/files/product_21_image1.jpg?v=1749927945",
-        "https://cdn.shopify.com/s/files/1/0755/0271/5129/files/product_21_image2.jpg?v=1749927945",
-        "https://cdn.shopify.com/s/files/1/0755/0271/5129/files/product_21_image3.jpg?v=1749927945",
-        "https://cdn.shopify.com/s/files/1/0755/0271/5129/files/product_21_image4.jpg?v=1749927945",
-        "https://cdn.shopify.com/s/files/1/0755/0271/5129/files/product_21_image5.jpg?v=1749927945"
-    )*/
-
-//    val colors = listOf(
-//        "black",
-//        "blue",
-//        "white",
-//        "red",
-//        "gray",
-//        "yellow",
-//        "beige",
-//        "light_brown",
-//        "burgandy",
-//    )
-    /*val colors = listOf(
-        "white",
-        "black",
-        "red",
-    )*/
-//    val sizes = listOf("4", "8","2", "14")
-//    val sizes = listOf("s", "m", "2l", "xl")
     val isLoading = remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
-    var favoriteState by remember { mutableStateOf(Icons.Default.FavoriteBorder) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     when (uiState) {
         is ProductUiState.Success -> {
@@ -116,6 +93,8 @@ fun ProductDetailsScreenUI(
             val pagerState = rememberPagerState(pageCount = { product.images.size })
             var selectedSize by remember { mutableStateOf<String>(product.sizes[0]) }
             var selectedColor by remember { mutableStateOf<String>(product.colors[0]) }
+            var favoriteState by remember { mutableStateOf(if ((uiState as ProductUiState.Success).isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder) }
+            var isFavorite by remember { mutableStateOf((uiState as ProductUiState.Success).isFavorite) }
 
             Column(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -147,7 +126,7 @@ fun ProductDetailsScreenUI(
                     }
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // indicators
+                    // indicators and wishlist icon
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -164,13 +143,20 @@ fun ProductDetailsScreenUI(
                             contentDescription = "Favorite icon",
                             modifier = Modifier
                                 .size(36.dp)
-                                .clickable {
-                                    favoriteState =
-                                        if (favoriteState == Icons.Default.FavoriteBorder) {
-                                            Icons.Default.Favorite
-                                        } else {
-                                            Icons.Default.FavoriteBorder
-                                        }
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    Log.i("TAG", "ProductDetailsScreenUI: $isFavorite")
+                                    if (isFavorite) {
+                                        viewModel.deleteProductFromWishlist(product.id)
+                                        favoriteState = Icons.Default.FavoriteBorder
+                                        isFavorite = false
+                                    } else {
+                                        viewModel.addProductToWishlist(product.id)
+                                        favoriteState = Icons.Default.Favorite
+                                        isFavorite = true
+                                    }
                                 },
                             tint = if (favoriteState == Icons.Default.Favorite) {
                                 Color.Red
@@ -321,7 +307,6 @@ fun ProductDetailsScreenUI(
 
                 }
 
-//        Spacer(Modifier.height(16.dp))
                 HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 2.dp)
 
                 Row(
