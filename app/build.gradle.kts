@@ -33,6 +33,9 @@ android {
 
     val accessToken = localProperties.getProperty("ACCESS_TOKEN")
     val shopDomain = localProperties.getProperty("SHOP_DOMAIN")
+    val emailServiceId = localProperties.getProperty("EMAIL_SERVICE_ID")
+    val emailTemplateId = localProperties.getProperty("EMAIL_TEMPLATE_ID")
+    val emailPublicKey = localProperties.getProperty("EMAIL_PUBLIC_KEY")
 
     defaultConfig {
         applicationId = "com.example.m_commerce"
@@ -45,6 +48,9 @@ android {
 
         buildConfigField("String", "ACCESS_TOKEN", accessToken)
         buildConfigField("String", "SHOP_DOMAIN", shopDomain)
+        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
+        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
+        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
     }
 
     buildTypes {
