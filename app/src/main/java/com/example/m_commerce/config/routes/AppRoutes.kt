@@ -35,6 +35,9 @@ sealed class AppRoutes {
     object ProfileScreen : AppRoutes()
 
     @Serializable
+    object UserOrdersScreen : AppRoutes()
+
+    @Serializable
     object RegisterScreen : AppRoutes()
 
     @Serializable
@@ -51,8 +54,6 @@ sealed class AppRoutes {
 
     @Serializable
     object CreditCardDetails : AppRoutes()
-
-
 
 
 }

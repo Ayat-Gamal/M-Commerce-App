@@ -87,7 +87,7 @@ fun ProfileScreenUI(
                     "Manage Address" -> navController.navigate(AppRoutes.ManageAddressScreen)
 //                "Your profile" -> navController.navigate("your_profile")
                 "Payment Methods" -> navController.navigate(AppRoutes.CreditCardDetails)
-//                "My Orders" -> navController.navigate("my_orders")
+                "My Orders" -> navController.navigate(AppRoutes.UserOrdersScreen)
 //                "My Wishlist" -> navController.navigate("my_wishlist")
 //                "My Coupons" -> navController.navigate("my_coupons")
 //                "Settings" -> navController.navigate("settings")

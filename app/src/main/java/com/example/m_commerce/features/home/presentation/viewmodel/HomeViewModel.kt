@@ -33,13 +33,15 @@ class HomeViewModel @Inject constructor(
             val categories = getCategoriesUseCase(Unit).catch { emit(null) }.firstOrNull()
 
             //TODO: This might be a bad idea
-            if (brands.isNullOrEmpty() || categories.isNullOrEmpty()) {
-                _dataState.value = HomeUiState.Error("No Data Found")
+            if (brands.isNullOrEmpty()) {
+                _dataState.value = HomeUiState.Error("No Brands Found")
+            }else if (categories.isNullOrEmpty()){
+                _dataState.value = HomeUiState.Error("No Categories Found")
             } else {
                 _dataState.value = HomeUiState.Success(brands, categories)
             }
         } catch (e: Exception) {
-            Log.d("Error", e.message.toString())
+            Log.e("Error", e.message.toString())
             _dataState.value = HomeUiState.Error(e.message.toString())
         }
     }

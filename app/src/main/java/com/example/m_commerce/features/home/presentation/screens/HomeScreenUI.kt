@@ -74,7 +74,7 @@ fun HomeScreenUI(
                     categories
                 )
             } else {
-                Failed(msg = "No Data Found")
+                Failed(msg = "No Data Foundddd")
             }
         }
     }
