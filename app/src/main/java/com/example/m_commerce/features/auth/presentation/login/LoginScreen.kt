@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +28,6 @@ import com.example.m_commerce.features.auth.presentation.login.components.LoginD
 import com.example.m_commerce.features.auth.presentation.login.components.LoginFormSection
 import com.example.m_commerce.features.auth.presentation.login.components.LoginHeaderSection
 import com.example.m_commerce.features.auth.presentation.register.AuthState
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,7 +66,10 @@ fun LoginScreen(
             LaunchedEffect(Unit) {
                 snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
-                    snackBarHostState.showSnackbar("Logged In Successful")
+                    snackBarHostState.showSnackbar(
+                        "Logged In Successful",
+                        duration = SnackbarDuration.Short
+                    )
                     withContext(Dispatchers.Main) {
                         navigate(AppRoutes.HomeScreen)
                     }
@@ -77,7 +80,6 @@ fun LoginScreen(
     }
 
     LaunchedEffect(Unit) {
-        FirebaseAuth.getInstance().signOut()
         viewModel.messageState.collect {
             isLoading.value = false
             if (it.isNotBlank()) {

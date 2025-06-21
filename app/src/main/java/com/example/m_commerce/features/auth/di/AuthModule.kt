@@ -70,6 +70,5 @@ object AuthModule {
             shopDomain = "mad45-alex-and02.myshopify.com",
             accessToken = "cf0390c1a174351fc5092b6f62d71a32"
         )
-
     }
 }

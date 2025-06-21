@@ -28,6 +28,7 @@ import com.example.m_commerce.features.payment.prsentation.screen.CreditCardDeta
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 import com.example.m_commerce.features.wishlist.presentation.WishListScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavSetup(
@@ -38,7 +39,8 @@ fun NavSetup(
     paddingValues: PaddingValues
 
 ) {
-    val startingScreen = AppRoutes.HomeScreen
+    val user = FirebaseAuth.getInstance().currentUser
+    val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
 
 
     NavHost(
@@ -138,7 +140,7 @@ fun NavSetup(
         }
 
         composable<AppRoutes.WishListScreen> {
-            WishListScreen(navController)
+            WishListScreen(navController, paddingValues)
         }
 
     }
