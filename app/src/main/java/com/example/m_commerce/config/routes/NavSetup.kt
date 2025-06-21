@@ -26,6 +26,9 @@ import com.example.m_commerce.features.orders.presentation.screen.CheckoutScreen
 import com.example.m_commerce.features.payment.presentation.screen.PaymentScreenUI
 import com.example.m_commerce.features.payment.prsentation.screen.CreditCardDetailsUiLayout
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
+import com.example.m_commerce.features.profile.presentation.screen.CurrencyUiLayout
+import com.example.m_commerce.features.profile.presentation.screen.HelpCenterScreenUiLayout
+import com.example.m_commerce.features.profile.presentation.screen.MapScreenUi
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 
@@ -90,7 +93,10 @@ fun NavSetup(
         composable<AppRoutes.CategoryDetailsScreen> {
             showBottomNavbar.value = false
             val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
-            CategoryDetailsScreenUI(categoryId = categoryArgs.categoryId, navController = navController)
+            CategoryDetailsScreenUI(
+                categoryId = categoryArgs.categoryId,
+                navController = navController
+            )
         }
 
         composable<AppRoutes.CartScreen> {
@@ -130,7 +136,8 @@ fun NavSetup(
             ManageAddressScreenUi(navController)
         }
         composable<AppRoutes.AddAddressScreen> {
-            AddAddressScreen(navController)
+            val args = it.toRoute<AppRoutes.AddAddressScreen>()
+            AddAddressScreen(navController, lat = args.lat , lng = args.lng)
         }
         composable<AppRoutes.CreditCardDetails> {
             showBottomNavbar.value = false
@@ -139,6 +146,16 @@ fun NavSetup(
 
         composable<AppRoutes.WishListScreen> {
             WishListScreen(navController)
+        }
+        composable<AppRoutes.CurrencyScreen> {
+            CurrencyUiLayout(navController)
+        }
+        composable<AppRoutes.MapScreen> {
+            MapScreenUi(navController,)
+        }
+        composable<AppRoutes.HelpCenterScreen> {
+            showBottomNavbar.value = false
+            HelpCenterScreenUiLayout(navController,)
         }
 
     }
