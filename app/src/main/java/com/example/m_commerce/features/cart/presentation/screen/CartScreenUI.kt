@@ -18,15 +18,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.dividerGray
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
+import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 
 @Composable
-fun CartScreenUI(paddingValues:PaddingValues , modifier: Modifier = Modifier ) {
+fun CartScreenUI(paddingValues: PaddingValues, modifier: Modifier = Modifier, viewModel: OrderViewModel = hiltViewModel()) {
+
+
     var quantity by rememberSaveable { mutableStateOf(1) }
 
     Scaffold(
@@ -41,11 +45,12 @@ fun CartScreenUI(paddingValues:PaddingValues , modifier: Modifier = Modifier ) {
         Column(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize().background(Background)
+                .fillMaxSize()
+                .background(Background)
 
         ) {
             LazyColumn(
-                modifier = Modifier.height( LocalConfiguration.current.screenHeightDp.dp * 0.4f) ,
+                modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.4f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(10) { index ->
