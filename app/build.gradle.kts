@@ -1,5 +1,3 @@
-import org.gradle.declarative.dsl.schema.FqName.Empty.packageName
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -54,6 +52,7 @@ android {
 dependencies {
     implementation(libs.volley)
     implementation(libs.androidx.foundation.android)
+    implementation(libs.play.services.location)
     val room_version = "2.6.1"
     val nav_version = "2.8.8"
 
@@ -124,6 +123,10 @@ dependencies {
 
     // Material3 Pager
     implementation("androidx.compose.foundation:foundation:1.8.2")
+    // Google Maps
+    implementation("com.google.maps.android:maps-compose:6.5.2")
+    implementation("com.google.maps.android:maps-compose-utils:6.5.2")
+    implementation("com.google.maps.android:maps-compose-widgets:6.5.2")
 }
 
 //apollo {
