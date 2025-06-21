@@ -72,7 +72,6 @@ fun RegisterScreen(
                         duration = SnackbarDuration.Short
                     )
                     withContext(Dispatchers.Main) {
-                        Log.i("TAG", "RegisterScreen: ${user?.uid}")
                         navigateToSignIn()
                     }
                 }

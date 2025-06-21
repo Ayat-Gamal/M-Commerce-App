@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.product.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,7 +15,7 @@ import com.example.m_commerce.features.product.domain.entities.Product
 fun ProductsGridView(
     modifier: Modifier,
     products: List<Product>/*List<ProductCardModel>*/,
-    addToWishList: ((Product/*ProductCardModel*/) -> Unit)? = null,
+    deleteFromWishList: ((Product/*ProductCardModel*/) -> Unit)? = null,
     navigateToProduct: (Product/*ProductCardModel*/) -> Unit
 ) {
     LazyVerticalGrid(
@@ -30,9 +31,13 @@ fun ProductsGridView(
                 onClick = {
                     navigateToProduct(products[it])
                 },
-                addToWishList = if (addToWishList != null) {
-                    { addToWishList(products[it]) }
-                } else null
+                deleteFromWishList = if (deleteFromWishList != null) {
+                    {
+                        deleteFromWishList(products[it])
+                        Log.d("TAG", "ProductsGridView: deleteFromWishList pressed ")
+                    }
+                } else null,
+
             )
         }
     }

@@ -2,7 +2,6 @@
 
 package com.example.m_commerce.features.wishlist.data.remote
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -48,15 +47,14 @@ class WishlistRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getWishlist() = flow {
-        Log.i("TAG", "uid: $uid")
+        var data = emptyList<String>()
         uid?.let {
             val snapshot = db.collection("users")
                 .document(uid)
                 .get()
                 .await()
-            val list = snapshot.get("wishlist") as? List<String> ?: emptyList()
-            emit(list)
+            data = snapshot.get("wishlist") as? List<String> ?: emptyList()
         }
-        emit(emptyList())
+        emit(data)
     }
 }

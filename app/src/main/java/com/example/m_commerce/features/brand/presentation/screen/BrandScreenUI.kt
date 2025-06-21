@@ -24,7 +24,7 @@ fun BrandScreenUI(modifier: Modifier = Modifier, brandId: String, navController:
             )
         }
     ) { padding ->
-        ProductsGridView(modifier = Modifier.padding(padding), products = products, addToWishList = {}) { product ->
+        ProductsGridView(modifier = Modifier.padding(padding), products = products) { product ->
             navController.navigate(AppRoutes.ProductDetailsScreen(product.id))
         }
     }

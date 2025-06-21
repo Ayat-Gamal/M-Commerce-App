@@ -45,7 +45,7 @@ fun WishListScreen(
             }
 
             is WishlistUiState.Error -> {
-                Log.i("TAG", "WishlistUiState.Error")
+                Log.i("TAG", "WishlistUiState.Error/ ${(uiState as WishlistUiState.Error).error}")
             }
 
             WishlistUiState.Loading -> {
@@ -64,9 +64,16 @@ fun WishListScreen(
 }
 
 @Composable
-fun LoadData(data: List<Product>, navController: NavHostController) {
+fun LoadData(data: List<Product>, navController: NavHostController, viewModel: WishlistViewModel = hiltViewModel()) {
     Log.i("TAG", "WishlistUiState.Success: ${data.size}")
-    ProductsGridView(modifier = Modifier, products = data/*products*/) { product ->
+    ProductsGridView(
+        modifier = Modifier,
+        products = data/*products*/,
+        deleteFromWishList = {
+            Log.d("TAG", "LoadData: product id: ${it.id}")
+            viewModel.deleteProductFromWishlist(it.id)
+            viewModel.getProducts()
+        }) { product ->
         navController.navigate(AppRoutes.ProductDetailsScreen(product.id))
     }
 }
