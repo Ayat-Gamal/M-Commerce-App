@@ -1,6 +1,6 @@
 package com.example.m_commerce.features.brand.data.datasources.remote
 
-import com.example.m_commerce.core.utils.extentions.getBrandListOrNull
+import com.example.m_commerce.core.utils.extentions.toDomain
 import com.example.m_commerce.features.brand.data.dto.BrandDto
 import com.shopify.buy3.GraphCallResult
 import com.shopify.buy3.GraphClient
@@ -27,7 +27,7 @@ class BrandsRemoteDataSourceImpl @Inject constructor(private val shopifyClient: 
             when (result) {
                 is GraphCallResult.Success -> {
 
-                    val brands = result.getBrandListOrNull() ?: emptyList()
+                    val brands = result.response.data?.collections?.toDomain() ?: emptyList()
 
                     trySend(brands)
                     close()

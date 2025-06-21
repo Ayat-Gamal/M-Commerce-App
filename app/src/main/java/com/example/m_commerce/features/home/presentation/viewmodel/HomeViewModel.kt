@@ -26,7 +26,6 @@ class HomeViewModel @Inject constructor(
 
 
     fun getHomeData() = viewModelScope.launch {
-        _dataState.value = HomeUiState.Loading
 
         try {
             val brands = getBrandsUseCase(7).catch { emit(null) }.firstOrNull()

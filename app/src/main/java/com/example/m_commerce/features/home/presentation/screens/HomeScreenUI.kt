@@ -83,8 +83,6 @@ fun HomeScreenUI(
 
 }
 
-
-
 @Composable
 private fun LoadedData(
     scrollState: ScrollState,
