@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.categories.presentation.components.CategoryCard
-import com.example.m_commerce.features.home.domain.entity.Category
+import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.category.categories
 
 @Composable

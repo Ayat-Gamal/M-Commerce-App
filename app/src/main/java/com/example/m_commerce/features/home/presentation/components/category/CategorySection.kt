@@ -8,11 +8,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.m_commerce.features.home.domain.entity.Category
+import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.SectionTemplate
 
 @Composable
-fun CategorySection(modifier: Modifier = Modifier, navigateToCategories: () -> Unit, navigateToCategory: (Category) -> Unit) {
+fun CategorySection(modifier: Modifier = Modifier, categories: List<Category>, navigateToCategories: () -> Unit, navigateToCategory: (Category) -> Unit) {
 
     SectionTemplate(title = "Categories", seeAllOnClick = navigateToCategories) {
         LazyRow(

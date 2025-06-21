@@ -23,6 +23,7 @@ import com.example.m_commerce.features.categories.presentation.screen.CategoryDe
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
 import com.example.m_commerce.features.orders.presentation.screen.CheckoutScreenUI
+import com.example.m_commerce.features.orders.presentation.screen.UserOrdersScreenUI
 import com.example.m_commerce.features.payment.presentation.screen.PaymentScreenUI
 import com.example.m_commerce.features.payment.prsentation.screen.CreditCardDetailsUiLayout
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
@@ -58,7 +59,7 @@ fun NavSetup(
             }, navigateToBrands = {
                 navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->
-                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id))
+                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id !!))
             },
                 navigateToCategory = { category ->
                     navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
@@ -119,6 +120,11 @@ fun NavSetup(
         composable<AppRoutes.PaymentScreen> {
             showBottomNavbar.value = false
             PaymentScreenUI(navController)
+        }
+
+        composable<AppRoutes.UserOrdersScreen> {
+            showBottomNavbar.value = false
+            UserOrdersScreenUI(navController = navController)
         }
 
 
