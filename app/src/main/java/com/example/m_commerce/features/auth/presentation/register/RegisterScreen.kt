@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.auth.presentation.register
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +27,7 @@ import com.example.m_commerce.features.auth.presentation.components.AuthSocialSe
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterDividerSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterFormSection
 import com.example.m_commerce.features.auth.presentation.register.components.RegisterHeaderSection
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,16 +64,18 @@ fun RegisterScreen(
         is AuthState.Success -> {
             isLoading.value = true
             LaunchedEffect(Unit) {
+                val user = FirebaseAuth.getInstance().currentUser
                 snackBarHostState.currentSnackbarData?.dismiss()
                 scope.launch {
                     snackBarHostState.showSnackbar(
                         message = "Check your email for verification",
+                        duration = SnackbarDuration.Short
                     )
                     withContext(Dispatchers.Main) {
+                        Log.i("TAG", "RegisterScreen: ${user?.uid}")
                         navigateToSignIn()
                     }
                 }
-
             }
         }
     }

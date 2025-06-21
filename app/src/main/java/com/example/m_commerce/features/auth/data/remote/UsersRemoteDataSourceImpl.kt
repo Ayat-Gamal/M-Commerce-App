@@ -49,8 +49,8 @@ class UsersRemoteDataSourceImpl @Inject constructor(
             val result = auth.signInWithEmailAndPassword(email, password).await()
             if (result.user?.isEmailVerified == true) {
                 emit(AuthState.Success(result.user))
-                auth.signOut()
             } else {
+                auth.signOut()
                 emit(AuthState.Error(Exception(), "Please activate your email"))
             }
         } catch (e: Exception) {
