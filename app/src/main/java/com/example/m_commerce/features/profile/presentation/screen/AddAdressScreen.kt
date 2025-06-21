@@ -35,12 +35,8 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.shopify.buy3.GraphCall
 import com.shopify.buy3.GraphClient
-import com.shopify.buy3.GraphError
-import com.shopify.buy3.GraphResponse
 import com.shopify.buy3.Storefront
-import org.chromium.base.Callback
 import java.util.Locale
 
 
@@ -189,23 +185,23 @@ fun saveAddress(context: Context) {
         }
     }
 
-    graphClient.mutateGraph(mutation).enqueue(object : GraphCall.Callback<Storefront.Mutation> {
-        override fun onResponse(response: GraphResponse<Storefront.Mutation>) {
-            val result = response.data?.customerAddressCreate
-            val addr = result?.customerAddress
-            val errs = result?.userErrors.orEmpty()
-
-            if (addr != null) {
-                Log.d("SAVE_ADDR", "✅ Address created: ${addr.id}")
-            } else {
-                errs.forEach { Log.e("SAVE_ADDR", "❌ ${it.field}: ${it.message}") }
-            }
-        }
-
-        override fun onFailure(error: GraphError) {
-            Log.e("SAVE_ADDR", "❌ GraphError: ${error.message}", error)
-        }
-    })
+//    graphClient.mutateGraph(mutation).enqueue(object : GraphCall.Callback<Storefront.Mutation> {
+//        override fun onResponse(response: GraphResponse<Storefront.Mutation>) {
+//            val result = response.data?.customerAddressCreate
+//            val addr = result?.customerAddress
+//            val errs = result?.userErrors.orEmpty()
+//
+//            if (addr != null) {
+//                Log.d("SAVE_ADDR", "✅ Address created: ${addr.id}")
+//            } else {
+//                errs.forEach { Log.e("SAVE_ADDR", "❌ ${it.field}: ${it.message}") }
+//            }
+//        }
+//
+//        override fun onFailure(error: GraphError) {
+//            Log.e("SAVE_ADDR", "❌ GraphError: ${error.message}", error)
+//        }
+//    })
 }
 
 
