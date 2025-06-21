@@ -147,7 +147,6 @@ fun ProductDetailsScreenUI(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
                                 ) {
-                                    Log.i("TAG", "ProductDetailsScreenUI: $isFavorite")
                                     if (isFavorite) {
                                         viewModel.deleteProductFromWishlist(product.id)
                                         favoriteState = Icons.Default.FavoriteBorder

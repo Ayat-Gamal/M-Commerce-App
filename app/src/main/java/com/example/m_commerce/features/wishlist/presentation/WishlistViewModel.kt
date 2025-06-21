@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
+import com.example.m_commerce.features.wishlist.domain.usecases.DeleteFromWishlistUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.GetWishlistUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class WishlistViewModel @Inject constructor(
     private val getWishlist: GetWishlistUseCase,
     private val getProductById: GetProductByIdUseCase,
+    private val deleteFromWishlist: DeleteFromWishlistUseCase,
 ) : ViewModel() {
     private var _uiState = MutableStateFlow<WishlistUiState>(WishlistUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -31,7 +33,6 @@ class WishlistViewModel @Inject constructor(
     fun getProducts() {
         viewModelScope.launch {
             getWishlist()
-                .filter { it.isNotEmpty() }
                 .flatMapConcat { ids ->
                     Log.d("TAG", "getProducts: ${ids.size}")
                     if (ids.isEmpty()) {
@@ -48,10 +49,13 @@ class WishlistViewModel @Inject constructor(
                 }
                 .catch { e -> _uiState.emit(WishlistUiState.Error(e.message ?: "Unknown error")) }
                 .collect { products ->
-                    Log.d("TAG", "collect: ${products.size}")
                     if (products.isEmpty()) _uiState.emit(WishlistUiState.Empty)
                     else _uiState.emit(WishlistUiState.Success(products))
                 }
         }
+    }
+
+    fun deleteProductFromWishlist(productVariantId: String) = viewModelScope.launch {
+        deleteFromWishlist(productVariantId)
     }
 }
