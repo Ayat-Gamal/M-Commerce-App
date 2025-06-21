@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class BrandsRemoteDataSourceImpl @Inject constructor(private val shopifyClient: GraphClient) : BrandsRemoteDataSource {
-    override fun getBrands(): Flow<List<BrandDto>> = callbackFlow {
+    override fun getBrands(first: Int): Flow<List<BrandDto>> = callbackFlow {
         val query = Storefront.query { root ->
-            root.collections({ it.first(20) }) { brand ->
+            root.collections({ it.first(first) }) { brand ->
                 brand.nodes {
                     it.title()
                     it.image { it.url() }

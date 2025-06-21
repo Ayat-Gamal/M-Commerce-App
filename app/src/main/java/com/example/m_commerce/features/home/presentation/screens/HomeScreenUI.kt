@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.m_commerce.features.brand.domain.entity.Brand
-import com.example.m_commerce.features.brand.ui_state.HomeUiState
+import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
 import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
@@ -89,7 +89,7 @@ private fun Loading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Failed(modifier: Modifier = Modifier, msg: String) {
+private fun Failed(modifier: Modifier = Modifier, msg: String) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(msg)
     }

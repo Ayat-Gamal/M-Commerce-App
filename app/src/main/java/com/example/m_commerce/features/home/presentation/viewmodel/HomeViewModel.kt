@@ -3,7 +3,7 @@ package com.example.m_commerce.features.home.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.m_commerce.features.brand.ui_state.HomeUiState
+import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
 import com.example.m_commerce.features.categories.domain.usecases.GetCategoriesUseCase
 import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +29,7 @@ class HomeViewModel @Inject constructor(
         _dataState.value = HomeUiState.Loading
 
         try {
-            val brands = getBrandsUseCase(Unit).catch { emit(null) }.firstOrNull()
+            val brands = getBrandsUseCase(7).catch { emit(null) }.firstOrNull()
             val categories = getCategoriesUseCase(Unit).catch { emit(null) }.firstOrNull()
 
             //TODO: This might be a bad idea
