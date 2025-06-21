@@ -23,6 +23,7 @@ import com.example.m_commerce.features.categories.presentation.screen.CategoryDe
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
 import com.example.m_commerce.features.orders.presentation.screen.CheckoutScreenUI
+import com.example.m_commerce.features.orders.presentation.screen.UserOrdersScreenUI
 import com.example.m_commerce.features.payment.presentation.screen.PaymentScreenUI
 import com.example.m_commerce.features.payment.prsentation.screen.CreditCardDetailsUiLayout
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
@@ -31,6 +32,7 @@ import com.example.m_commerce.features.profile.presentation.screen.HelpCenterScr
 import com.example.m_commerce.features.profile.presentation.screen.MapScreenUi
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 import com.example.m_commerce.features.wishlist.presentation.WishListScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavSetup(
@@ -41,7 +43,8 @@ fun NavSetup(
     paddingValues: PaddingValues
 
 ) {
-    val startingScreen = AppRoutes.LoginScreen
+    val user = FirebaseAuth.getInstance().currentUser
+    val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
 
 
     NavHost(
@@ -59,7 +62,7 @@ fun NavSetup(
             }, navigateToBrands = {
                 navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->
-                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id))
+                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id !!))
             },
                 navigateToCategory = { category ->
                     navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
@@ -125,6 +128,11 @@ fun NavSetup(
             PaymentScreenUI(navController)
         }
 
+        composable<AppRoutes.UserOrdersScreen> {
+            showBottomNavbar.value = false
+            UserOrdersScreenUI(navController = navController)
+        }
+
 
         composable<AppRoutes.LoginScreen> {
             LoginScreen(snackBarHostState = snackBarHostState) {
@@ -145,7 +153,7 @@ fun NavSetup(
         }
 
         composable<AppRoutes.WishListScreen> {
-            WishListScreen(navController)
+            WishListScreen(navController, paddingValues)
         }
         composable<AppRoutes.CurrencyScreen> {
             CurrencyUiLayout(navController)

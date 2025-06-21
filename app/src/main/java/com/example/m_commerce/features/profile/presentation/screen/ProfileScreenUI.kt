@@ -74,7 +74,7 @@ fun ProfileScreenUI(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Profile name"
+                    "Welcome name"
                 )
             }
 

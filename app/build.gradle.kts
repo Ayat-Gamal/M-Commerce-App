@@ -1,3 +1,6 @@
+import org.gradle.declarative.dsl.schema.FqName.Empty.packageName
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -16,6 +19,21 @@ android {
     namespace = "com.example.m_commerce"
     compileSdk = 35
 
+//    val localProperties = Properties().apply {
+//        load(File(rootProject.projectDir, "local.properties").inputStream())
+//    }
+
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use {
+            localProperties.load(it)
+        }
+    }
+
+    val accessToken = localProperties.getProperty("ACCESS_TOKEN")
+    val shopDomain = localProperties.getProperty("SHOP_DOMAIN")
+
     defaultConfig {
         applicationId = "com.example.m_commerce"
         minSdk = 24
@@ -24,6 +42,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "ACCESS_TOKEN", accessToken)
+        buildConfigField("String", "SHOP_DOMAIN", shopDomain)
     }
 
     buildTypes {
@@ -43,6 +64,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -111,9 +133,10 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 
-    // firebase auth
+    // firebase services
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 
     // extended icons
     implementation("androidx.compose.material:material-icons-extended:1.6.1")

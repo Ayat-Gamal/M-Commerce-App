@@ -7,13 +7,18 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.m_commerce.features.brand.domain.entity.ProductCardModel
+import com.example.m_commerce.features.product.domain.entities.Product
 
 
 @Composable
-fun ProductsGridView(modifier: Modifier, products: List<ProductCardModel>, navigateToProduct: (ProductCardModel) -> Unit ) {
+fun ProductsGridView(
+    modifier: Modifier,
+    products: List<Product>/*List<ProductCardModel>*/,
+    addToWishList: ((Product/*ProductCardModel*/) -> Unit)? = null,
+    navigateToProduct: (Product/*ProductCardModel*/) -> Unit
+) {
     LazyVerticalGrid(
-        modifier  = modifier,
+        modifier = modifier,
         columns = GridCells.Fixed(2),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -25,7 +30,9 @@ fun ProductsGridView(modifier: Modifier, products: List<ProductCardModel>, navig
                 onClick = {
                     navigateToProduct(products[it])
                 },
-                addToWishList = {}
+                addToWishList = if (addToWishList != null) {
+                    { addToWishList(products[it]) }
+                } else null
             )
         }
     }

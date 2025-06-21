@@ -8,4 +8,5 @@ interface UsersRemoteDataSource {
     suspend fun registerWithEmail(email: String, password: String): Flow<AuthState>
     suspend fun sendEmailVerification(user: FirebaseUser): Flow<AuthState>
     suspend fun loginUser(email: String, password: String): Flow<AuthState>
+    suspend fun storeTokenAndCartId(token: String, cartId: String, uid: String)
 }
