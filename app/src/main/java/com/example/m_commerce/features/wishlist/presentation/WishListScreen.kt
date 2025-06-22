@@ -23,6 +23,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
+import com.example.m_commerce.core.shared.components.Empty
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.features.home.presentation.components.SearchBarWithClear
 import com.example.m_commerce.features.product.domain.entities.Product
@@ -74,6 +76,7 @@ fun WishListScreen(
 
                 WishlistUiState.Empty -> {
                     Log.i("TAG", "WishlistUiState.Empty")
+                    Empty("No products added yet")
                 }
 
                 is WishlistUiState.Error -> {
@@ -93,6 +96,7 @@ fun WishListScreen(
 
                 WishlistUiState.NoNetwork -> {
                     Log.i("TAG", "WishlistUiState.NoNetwork")
+                    NoNetwork()
                 }
 
                 WishlistUiState.Search -> SearchScreen()

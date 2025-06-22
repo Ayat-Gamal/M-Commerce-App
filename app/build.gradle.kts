@@ -1,4 +1,3 @@
-import org.gradle.declarative.dsl.schema.FqName.Empty.packageName
 import java.util.Properties
 
 plugins {
@@ -147,7 +146,13 @@ dependencies {
     implementation("androidx.compose.foundation:foundation:1.8.2")
 
     // flowlayout
-    implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
+//    implementation(
+//        "com.google.accompanist:accompanist-flowlayout:0.32.0"
+//    )
+
+    // Lottie
+    implementation("com.airbnb.android:lottie-compose:6.6.4")
+
 }
 
 //apollo {
