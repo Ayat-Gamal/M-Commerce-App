@@ -146,6 +146,7 @@ fun NavSetup(
         }
 
         composable<AppRoutes.WishListScreen> {
+            showBottomNavbar.value = false
             WishListScreen(navController, paddingValues)
         }
 

@@ -22,11 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.m_commerce.features.home.presentation.viewmodel.HomeViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchSection(modifier: Modifier = Modifier) {
+fun SearchSection(modifier: Modifier = Modifier, viewModel: HomeViewModel = hiltViewModel()) {
     var searchQuery by remember { mutableStateOf("") }
 
     Column(
@@ -35,22 +37,23 @@ fun SearchSection(modifier: Modifier = Modifier) {
             .background(Color.Gray)
             .height(170.dp)
             .padding(16.dp),
-        verticalArrangement =  Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text("Location")
         Row {
             Icon(
-                imageVector = Icons.Filled.LocationOn,
-                contentDescription = "Home"
+                imageVector = Icons.Filled.LocationOn, contentDescription = "Home"
             )
             Text("New York, USA")
         }
 
-        SearchBarWithClear(
-            query = searchQuery,
-            onQueryChange = { searchQuery = it },
-            onClear = { searchQuery = "" }
-        )
+        SearchBarWithClear(query = searchQuery, onQueryChange = {
+            searchQuery = it
+            viewModel.search(it)
+        }, onClear = {
+            searchQuery = ""
+            viewModel.search("")
+        })
 
         Log.d("SEARCH", "Search results for: $searchQuery")
     }

@@ -145,6 +145,9 @@ dependencies {
 
     // Material3 Pager
     implementation("androidx.compose.foundation:foundation:1.8.2")
+
+    // flowlayout
+    implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
 }
 
 //apollo {

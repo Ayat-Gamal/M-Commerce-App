@@ -6,6 +6,7 @@ sealed class WishlistUiState {
     data class Error(val error: String) : WishlistUiState()
     data object Empty : WishlistUiState()
     data object Loading : WishlistUiState()
+    data object Search : WishlistUiState()
     data object NoNetwork : WishlistUiState()
     data class Success(val data: List<Product>) : WishlistUiState()
 }

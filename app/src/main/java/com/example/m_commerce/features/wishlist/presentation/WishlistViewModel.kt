@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flowOf
@@ -52,6 +51,17 @@ class WishlistViewModel @Inject constructor(
                     if (products.isEmpty()) _uiState.emit(WishlistUiState.Empty)
                     else _uiState.emit(WishlistUiState.Success(products))
                 }
+        }
+    }
+
+    fun search(query: String) {
+        viewModelScope.launch {
+            if (query.isNotEmpty())
+                _uiState.emit(WishlistUiState.Search)
+            else {
+                _uiState.emit(WishlistUiState.Loading)
+                getProducts()
+            }
         }
     }
 
