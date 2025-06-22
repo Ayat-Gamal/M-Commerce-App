@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
+import com.example.m_commerce.features.brand.domain.usecases.GetProductsByBrandUseCase
 import com.example.m_commerce.features.brand.presentation.ui_state.BrandsUiState
-import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
+import com.example.m_commerce.features.product.presentation.ui_state.ProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +17,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BrandsViewModel @Inject constructor(private val getBrandsUseCase: GetBrandsUseCase) : ViewModel() {
+class BrandsViewModel @Inject constructor(
+    private val getBrandsUseCase: GetBrandsUseCase,
+    private val getProductsUseCase: GetProductsByBrandUseCase
+) : ViewModel() {
 
-    private val _dataState: MutableStateFlow<BrandsUiState> = MutableStateFlow(BrandsUiState.Loading)
-    val dataState: StateFlow<BrandsUiState> = _dataState.asStateFlow()
+    private val _brandsState: MutableStateFlow<BrandsUiState> = MutableStateFlow(BrandsUiState.Loading)
+    val brandsState: StateFlow<BrandsUiState> = _brandsState.asStateFlow()
+
+    private val _productsState: MutableStateFlow<ProductsUiState> = MutableStateFlow(ProductsUiState.Loading)
+    val productsState: StateFlow<ProductsUiState> = _productsState.asStateFlow()
 
 
     init {
@@ -32,13 +39,26 @@ class BrandsViewModel @Inject constructor(private val getBrandsUseCase: GetBrand
             val brands = getBrandsUseCase(30).catch { emit(null) }.firstOrNull()
 
             if (brands.isNullOrEmpty()) {
-                _dataState.value = BrandsUiState.Error("No Brands Found")
+                _brandsState.value = BrandsUiState.Error("No Brands Found")
             } else {
-                _dataState.value = BrandsUiState.Success(brands)
+                _brandsState.value = BrandsUiState.Success(brands)
             }
         } catch (e: Exception) {
             Log.e("Error", e.message.toString())
-            _dataState.value = BrandsUiState.Error(e.message.toString())
+            _brandsState.value = BrandsUiState.Error(e.message.toString())
+        }
+    }
+
+    fun getProductsByBrandName(name: String) = viewModelScope.launch {
+        try {
+            val products = getProductsUseCase(name).catch { emit(null) }.firstOrNull()
+            if (products.isNullOrEmpty()) {
+                _productsState.value = ProductsUiState.Error("No Products Found")
+            } else {
+                _productsState.value = ProductsUiState.Success(products)
+            }
+        } catch (e: Exception) {
+
         }
     }
 }

@@ -59,7 +59,7 @@ fun NavSetup(
             }, navigateToBrands = {
                 navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->
-                navController.navigate(AppRoutes.BrandDetailsScreen(brand.id !!))
+                navController.navigate(AppRoutes.BrandDetailsScreen(brand.name ?: "Empty"))
             },
                 navigateToCategory = { category ->
                     navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
@@ -74,7 +74,7 @@ fun NavSetup(
         composable<AppRoutes.BrandDetailsScreen> {
             showBottomNavbar.value = false
             val brandArgs = it.toRoute<AppRoutes.BrandDetailsScreen>()
-            BrandScreenUI(brandId = brandArgs.brandId, navController = navController)
+            BrandScreenUI(brandName = brandArgs.brandName, navController = navController)
         }
 
         composable<AppRoutes.ProductDetailsScreen> {

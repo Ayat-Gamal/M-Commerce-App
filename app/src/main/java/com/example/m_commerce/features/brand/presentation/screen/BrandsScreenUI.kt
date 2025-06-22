@@ -29,7 +29,7 @@ fun BrandsScreenUI(
     viewModel: BrandsViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-    val state by viewModel.dataState.collectAsStateWithLifecycle()
+    val state by viewModel.brandsState.collectAsStateWithLifecycle()
 
     when (state) {
         is BrandsUiState.Loading -> LoadingScreenCase()
@@ -56,7 +56,7 @@ private fun LoadedData(modifier: Modifier = Modifier, brands: List<Brand>, navCo
         ) {
             items(brands.size) { index ->
                 BrandCard(brand = brands[index]) {
-                    navController.navigate(AppRoutes.BrandDetailsScreen(brands[index].id!!))
+                    navController.navigate(AppRoutes.BrandDetailsScreen(brands[index].name ?: "Empty"))
                 }
             }
 

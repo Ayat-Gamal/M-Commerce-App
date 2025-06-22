@@ -14,9 +14,9 @@ import com.example.m_commerce.features.product.domain.entities.Product
 @Composable
 fun ProductsGridView(
     modifier: Modifier,
-    products: List<Product>/*List<ProductCardModel>*/,
-    deleteFromWishList: ((Product/*ProductCardModel*/) -> Unit)? = null,
-    navigateToProduct: (Product/*ProductCardModel*/) -> Unit
+    products: List<Product>,
+    deleteFromWishList: ((Product) -> Unit)? = null,
+    navigateToProduct: (Product) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = modifier,
