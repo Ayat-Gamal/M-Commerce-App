@@ -1,14 +1,14 @@
 package com.example.m_commerce.features.orders.domain.usecases
 
 import com.example.m_commerce.core.usecase.UseCase
-import com.example.m_commerce.features.orders.data.model.MailerEmailRequest
+import com.example.m_commerce.features.orders.data.model.EmailRequest
 import com.example.m_commerce.features.orders.domain.repository.EmailRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SendOrderConfirmationEmailUseCase @Inject constructor( private val repo: EmailRepository) : UseCase<MailerEmailRequest, Flow<Result<Unit>>> {
+class SendOrderConfirmationEmailUseCase @Inject constructor( private val repo: EmailRepository) {
 
-    override fun invoke(request: MailerEmailRequest): Flow<Result<Unit>> {
+    suspend operator fun invoke(request: EmailRequest) {
 
         return repo.sendEmail(request)
     }
