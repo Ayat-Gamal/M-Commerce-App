@@ -27,7 +27,6 @@ class BrandsViewModel @Inject constructor(private val getBrandsUseCase: GetBrand
     }
 
     private fun getBrandsData() = viewModelScope.launch {
-        _dataState.value = BrandsUiState.Loading
 
         try {
             val brands = getBrandsUseCase(30).catch { emit(null) }.firstOrNull()
