@@ -6,68 +6,69 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.BuildConfig
-import com.example.m_commerce.features.orders.data.model.GraphQLRequestWithVariables
-import com.example.m_commerce.features.orders.data.model.completeDraftOrderMutation
-import com.example.m_commerce.features.orders.data.model.mutationQuery
-import com.example.m_commerce.features.orders.data.model.shopifyApi
-import com.example.m_commerce.features.orders.data.model.variablesCompleteOrder
-import com.example.m_commerce.features.orders.data.model.variablesCreateOrder
+import com.example.m_commerce.features.orders.data.model.CompleteOrderVariables
+import com.example.m_commerce.features.orders.data.model.DraftOrderCreateVariables
+import com.example.m_commerce.features.orders.data.model.GraphQLRequest
+import com.example.m_commerce.features.orders.data.model.LineItem
+import com.example.m_commerce.features.orders.data.model.ShippingAddress
+import com.example.m_commerce.features.orders.data.model.completeDraftOrderQuery
+import com.example.m_commerce.features.orders.data.model.createDraftOrderQuery
+import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
+import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class OrderViewModel @Inject constructor() : ViewModel() {
+class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateOrderUseCase, /*private val completeOrderUseCase: CompleteOrderUseCase*/) : ViewModel() {
 
-    val token = BuildConfig.ADMIN_TOKEN
-    val completeRequest = GraphQLRequestWithVariables(
-        query = completeDraftOrderMutation,
-        variables = variablesCompleteOrder
-    )
-
-    val createRequest = GraphQLRequestWithVariables(
-        query = mutationQuery,
-        variables = variablesCreateOrder
-    )
-
+    private val _state = MutableStateFlow<OrderUiState>(OrderUiState.Idle)
+    val state: StateFlow<OrderUiState> = _state
 
     fun completeOrder() = viewModelScope.launch {
-        try {
-            val response = shopifyApi.createOrder(
-                completeRequest, token
-            )
 
-            if (response.isSuccessful) {
-                val body = response.body()?.string()
-                Log.d("Shopify", "Draft order created: $body")
-            } else {
-                Log.e("Shopify", "Error ${response.code()}: ${response.errorBody()?.string()}")
-            }
-        } catch (e: Exception) {
-            Log.e("Shopify", "Exception: ${e.message}")
-        }
     }
 
-    fun createOrder() = viewModelScope.launch {
-            try {
-                val response = shopifyApi.createOrder(
-                    body = createRequest,
-                    token = token
+    fun createOrder() {
+        val variables = DraftOrderCreateVariables(
+            email = "youssifn.mostafa@gmail.com",
+            shippingAddress = ShippingAddress(
+                firstName = "Youssif",
+                lastName = "Nasser",
+                address1 = "123 Main Street",
+                city = "Cairo",
+                country = "Egypt",
+                zip = "12345"
+            ),
+            lineItems = listOf( //!
+                LineItem(
+                    variantId = "gid://shopify/ProductVariant/46559952797945",
+                    quantity = 2,
+                    originalUnitPrice = "150.00"
                 )
+            ),
+            note = null
+        )
 
-                if (response.isSuccessful) {
+        val request = GraphQLRequest(
+            query = createDraftOrderQuery,
+            variables = variables
+        )
 
-                    val responseBody = response.body()?.string()
-                    Log.d("Shopify", "Order created: $responseBody")
-                } else {
-                    Log.e("Shopify", "Error ${response.code()}: ${response.errorBody()?.string()}")
+        viewModelScope.launch {
+            _state.value = OrderUiState.Loading
+            try {
+                createOrderUseCase(request).collect { order ->
+                    Log.d("Shopify", "createOrder: ${order}")
+                    _state.value = OrderUiState.Success(order)
                 }
-
             } catch (e: Exception) {
-                Log.e("Shopify", "Request failed: ${e.message}")
+                _state.value = OrderUiState.Error(e.message ?: "Unknown error")
+                Log.e("Shopify", "createOrder:", e )
             }
         }
-
-
+    }
 }
