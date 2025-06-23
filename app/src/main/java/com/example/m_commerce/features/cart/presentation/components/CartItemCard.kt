@@ -1,5 +1,7 @@
 package com.example.m_commerce.features.cart.presentation.components
 
+import ProductVariant
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.m_commerce.config.theme.Background
@@ -38,13 +39,10 @@ import com.example.m_commerce.config.theme.White
 
 @Composable
 fun CartItemCard(
-    productName: String = "T-Shirt",
-    productCategory: String = "Clothing",
-    productPrice: Double = 12.00,
-    productImageUrl: String = "https://i.pinimg.com/736x/67/7a/a3/677aa319e1ce93756f9c368692bbc5e4.jpg",
-    quantity: Int,
-    onIncrease: () -> Unit,
+    prodct : ProductVariant
+    ,onIncrease: () -> Unit,
     onDecrease: () -> Unit
+    ,onRemove: () -> Unit
 ) {
     Box{ Card(
         modifier = Modifier
@@ -61,7 +59,7 @@ fun CartItemCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = productImageUrl,
+                model = prodct.imageUrl,
                 contentDescription = "Product Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -75,15 +73,15 @@ fun CartItemCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = productName,
+                    text = prodct.title,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = productCategory,
+                    text = prodct.productTitle,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "$${String.format("%.2f", productPrice)}",
+                    text = "${prodct.price} ${prodct.currency}",
                 )
             }
 
@@ -110,8 +108,8 @@ fun CartItemCard(
                 }
 
                 Text(
-                    text = quantity.toString(),
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    text = (prodct.quantity).toString(),
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
                 Box(
@@ -139,27 +137,18 @@ fun CartItemCard(
         contentDescription = "Delete",
         tint = Color.Red,
         modifier = Modifier
-            .align(Alignment.TopEnd).padding(4.dp)
-            .padding(8.dp).size(20.dp)
+            .align(Alignment.TopEnd)
+            .padding(4.dp)
+            .padding(8.dp)
+            .size(20.dp)
             .clickable {
+                Log.i("TAG", "CartItemCard:${prodct.toString()} ")
+                onRemove()
             }
     )
 }}
 
 
-@Preview(showBackground = true)
-@Composable
-fun CartItemCardPreview() {
-    CartItemCard(
-        productName = "doj",
-        productCategory = "Dog Accessories",
-        productPrice = 12.00,
-        productImageUrl = "https://i.pinimg.com/736x/67/7a/a3/677aa319e1ce93756f9c368692bbc5e4.jpg",
-        quantity = 1,
-        onIncrease = { /*TODO*/ },
-        onDecrease = { /*TODO*/ }
-    )
-}
 
 
 
