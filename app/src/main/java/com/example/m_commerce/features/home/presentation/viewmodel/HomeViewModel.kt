@@ -3,9 +3,10 @@ package com.example.m_commerce.features.home.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.m_commerce.features.brand.ui_state.HomeUiState
-import com.example.m_commerce.features.categories.domain.usecases.GetCategoriesUseCase
 import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
+import com.example.m_commerce.features.categories.domain.usecases.GetCategoriesUseCase
+import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
+import com.example.m_commerce.features.wishlist.presentation.WishlistUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,16 +27,15 @@ class HomeViewModel @Inject constructor(
 
 
     fun getHomeData() = viewModelScope.launch {
-        _dataState.value = HomeUiState.Loading
 
         try {
-            val brands = getBrandsUseCase(Unit).catch { emit(null) }.firstOrNull()
+            val brands = getBrandsUseCase(7).catch { emit(null) }.firstOrNull()
             val categories = getCategoriesUseCase(Unit).catch { emit(null) }.firstOrNull()
 
             //TODO: This might be a bad idea
             if (brands.isNullOrEmpty()) {
                 _dataState.value = HomeUiState.Error("No Brands Found")
-            }else if (categories.isNullOrEmpty()){
+            } else if (categories.isNullOrEmpty()) {
                 _dataState.value = HomeUiState.Error("No Categories Found")
             } else {
                 _dataState.value = HomeUiState.Success(brands, categories)
@@ -46,4 +46,14 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun search(query: String) {
+        viewModelScope.launch {
+            if (query.isNotEmpty())
+                _dataState.emit(HomeUiState.Search)
+            else {
+                _dataState.emit(HomeUiState.Loading)
+                getHomeData()
+            }
+        }
+    }
 }

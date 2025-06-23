@@ -1,6 +1,6 @@
 package com.example.m_commerce.features.brand.data.datasources.remote
 
-import android.util.Log
+import com.example.m_commerce.core.utils.extentions.toDomain
 import com.example.m_commerce.features.brand.data.dto.BrandDto
 import com.shopify.buy3.GraphCallResult
 import com.shopify.buy3.GraphClient
@@ -13,28 +13,22 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class BrandsRemoteDataSourceImpl @Inject constructor(private val shopifyClient: GraphClient) : BrandsRemoteDataSource {
-    override fun getBrands(): Flow<List<BrandDto>> = callbackFlow {
+    override fun getBrands(first: Int): Flow<List<BrandDto>> = callbackFlow {
         val query = Storefront.query { root ->
-            root.collections({ it.first(20) }) { brand ->
+            root.collections({ it.first(first) }) { brand ->
                 brand.nodes {
                     it.title()
                     it.image { it.url() }
                 }
             }
         }
+
         shopifyClient.queryGraph(query).enqueue { result ->
             when (result) {
                 is GraphCallResult.Success -> {
-                    val brands =
-                        result.response.data?.collections?.nodes?.mapNotNull {
-//                            Log.d("QL", "YA RABBBB")
-//                            Log.d("QL", "${it.title} -- ${it.id}")
-                            BrandDto(
-                                id = it.id.toString(),
-                                image = it.image?.url,
-                                name = it.title
-                            )
-                        } ?: emptyList()
+
+                    val brands = result.response.data?.collections?.toDomain() ?: emptyList()
+
                     trySend(brands)
                     close()
                 }
@@ -48,3 +42,4 @@ class BrandsRemoteDataSourceImpl @Inject constructor(private val shopifyClient: 
 
     }.flowOn(Dispatchers.IO)
 }
+

@@ -1,0 +1,11 @@
+package com.example.m_commerce.features.brand.presentation.ui_state
+
+import com.example.m_commerce.features.brand.domain.entity.Brand
+import com.example.m_commerce.features.categories.domain.entity.Category
+
+
+sealed class BrandsUiState {
+    object Loading : BrandsUiState()
+    data class Success(val brands: List<Brand>) : BrandsUiState()
+    data class Error(val message: String) : BrandsUiState()
+}

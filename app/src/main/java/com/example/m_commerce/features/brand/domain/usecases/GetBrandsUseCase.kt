@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
-class GetBrandsUseCase @Inject constructor(private val repo: BrandsRepository) : UseCase<Unit, Flow<List<Brand>?>> {
-    override fun invoke(params: Unit): Flow<List<Brand>?> {
-        return  repo.getBrands().map { it.map { it.toBrand() } }
+class GetBrandsUseCase @Inject constructor(private val repo: BrandsRepository) : UseCase<Int, Flow<List<Brand>?>> {
+    override fun invoke(params: Int): Flow<List<Brand>?> {
+        return  repo.getBrands(params).map { it.map { it.toBrand() } }
     }
 }

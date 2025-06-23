@@ -28,10 +28,6 @@ object AuthModule {
         return FirebaseAuth.getInstance()
     }
 
-    @Provides
-    fun provideFirebaseFirestore(): FirebaseFirestore {
-        return Firebase.firestore
-    }
 
     @Provides
     fun provideRegisterUserUseCase(repo: AuthRepository): RegisterUserUseCase {

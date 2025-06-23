@@ -8,5 +8,5 @@ import javax.inject.Inject
 
 
 class BrandsRepositoryImpl @Inject constructor(private val remoteSource: BrandsRemoteDataSource): BrandsRepository {
-    override fun getBrands(): Flow<List<BrandDto>>  = remoteSource.getBrands()
+    override fun getBrands(first: Int): Flow<List<BrandDto>>  = remoteSource.getBrands(first)
 }

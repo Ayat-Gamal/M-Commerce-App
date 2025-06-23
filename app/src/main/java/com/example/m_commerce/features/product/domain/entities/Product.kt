@@ -12,5 +12,5 @@ data class Product(
     val currencyCode: String,
     val colors: List<String>,
     val sizes: List<String>,
-    var variants: List<Storefront. ProductVariant>
+    var variants: List<Storefront.ProductVariant>
 )
