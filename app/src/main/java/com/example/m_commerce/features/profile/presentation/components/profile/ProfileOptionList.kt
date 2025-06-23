@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.profile.presentation.components
+package com.example.m_commerce.features.profile.presentation.components.profile
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn

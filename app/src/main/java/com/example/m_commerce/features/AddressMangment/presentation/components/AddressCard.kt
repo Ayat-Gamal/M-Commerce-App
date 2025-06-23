@@ -1,6 +1,6 @@
-package com.example.m_commerce.features.profile.presentation.components
+package com.example.m_commerce.features.AddressMangment.presentation.components
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,20 +25,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Teal
-import com.example.m_commerce.features.profile.domain.model.AddressItem
+import com.shopify.buy3.Storefront
 
 @Composable
 fun AddressCard(
-    item: AddressItem,
+    item: Storefront.MailingAddress,
     isSelected: Boolean,
-    onSelect: () -> Unit,
-    onDelete: () -> Unit
+    onLongSelect: (Storefront.MailingAddress) -> Unit,
+    onCheck: () -> Unit,
+    onDelete: () -> Unit,
+    hideDeleteIconFlag: Boolean = false
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onSelect() }
+            .combinedClickable(
+                onClick = { },
+                onLongClick = {
+                    onLongSelect(item)
+                }
+            )
             .padding(16.dp)
     ) {
         Row(
@@ -54,44 +61,30 @@ fun AddressCard(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Row {
-                    Text(item.title, fontWeight = FontWeight.Bold)
-                    if (isSelected) {
-                        Text(
-                            text = "Default Address",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Teal,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                }
-
-                Text(item.subtitle, fontSize = 12.sp, color = Color.Gray)
+                Text(item.firstName ?: "", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(item.address1 ?: "No Value", fontSize = 12.sp, color = Color.Gray)
             }
 
             Spacer(modifier = Modifier.width(8.dp))
 
-//            RadioButton(
-//                selected = isSelected,
-//                onClick = onSelect,
-//                colors = RadioButtonDefaults.colors(selectedColor = Teal)
-//            )
+
+        }
+        if(! hideDeleteIconFlag){
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete address",
+                    tint = Color.Red,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
 
-        IconButton(
-            onClick = onDelete,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(24.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete address",
-                tint = Color.Red,
-                modifier = Modifier.size(20.dp)
-            )
-        }
     }
 }
 
