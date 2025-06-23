@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -23,7 +24,7 @@ class GetProfileOptionsUseCase {
                 ProfileOption("My Wishlist", Icons.Default.Favorite),
                 ProfileOption("My Coupons", Icons.Default.CardGiftcard),
                 ProfileOption("Settings", Icons.Default.Settings),
-                ProfileOption("Help Center", Icons.Default.LocationOn)
+                ProfileOption("Help Center", Icons.Default.Help)
             )
         )
     }

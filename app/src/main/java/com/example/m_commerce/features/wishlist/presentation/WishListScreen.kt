@@ -100,6 +100,7 @@ fun WishListScreen(
                 }
 
                 WishlistUiState.Search -> SearchScreen()
+                WishlistUiState.Guest -> {}
             }
         }
     }

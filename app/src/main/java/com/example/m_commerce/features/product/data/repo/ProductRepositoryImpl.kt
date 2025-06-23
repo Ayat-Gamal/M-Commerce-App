@@ -1,8 +1,8 @@
-package com.example.m_commerce.features.product.domain.repo
+package com.example.m_commerce.features.product.data.repo
 
 import com.example.m_commerce.features.product.data.remote.ProductRemoteDataSource
-import com.example.m_commerce.features.product.data.repo.ProductRepository
 import com.example.m_commerce.features.product.domain.entities.Product
+import com.example.m_commerce.features.product.domain.repo.ProductRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -11,5 +11,9 @@ class ProductRepositoryImpl @Inject constructor(
 ) : ProductRepository {
     override fun getProductById(productId: String): Flow<Product> {
         return remoteDataSource.getProductById(productId)
+    }
+
+    override fun addProductVariantToCart(productVariantId: String): Flow<Boolean> {
+        return remoteDataSource.addProductVariantToCart(productVariantId)
     }
 }

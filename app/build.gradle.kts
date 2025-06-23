@@ -47,9 +47,9 @@ android {
 
         buildConfigField("String", "ACCESS_TOKEN", accessToken)
         buildConfigField("String", "SHOP_DOMAIN", shopDomain)
-        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
-        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
-        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
+//        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
+//        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
+//        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
     }
 
     buildTypes {
@@ -79,6 +79,7 @@ android {
 dependencies {
     implementation(libs.volley)
     implementation(libs.androidx.foundation.android)
+    implementation(libs.play.services.location)
     val room_version = "2.6.1"
     val nav_version = "2.8.8"
 
@@ -159,6 +160,10 @@ dependencies {
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.6.4")
 
+    // Google Maps
+    implementation("com.google.maps.android:maps-compose:6.5.2")
+    implementation("com.google.maps.android:maps-compose-utils:6.5.2")
+    implementation("com.google.maps.android:maps-compose-widgets:6.5.2")
 }
 
 //apollo {

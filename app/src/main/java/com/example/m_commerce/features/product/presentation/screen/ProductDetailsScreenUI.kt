@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.product.presentation.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -96,7 +97,9 @@ fun ProductDetailsScreenUI(
                 var favoriteState by remember { mutableStateOf(if ((uiState as ProductUiState.Success).isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder) }
                 var isFavorite by remember { mutableStateOf((uiState as ProductUiState.Success).isFavorite) }
 
-                Column(modifier = Modifier.fillMaxSize().padding(it)) {
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()

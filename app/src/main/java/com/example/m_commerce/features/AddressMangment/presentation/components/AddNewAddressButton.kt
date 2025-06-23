@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.profile.presentation.components
+package com.example.m_commerce.features.AddressMangment.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.m_commerce.config.fonts.InterFontFamily
 import com.example.m_commerce.config.theme.Teal
 
 

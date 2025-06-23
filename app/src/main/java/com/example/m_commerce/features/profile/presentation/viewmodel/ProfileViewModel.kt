@@ -2,6 +2,7 @@ package com.example.m_commerce.features.profile.presentation.viewmodel
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
@@ -35,7 +36,7 @@ class ProfileViewModel : ViewModel() {
             ProfileOption("Payment Methods", Icons.Default.CreditCard),
             ProfileOption("My Orders", Icons.Default.ShoppingCart),
             ProfileOption("My Wishlist", Icons.Default.Favorite),
-            //ProfileOption("My Coupons", Icons.Default.CardGiftcard),
+            ProfileOption("Currency", Icons.Default.CurrencyExchange),
             ProfileOption("Settings", Icons.Default.Settings),
             ProfileOption("Help Center", Icons.Default.LocationOn),
         )

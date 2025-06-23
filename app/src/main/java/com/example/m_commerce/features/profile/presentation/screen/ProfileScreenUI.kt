@@ -33,7 +33,7 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.example.m_commerce.features.profile.presentation.components.ProfileOptionsList
+import com.example.m_commerce.features.profile.presentation.components.profile.ProfileOptionsList
 import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -87,11 +87,11 @@ fun ProfileScreenUI(
                     "Manage Address" -> navController.navigate(AppRoutes.ManageAddressScreen)
 //                "Your profile" -> navController.navigate("your_profile")
                 "Payment Methods" -> navController.navigate(AppRoutes.CreditCardDetails)
+//                "My Orders" -> navController.navigate("my_orders")
                 "My Wishlist" -> navController.navigate(AppRoutes.WishListScreen)
-                "My Orders" -> navController.navigate(AppRoutes.UserOrdersScreen)
-//                "My Coupons" -> navController.navigate("my_coupons")
-//                "Settings" -> navController.navigate("settings")
-//                "Help Center" -> navController.navigate("help_center")
+                //"My Coupons" -> navController.navigate("my_coupons")
+                "Currency" -> navController.navigate(AppRoutes.CurrencyScreen)
+                "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
                 }
             }
         }
