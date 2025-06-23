@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.product.presentation.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -71,12 +72,13 @@ import com.example.m_commerce.features.product.presentation.components.VariantVa
 @Composable
 fun ProductDetailsScreenUI(
     modifier: Modifier = Modifier,
-    productId: String = "gid://shopify/Product/8845371244793",
+    productId: String ,
     navController: NavHostController,
     viewModel: ProductViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
         val productId = "gid://shopify/Product/8845369016569"
+        Log.d("TAG", "ProductDetailsScreenUI: $productId")
         viewModel.getProductById(productId)
     }
 
@@ -97,7 +99,9 @@ fun ProductDetailsScreenUI(
                 var favoriteState by remember { mutableStateOf(if ((uiState as ProductUiState.Success).isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder) }
                 var isFavorite by remember { mutableStateOf((uiState as ProductUiState.Success).isFavorite) }
 
-                Column(modifier = Modifier.fillMaxSize().padding(it)) {
+                Column(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -338,6 +342,7 @@ fun ProductDetailsScreenUI(
                                     selectedSize,
                                     selectedColor
                                 )
+                                viewModel.addToCart(variantId!!)
                             },
                             text = "Add to Cart",
                             modifier = Modifier.weight(1f),

@@ -2,23 +2,30 @@ package com.example.m_commerce.features.product.data.remote
 
 import android.util.Log
 import com.example.m_commerce.features.product.data.mapper.toDomain
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.shopify.buy3.GraphCallResult
 import com.shopify.buy3.GraphClient
 import com.shopify.buy3.Storefront
+import com.shopify.buy3.Storefront.CartLineInput
 import com.shopify.graphql.support.ID
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class ProductRemoteDataSourceImpl @Inject constructor(private val graphClient: GraphClient) :
+class ProductRemoteDataSourceImpl @Inject constructor(
+    private val graphClient: GraphClient,
+    private val db: FirebaseFirestore
+) :
     ProductRemoteDataSource {
     override fun getProductById(productId: String) = flow {
         val product = suspendCancellableCoroutine { cont ->
             val query = Storefront.query { rootQuery ->
                 rootQuery.product({ args ->
-                    args.id(ID(productId)) // TODO
+                    args.id(ID(productId))
                 }) { product ->
                     product
                         .title()
@@ -58,5 +65,56 @@ class ProductRemoteDataSourceImpl @Inject constructor(private val graphClient: G
             }
         }
         emit(product)
+    }
+
+    override fun addProductVariantToCart(productVariantId: String) = flow {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user == null) {
+            emit(false)
+            return@flow
+        }
+
+        val userDocument = db.collection("users").document(user.uid).get().await()
+        val cartIdString = userDocument.getString("cartId")
+        if (cartIdString.isNullOrEmpty()) {
+            emit(false)
+            return@flow
+        }
+
+        val cartId = ID(cartIdString)
+        val merchandiseId = ID(productVariantId)
+
+        val isAdded = suspendCancellableCoroutine { cont ->
+            val mutation = Storefront.mutation { mutationBuilder ->
+                mutationBuilder.cartLinesAdd(
+                    cartId,
+                    listOf(CartLineInput(merchandiseId))
+                ) { cartLinesAdd ->
+                    cartLinesAdd.cart {}
+                }
+            }
+
+            graphClient.mutateGraph(mutation).enqueue { result ->
+                when (result) {
+                    is GraphCallResult.Success -> {
+                        if (result.response.hasErrors) {
+                            Log.i("TAG", "addProductVariantToCart: Success / result.response.hasErrors")
+                            cont.resumeWithException(Exception(result.response.errors.joinToString { it.message() }))
+                        } else {
+                            Log.i("TAG", "addProductVariantToCart: Success")
+                            cont.resume(true)
+                        }
+                    }
+
+                    is GraphCallResult.Failure -> {
+                        Log.i("TAG", "addProductVariantToCart: GraphCallResult.Failure")
+                        cont.resumeWithException(result.error)
+                    }
+                }
+            }
+
+        }
+        Log.i("TAG", "addProductVariantToCart: isAdded: $isAdded")
+        emit(isAdded)
     }
 }
