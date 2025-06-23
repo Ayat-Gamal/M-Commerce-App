@@ -1,5 +1,6 @@
 package com.example.m_commerce.config.routes
 
+import CartScreenUI
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
@@ -19,7 +20,6 @@ import com.example.m_commerce.features.auth.presentation.login.LoginScreen
 import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
 import com.example.m_commerce.features.brand.presentation.screen.BrandsScreenUI
-import com.example.m_commerce.features.cart.presentation.screen.CartScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryDetailsScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
