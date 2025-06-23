@@ -33,7 +33,7 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.example.m_commerce.features.profile.presentation.components.ProfileOptionsList
+import com.example.m_commerce.features.profile.presentation.components.profile.ProfileOptionsList
 import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
 
 @SuppressLint("StateFlowValueCalledInComposition")

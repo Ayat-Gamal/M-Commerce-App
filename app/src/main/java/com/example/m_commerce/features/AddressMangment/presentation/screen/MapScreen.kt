@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.profile.presentation.screen
+package com.example.m_commerce.features.AddressMangment.presentation.screen
 
 import android.Manifest
 import android.content.Context

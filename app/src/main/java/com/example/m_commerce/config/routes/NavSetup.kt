@@ -1,7 +1,5 @@
 package com.example.m_commerce.config.routes
 
-import AddAddressScreen
-import ManageAddressScreenUi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
@@ -14,6 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.m_commerce.core.utils.extentions.navigateAndClear
+import com.example.m_commerce.features.AddressMangment.presentation.screen.AddAddressScreen
+import com.example.m_commerce.features.AddressMangment.presentation.screen.ManageAddressScreenUi
+import com.example.m_commerce.features.AddressMangment.presentation.screen.MapScreenUi
 import com.example.m_commerce.features.auth.presentation.login.LoginScreen
 import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
@@ -29,7 +30,6 @@ import com.example.m_commerce.features.payment.prsentation.screen.CreditCardDeta
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
 import com.example.m_commerce.features.profile.presentation.screen.CurrencyUiLayout
 import com.example.m_commerce.features.profile.presentation.screen.HelpCenterScreenUiLayout
-import com.example.m_commerce.features.profile.presentation.screen.MapScreenUi
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 import com.google.firebase.auth.FirebaseAuth
