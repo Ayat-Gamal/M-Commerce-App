@@ -33,7 +33,6 @@ class WishlistViewModel @Inject constructor(
         viewModelScope.launch {
             getWishlist()
                 .flatMapConcat { ids ->
-                    Log.d("TAG", "getProducts: ${ids.size}")
                     if (ids.isEmpty()) {
                         flowOf(emptyList())
                     } else {

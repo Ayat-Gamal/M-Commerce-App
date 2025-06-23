@@ -55,6 +55,5 @@ fun SearchSection(modifier: Modifier = Modifier, viewModel: HomeViewModel = hilt
             viewModel.search("")
         })
 
-        Log.d("SEARCH", "Search results for: $searchQuery")
     }
 }
