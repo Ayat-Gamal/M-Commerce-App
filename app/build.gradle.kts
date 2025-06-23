@@ -47,9 +47,9 @@ android {
 
         buildConfigField("String", "ACCESS_TOKEN", accessToken)
         buildConfigField("String", "SHOP_DOMAIN", shopDomain)
-        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
-        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
-        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
+//        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
+//        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
+//        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
     }
 
     buildTypes {
