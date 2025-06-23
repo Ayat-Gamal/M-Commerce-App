@@ -42,9 +42,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "ACCESS_TOKEN", "\"$accessToken\"")
-        buildConfigField("String", "SHOP_DOMAIN", "\"$shopDomain\"")
-
+        buildConfigField("String", "ACCESS_TOKEN", accessToken)
+        buildConfigField("String", "SHOP_DOMAIN", shopDomain)
     }
 
     buildTypes {
