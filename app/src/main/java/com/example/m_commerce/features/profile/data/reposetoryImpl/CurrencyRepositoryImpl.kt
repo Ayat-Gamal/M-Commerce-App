@@ -40,4 +40,5 @@ class CurrencyRepositoryImpl @Inject constructor(
             emptyList()
         }
     }
+
 }

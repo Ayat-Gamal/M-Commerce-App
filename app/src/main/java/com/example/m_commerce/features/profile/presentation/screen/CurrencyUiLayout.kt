@@ -79,7 +79,7 @@ fun CurrencyUiLayout(
             }
 
             else -> {
-                var defaultCurrency by remember { mutableStateOf(state.currencies[0]) }
+                var defaultCurrency by remember { mutableStateOf(viewModel.defaultCurrencyState.defaultCurrency) }
                 var pendingCurrency by remember { mutableStateOf(defaultCurrency) }
 
                 Column(
@@ -94,7 +94,8 @@ fun CurrencyUiLayout(
                         message = "Are you sure you want to change the default currency?",
                         onConfirm = {
                             showDialog = false
-                            defaultCurrency = pendingCurrency ?: defaultCurrency
+                            defaultCurrency = pendingCurrency
+                            defaultCurrency?.let { viewModel.saveDefaultCurrency(it) }
                         },
                         onDismiss = {
                             showDialog = false
@@ -111,11 +112,13 @@ fun CurrencyUiLayout(
                         modifier = Modifier.padding(16.dp)
                     )
 
-                    CurrencyListItem(defaultCurrency, onCurrencyClick = {
-                        print("we clicked on ${it.currencyName}")
-                        showDialog = true
-                        defaultCurrency = it
-                    })
+                    defaultCurrency?.let {
+                        CurrencyListItem(it, onCurrencyClick = {
+                            print("we clicked on ${it.currencyName}")
+                            showDialog = true
+                            defaultCurrency = it
+                        })
+                    }
                     Text(
                         text = "Available Currencies",
                         modifier = Modifier.padding(16.dp)
