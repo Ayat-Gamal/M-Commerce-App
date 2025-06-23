@@ -1,5 +1,7 @@
 package com.example.m_commerce.features.cart.presentation.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,10 +30,15 @@ import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartScreenUI(paddingValues: PaddingValues, modifier: Modifier = Modifier, viewModel: OrderViewModel = hiltViewModel()) {
 
 
+    LaunchedEffect(Unit) {
+//        viewModel.completeOrder()
+        viewModel.createOrder()
+    }
     var quantity by rememberSaveable { mutableStateOf(1) }
 
     Scaffold(
