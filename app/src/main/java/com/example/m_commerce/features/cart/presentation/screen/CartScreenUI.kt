@@ -59,7 +59,7 @@ fun CartScreenUI(
             if (uiState is CartUiState.Success) {
                 CartReceipt(
                     paddingValues,
-                    // cart = (uiState as CartUiState.Success).cart
+                    viewModel = viewModel
                 )
             }
         },
