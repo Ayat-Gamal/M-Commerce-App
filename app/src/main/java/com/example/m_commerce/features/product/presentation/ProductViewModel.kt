@@ -1,7 +1,9 @@
 package com.example.m_commerce.features.product.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.features.product.domain.usecases.AddProductVariantToCart
 import com.example.m_commerce.features.product.domain.usecases.AddToWishlistUseCase
 import com.example.m_commerce.features.product.domain.usecases.CheckIfInWishlistUseCase
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
@@ -11,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +24,7 @@ class ProductViewModel @Inject constructor(
     private val addToWishlist: AddToWishlistUseCase,
     private val deleteFromWishlist: DeleteFromWishlistUseCase,
     private val checkIfInWishlist: CheckIfInWishlistUseCase,
+    private val addProductVariantToCart: AddProductVariantToCart
 ) : ViewModel() {
 
     private var _uiState = MutableStateFlow<ProductUiState>(ProductUiState.Loading)
@@ -63,5 +67,13 @@ class ProductViewModel @Inject constructor(
 
     fun deleteProductFromWishlist(productVariantId: String) = viewModelScope.launch {
         deleteFromWishlist(productVariantId)
+    }
+
+    fun addToCart(productVariantId: String) = viewModelScope.launch {
+        addProductVariantToCart(productVariantId)
+            .catch { Log.d("TAG", "ProductViewModel / catch: ${it::class.simpleName}") }
+            .collect {
+                Log.d("TAG", "ProductViewModel / collect / isAdded: $it")
+            }
     }
 }

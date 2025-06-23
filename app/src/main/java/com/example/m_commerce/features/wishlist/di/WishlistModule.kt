@@ -15,9 +15,9 @@ import javax.inject.Singleton
 abstract class WishlistModule {
 
     @Binds
-    abstract fun provideWishlistRemoteDataSource(impl: WishlistRemoteDataSourceImpl): WishlistRemoteDataSource
+    abstract fun bindWishlistRemoteDataSource(impl: WishlistRemoteDataSourceImpl): WishlistRemoteDataSource
 
     @Binds
     @Singleton
-    abstract fun provideWishlistRepository(impl: WishlistRepositoryImpl): WishlistRepository
+    abstract fun bindWishlistRepository(impl: WishlistRepositoryImpl): WishlistRepository
 }
