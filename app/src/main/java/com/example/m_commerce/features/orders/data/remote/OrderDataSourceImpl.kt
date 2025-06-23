@@ -1,8 +1,10 @@
 package com.example.m_commerce.features.orders.data.remote
 
-import com.example.m_commerce.features.orders.data.model.DraftOrderCreateVariables
+import com.example.m_commerce.features.orders.data.model.variables.DraftOrderCreateVariables
 import com.example.m_commerce.features.orders.data.model.GraphQLRequest
 import com.example.m_commerce.features.orders.data.model.toDomain
+import com.example.m_commerce.features.orders.data.model.variables.CompleteOrderVariables
+import com.example.m_commerce.features.orders.domain.entity.CompletedOrder
 import com.example.m_commerce.features.orders.domain.entity.CreatedOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +26,26 @@ class OrderDataSourceImpl @Inject constructor(
                 emit(order.toDomain())
             } else {
                 throw Exception("Draft order creation failed: Empty response")
+            }
+        } else {
+            val errorBody = response.errorBody()?.string()
+            throw Exception("HTTP ${response.code()}: $errorBody")
+        }
+    }.flowOn(Dispatchers.IO)
+
+
+
+    override fun completeOrder(
+        body: GraphQLRequest<CompleteOrderVariables>,
+        token: String
+    ): Flow<CompletedOrder> = flow {
+        val response = service.completeOrder(body, token)
+        if (response.isSuccessful) {
+            val order = response.body()?.data?.draftOrderComplete?.draftOrder
+            if (order != null) {
+                emit(order.toDomain())
+            } else {
+                throw Exception("Complete order failed: Empty response")
             }
         } else {
             val errorBody = response.errorBody()?.string()

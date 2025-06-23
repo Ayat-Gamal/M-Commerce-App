@@ -15,7 +15,5 @@ data class DraftOrderCreateResult(
     val userErrors: List<UserError>?
 )
 
-data class UserError(
-    val field: List<String>?,
-    val message: String
-)
+
+

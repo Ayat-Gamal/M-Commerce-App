@@ -28,6 +28,9 @@ import com.example.m_commerce.config.theme.dividerGray
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
+import com.example.m_commerce.features.orders.data.PaymentMethod
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.data.model.variables.ShippingAddress
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -37,7 +40,22 @@ fun CartScreenUI(paddingValues: PaddingValues, modifier: Modifier = Modifier, vi
 
     LaunchedEffect(Unit) {
 //        viewModel.completeOrder()
-        viewModel.createOrder()
+        viewModel.createOrderAndSendEmail(
+            listOf(
+                LineItem(
+                    variantId = "gid://shopify/ProductVariant/46559952797945",
+                    quantity = 1,
+                    originalUnitPrice = "10.0"
+                )
+            ), ShippingAddress(
+                firstName = "John",
+                lastName = "Doe",
+                address1 = "123 Main St",
+                city = "New York",
+                country = "USA",
+                zip = "10001"
+            ), PaymentMethod.COD
+        )
     }
     var quantity by rememberSaveable { mutableStateOf(1) }
 
