@@ -22,7 +22,6 @@ class CartViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    // Track the cart ID once retrieved
     private var cartId: String? = null
 
     fun getCartById() = viewModelScope.launch {
@@ -100,7 +99,7 @@ class CartViewModel @Inject constructor(
         try {
             updateCartUseCase.invoke(productVariantId = lineId, quantity = newQuantity).collect { success ->
                 if (success) {
-                    getCartById() // refresh cart after success
+                    getCartById()
                 } else {
                     _uiState.value = CartUiState.Error("Update failed")
                 }

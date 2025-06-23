@@ -139,7 +139,7 @@ class ShopifyAddressServiceImpl @Inject constructor(private val graphClient: Gra
                                 "TAG",
                                 "Field: ${error.field?.joinToString() ?: "Unknown"} - Message: ${error.message}"
                             )
-                        } ?: Log.e("TAG", "Unknown error occurred while setting default address.")
+                        } ?: Log.e("TAG", "error.")
                     }
                 }
 
@@ -177,12 +177,12 @@ class ShopifyAddressServiceImpl @Inject constructor(private val graphClient: Gra
                         onResult(defaultAddress)
                     } else {
                         // getBack
-                        Log.i("TAG", "No default address found.")
+                        Log.i("TAG", "no values.")
                     }
                 }
 
                 is GraphCallResult.Failure -> {
-                    Log.i("TAG", "Failed to fetch default address: ${result.error.message}")
+                    Log.i("TAG", "${result.error.message}")
                 }
             }
         }
