@@ -1,5 +1,7 @@
 package com.example.m_commerce.features.orders.data.model.variables
 
+import com.shopify.buy3.Storefront
+
 data class DraftOrderCreateVariables(
     val email: String,
     val shippingAddress: ShippingAddress,
@@ -15,6 +17,17 @@ data class ShippingAddress(
     val country: String,
     val zip: String
 )
+
+
+fun Storefront. MailingAddress.toDomain() = ShippingAddress(
+    firstName = firstName,
+    lastName = lastName,
+    address1 = address1,
+    city = city,
+    country = country,
+    zip = zip
+)
+
 
 data class LineItem(
     val variantId: String,

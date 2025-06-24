@@ -25,26 +25,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Teal
+import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.shopify.buy3.Storefront
-
 @Composable
 fun AddressCard(
-    item: Storefront.MailingAddress,
-    isSelected: Boolean,
-    onLongSelect: (Storefront.MailingAddress) -> Unit,
-    onCheck: () -> Unit,
-    onDelete: () -> Unit,
-    hideDeleteIconFlag: Boolean = false
+    address: Address,
+    isDefault: Boolean,
+    onLongPress: (() -> Unit)? = null,
+    onSelect: (() -> Unit)? = null,
+    onDelete: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .combinedClickable(
-                onClick = { },
-                onLongClick = {
-                    onLongSelect(item)
-                }
+                onClick = { onSelect?.invoke() },
+                onLongClick = { onLongPress?.invoke() }
             )
             .padding(16.dp)
     ) {
@@ -55,37 +53,50 @@ fun AddressCard(
             Icon(
                 imageVector = Icons.Filled.LocationOn,
                 contentDescription = null,
-                tint = Teal
+                tint = Teal,
+                modifier = Modifier.size(24.dp)
             )
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.firstName ?: "", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text(item.address1 ?: "No Value", fontSize = 12.sp, color = Color.Gray)
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-
-        }
-        if(! hideDeleteIconFlag){
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(24.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete address",
-                    tint = Color.Red,
-                    modifier = Modifier.size(20.dp)
+                Text(
+                    text = address.address2.ifEmpty { "Address" },
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
+                Text(
+                    text = address.address1,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "${address.city}, ${address.zip}",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+                if (isDefault) {
+                    Text(
+                        text = "Default Address",
+                        color = Teal,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+
+            if (!isDefault && onDelete != null) {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete address",
+                        tint = Color.Red
+                    )
+                }
             }
         }
-
     }
 }
-
-

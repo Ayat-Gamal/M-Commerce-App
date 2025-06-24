@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,8 +32,10 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.presentation.components.AddNewAddressButton
 import com.example.m_commerce.features.AddressMangment.presentation.components.AddressCard
+import com.example.m_commerce.features.AddressMangment.presentation.ui_states.DeleteState
 import com.example.m_commerce.features.AddressMangment.presentation.viewmodel.AddressViewModel
 import com.shopify.buy3.Storefront
 import kotlinx.coroutines.launch
@@ -43,93 +47,146 @@ fun ManageAddressScreenUi(
     navController: NavHostController,
     viewModel: AddressViewModel = hiltViewModel()
 ) {
-
-    var showDialog by remember { mutableStateOf(false) }
-    var pendingAddress by remember { mutableStateOf(Storefront.MailingAddress()) }
+    var showDefaultAddressDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var pendingAddress by remember { mutableStateOf<Address?>(null) }
+    val addresses by viewModel.addresses
     val defaultAddress by viewModel.defaultAddress
-    var selectedIndex = remember { mutableStateOf(0) }
+    val isLoading by viewModel.isLoading
+    val deleteState by viewModel.deleteState
 
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-
-    LaunchedEffect(navBackStackEntry.value) {
-        viewModel.getCustomerAddresses()
-        viewModel.getDefaultAddress()
+    LaunchedEffect(Unit) {
+        viewModel.loadAddresses()
     }
 
-    Scaffold(topBar = {
-        DefaultTopBar(title = "Manage Address", navController = navController)
-    }) { padding ->
+    LaunchedEffect(deleteState) {
+        when (deleteState) {
+            is DeleteState.Success -> {
+                viewModel.resetDeleteState()
+            }
+            is DeleteState.Error -> {
+                viewModel.resetDeleteState()
+            }
+            else -> {}
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            DefaultTopBar(
+                title = "Manage Address",
+                navController = navController,
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Background)
                 .padding(padding)
         ) {
-            CustomDialog(
-                showDialog = showDialog,
-                title = "Confirmation",
-                message = "Are you sure you want to change to the default Address?",
-                onConfirm = {
-                    showDialog = false
-                    viewModel.viewModelScope.launch {
-
-                    viewModel.setDefaultAddress(
-                        id = pendingAddress.id,
-                    )
-                    }
-                    viewModel.setDefaultAddressState(pendingAddress)
+            pendingAddress?.let { address ->
+                CustomDialog(
+                    showDialog = showDefaultAddressDialog,
+                    title = "Confirmation",
+                    message = "Set this as your default address?",
+                    onConfirm = {
+                        showDefaultAddressDialog = false
+                        viewModel.setDefaultAddress(address.id)
                     },
-                onDismiss = {
-                    showDialog = false
-                }
-            )
+                    onDismiss = { showDefaultAddressDialog = false }
+                )
+            }
+
+            pendingAddress?.let { address ->
+                CustomDialog(
+                    showDialog = showDeleteDialog,
+                    title = "Delete Address",
+                    message = "Are you sure you want to delete this address?",
+                    onConfirm = {
+                        showDeleteDialog = false
+                        viewModel.deleteAddress(address.id)
+                        pendingAddress = null
+                    },
+                    onDismiss = {
+                        showDeleteDialog = false
+                        pendingAddress = null
+                    }
+                )
+            }
+
             Text(
-                text = "Default Address ",
+                text = "Default Address",
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 16.dp)
-            )
-        Column(modifier = Modifier.padding(horizontal = 8.dp)) {
-            AddressCard(
-                item = defaultAddress,
-                isSelected = false,
-                onLongSelect = { item ->
-                    showDialog  }, onCheck = {  },
-                onDelete = { Log.i("TAG", "deleted: ") },
-                hideDeleteIconFlag = true
+                modifier = Modifier.padding(16.dp)
             )
 
-        }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-
-            LazyColumn(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .height(500.dp)
-            ) {
-                itemsIndexed(viewModel.customerAddresses.value) { index, item ->
-                    AddressCard(
-                        item = item,
-                        isSelected = selectedIndex.value == index,
-                        onLongSelect = { address ->
-                            showDialog = true
-                            pendingAddress = address
-                        },
-                        onCheck = { selectedIndex.value = index },
-                        onDelete = { println("Deleted") }
+            when {
+                isLoading && defaultAddress == null -> {
+                    CircularProgressIndicator(
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                defaultAddress != null -> {
+                    defaultAddress?.let { address ->
+                        AddressCard(
+                            address = address,
+                            isDefault = true,
+                            onLongPress = {
+                                pendingAddress = address
+                                showDefaultAddressDialog = true
+                            },
+                            onSelect = null,
+                            onDelete = null
+                        )
+                    }
+                }
+                else -> {
+                    Text(
+                        text = "No default address set",
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
             }
-            AddNewAddressButton(onClick = {
-                navController.navigate(AppRoutes.MapScreen)
-            })
 
-            Spacer(modifier = Modifier.weight(1f))
+            HorizontalDivider(modifier = Modifier.padding(16.dp))
 
-            Spacer(modifier = Modifier.height(32.dp))
+            when {
+                isLoading && addresses.isEmpty() -> {
+                    CircularProgressIndicator(
+                    )
+                }
+                addresses.isEmpty() -> {
+                    Text(
+                        text = "No addresses saved",
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        items(addresses) { address ->
+                            AddressCard(
+                                address = address,
+                                isDefault = false,
+                                onLongPress = {
+                                    pendingAddress = address
+                                    showDefaultAddressDialog = true
+                                },
+                                onSelect = {},
+                                onDelete = {
+                                    pendingAddress = address
+                                    showDeleteDialog = true
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+            }
+
+            AddNewAddressButton(
+                onClick = { navController.navigate(AppRoutes.MapScreen) },)
         }
-
     }
 }

@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.AddressMangment.domain.usecases
 
-import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.repository.AddressRepository
 import com.shopify.buy3.Storefront
@@ -9,10 +8,11 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-class SaveAddressUseCase @Inject constructor(
+
+class SetDefaultAddressUseCase @Inject constructor(
     private val repository: AddressRepository
 ) {
-    suspend operator fun invoke(address: Address): Flow<Response<Unit>> {
-        return repository.saveAddress(address)
+    operator suspend fun invoke(addressId: String): Flow<Response<Unit>> {
+        return repository.setDefaultAddress(addressId)
     }
 }

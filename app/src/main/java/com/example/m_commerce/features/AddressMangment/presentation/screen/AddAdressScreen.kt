@@ -1,6 +1,8 @@
 package com.example.m_commerce.features.AddressMangment.presentation.screen
 
 import android.location.Geocoder
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,12 +42,11 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.presentation.viewmodel.AddressViewModel
 import com.shopify.buy3.Storefront
 import kotlinx.coroutines.launch
 import java.util.Locale
-
-
 @Composable
 fun AddAddressScreen(
     navController: NavHostController,
@@ -55,40 +57,41 @@ fun AddAddressScreen(
     var addressType by remember { mutableStateOf("Home") }
     var completeAddress by remember { mutableStateOf("") }
     var floor by remember { mutableStateOf("") }
-    var title by remember { mutableStateOf("") }
     var city by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var zipCode by remember { mutableStateOf("") }
 
-    var titleError by remember { mutableStateOf("") }
-    var completeAddressError by remember { mutableStateOf("") }
-    var cityError by remember { mutableStateOf("") }
-    var countryError by remember { mutableStateOf("") }
-    var phoneError by remember { mutableStateOf("") }
-    var zipCodeError by remember { mutableStateOf("") }
+    val fieldErrors = remember {
+        mutableStateMapOf<String, String>()
+    }
 
-    val localContext = LocalContext.current
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
-        val geocoder = Geocoder(localContext, Locale.getDefault())
-        val addressList = geocoder.getFromLocation(lat, lng, 1)
-        if (!addressList.isNullOrEmpty()) {
-            val address = addressList[0]
-            completeAddress = address.getAddressLine(0) ?: ""
-            city = address.locality ?: ""
-            country = address.countryName ?: ""
-            zipCode = address.postalCode ?: ""
+        try {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            val addressList = geocoder.getFromLocation(lat, lng, 1)
+            addressList?.firstOrNull()?.let { address ->
+                completeAddress = address.getAddressLine(0) ?: ""
+                city = address.locality ?: ""
+                country = address.countryName ?: ""
+                zipCode = address.postalCode ?: ""
+            }
+        } catch (e: Exception) {
+            Log.e("Geocoder", "Failed to get address from location", e)
         }
     }
 
     Scaffold(
         topBar = {
-            DefaultTopBar(title = "Address Information", navController = navController)
+            DefaultTopBar(
+                title = "Address Information",
+                navController = navController
+            )
         }
     ) { padding ->
-        val scrollState = rememberScrollState()
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -99,63 +102,64 @@ fun AddAddressScreen(
         ) {
             CustomOutlinedField(
                 label = "Title *",
-                value = title,
+                value = addressType,
                 onValueChange = {
-                    title = it
-                    titleError = ""
+                    addressType = it
+                    fieldErrors.remove("title")
                 },
-                isError = titleError.isNotEmpty(),
-                errorMessage = titleError
+                isError = fieldErrors.containsKey("title"),
+                errorMessage = fieldErrors["title"] ?: ""
             )
 
             CustomOutlinedField(
                 label = "Complete Address *",
                 value = completeAddress,
-                maxLines = 4,
+                maxLines = 3,
                 onValueChange = {
                     completeAddress = it
-                    completeAddressError = ""
+                    fieldErrors.remove("address")
                 },
-                isError = completeAddressError.isNotEmpty(),
-                errorMessage = completeAddressError
+                isError = fieldErrors.containsKey("address"),
+                errorMessage = fieldErrors["address"] ?: ""
             )
 
-            CustomOutlinedField(
-                label = "City *",
-                value = city,
-                onValueChange = {
-                    city = it
-                    cityError = ""
-                },
-                isError = cityError.isNotEmpty(),
-                errorMessage = cityError
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                CustomOutlinedField(
+                    label = "City *",
+                    value = city,
+                    onValueChange = {
+                        city = it
+                        fieldErrors.remove("city")
+                    },
+                    isError = fieldErrors.containsKey("city"),
+                    errorMessage = fieldErrors["city"] ?: "",
+                    modifier = Modifier.weight(1f)
+                )
 
-            CustomOutlinedField(
-                label = "Country *",
-                value = country,
-                onValueChange = {
-                    country = it
-                    countryError = ""
-                },
-                isError = countryError.isNotEmpty(),
-                errorMessage = countryError
-            )
+                CustomOutlinedField(
+                    label = "Country *",
+                    value = country,
+                    onValueChange = {
+                        country = it
+                        fieldErrors.remove("country")
+                    },
+                    isError = fieldErrors.containsKey("country"),
+                    errorMessage = fieldErrors["country"] ?: "",
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 CustomOutlinedField(
                     label = "Zip Code *",
                     value = zipCode,
                     keyboardType = KeyboardType.Number,
                     onValueChange = {
                         zipCode = it
-                        zipCodeError = ""
+                        fieldErrors.remove("zip")
                     },
-                    isError = zipCodeError.isNotEmpty(),
-                    errorMessage = zipCodeError,
+                    isError = fieldErrors.containsKey("zip"),
+                    errorMessage = fieldErrors["zip"] ?: "",
                     modifier = Modifier.weight(1f)
                 )
 
@@ -173,10 +177,10 @@ fun AddAddressScreen(
                 keyboardType = KeyboardType.Phone,
                 onValueChange = {
                     phone = it
-                    phoneError = ""
+                    fieldErrors.remove("phone")
                 },
-                isError = phoneError.isNotEmpty(),
-                errorMessage = phoneError
+                isError = fieldErrors.containsKey("phone"),
+                errorMessage = fieldErrors["phone"] ?: ""
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -186,67 +190,38 @@ fun AddAddressScreen(
                     .fillMaxWidth()
                     .height(50.dp),
                 text = "Save Address",
-                backgroundColor = Teal,
+                backgroundColor =  Teal,
                 textColor = White,
-                height = 50,
                 cornerRadius = 12,
                 onClick = {
-                    fun String.isValid() = this.trim().isNotEmpty()
+                    val requiredFields = mapOf(
+                        "title" to addressType,
+                        "address" to completeAddress,
+                        "city" to city,
+                        "country" to country,
+                        "zip" to zipCode,
+                        "phone" to phone
+                    )
 
-                    val isTitleValid = title.isValid().also {
-                        titleError = if (!it) "Title must not be empty" else ""
-                    }
+                    fieldErrors.clear()
+                    var isValid = true
 
-                    val isAddressValid = completeAddress.isValid().also {
-                        completeAddressError = if (!it) "Address must not be empty" else ""
-                    }
-
-                    val isCityValid = city.isValid().also {
-                        cityError = if (!it) "City must not be empty" else ""
-                    }
-
-                    val isCountryValid = country.isValid().also {
-                        countryError = if (!it) "Country must not be empty" else ""
-                    }
-
-                    val isPhoneValid = phone.isValid().also {
-                        phoneError = if (!it) "Phone must not be empty" else ""
-                    }
-
-                    val isZipValid = zipCode.isValid().also {
-                        zipCodeError = if (!it) "Zip code must not be empty" else ""
-                    }
-
-                    val allValid = listOf(
-                        isTitleValid,
-                        isAddressValid,
-                        isCityValid,
-                        isCountryValid,
-                        isPhoneValid,
-                        isZipValid
-                    ).all { it }
-
-                    if (allValid) {
-                        val address = Storefront.MailingAddressInput().apply {
-                            address1 = completeAddress
-                            city = city
-                            country = country
-                            firstName = title
-                            lastName = city
-                            zip = zipCode
+                    requiredFields.forEach { (field, value) ->
+                        if (value.isBlank()) {
+                            fieldErrors[field] = "This field is required"
+                            isValid = false
                         }
+                    }
 
-                        viewModel.viewModelScope.launch {
-                            viewModel.saveAddress(address)
-                            viewModel.getCustomerAddresses()
-                        }
-
-                        navController.navigate(AppRoutes.ManageAddressScreen) {
-                            popUpTo(AppRoutes.ManageAddressScreen) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                    if (isValid) {
+                        viewModel.saveAddress(
+                            addressType = addressType,
+                            address1 = completeAddress,
+                            city = city,
+                            country = country,
+                            zip = zipCode,
+                            phone = phone
+                        )
                     }
                 }
             )

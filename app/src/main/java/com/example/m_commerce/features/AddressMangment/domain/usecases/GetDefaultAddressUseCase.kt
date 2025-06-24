@@ -9,10 +9,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-class SaveAddressUseCase @Inject constructor(
+
+
+class GetDefaultAddressUseCase @Inject constructor(
     private val repository: AddressRepository
 ) {
-    suspend operator fun invoke(address: Address): Flow<Response<Unit>> {
-        return repository.saveAddress(address)
+    operator suspend fun invoke(): Flow<Response<Address>> {
+        return repository.getDefaultAddress()
     }
 }
