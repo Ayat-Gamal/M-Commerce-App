@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.payment.prsentation.screen
+package com.example.m_commerce.features.payment.presentation.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.example.m_commerce.features.payment.prsentation.components.CreditCardDetailsUi
+import com.example.m_commerce.features.payment.presentation.components.CreditCardDetailsUi
 
 @Composable
 fun CreditCardDetailsUiLayout(navController: NavHostController) {

@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.payment.prsentation.components
+package com.example.m_commerce.features.payment.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
