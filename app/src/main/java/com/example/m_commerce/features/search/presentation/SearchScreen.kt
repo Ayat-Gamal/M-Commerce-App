@@ -161,7 +161,7 @@ fun SearchScreen(
 
             is SearchUiState.Empty -> {
                 Log.d("TAG", "SearchScreen: SearchUiState.Empty")
-                item {
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     Empty("No result found")
                 }
             }

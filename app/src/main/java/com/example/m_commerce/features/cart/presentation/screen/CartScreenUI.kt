@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -25,13 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.dividerGray
+import com.example.m_commerce.core.shared.components.GuestMode
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
@@ -43,15 +46,16 @@ import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyVi
 fun CartScreenUI(
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
+    navController: NavHostController,
     cartViewModel: CartViewModel = hiltViewModel(),
     currencyViewModel: CurrencyViewModel = hiltViewModel()
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        cartViewModel.getCartById()
-    }
+//    LaunchedEffect(Unit) {
+//        cartViewModel.getCartById()
+//    }
 
     Scaffold(
         modifier = modifier.background(Teal),
@@ -83,6 +87,7 @@ fun CartScreenUI(
                         color = Teal
                     )
                 }
+
                 is CartUiState.Success -> {
                     val cart = (uiState as CartUiState.Success).cart
                     CartContent(
@@ -102,12 +107,7 @@ fun CartScreenUI(
                 }
 
                 is CartUiState.Guest -> {
-                    Text(
-                        text = "Please login to view your cart",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(24.dp)
-                    )
+                    GuestMode(navController, "Cart", Icons.Default.ShoppingCart)
                 }
 
                 is CartUiState.NoNetwork -> {
@@ -153,11 +153,14 @@ fun CartContent(
                 CartItemCard(
                     prodct = line,
                     onIncrease = {
-                        viewModel.increaseQuantity(line.lineId) },
+                        viewModel.increaseQuantity(line.lineId)
+                    },
                     onDecrease = {
-                        viewModel.decreaseQuantity(line.lineId) },
+                        viewModel.decreaseQuantity(line.lineId)
+                    },
                     onRemove = {
-                        viewModel.removeLine(line.lineId) },
+                        viewModel.removeLine(line.lineId)
+                    },
                     currencyViewModel
                 )
 
