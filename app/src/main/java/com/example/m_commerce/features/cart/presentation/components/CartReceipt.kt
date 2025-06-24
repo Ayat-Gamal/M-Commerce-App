@@ -28,12 +28,18 @@ import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 
 @Composable
-fun CartReceipt(paddingValues: PaddingValues, viewModel: CartViewModel) {
+fun CartReceipt(
+    paddingValues: PaddingValues,
+    viewModel: CartViewModel,
+    currencyViewModel: CurrencyViewModel
+) {
     val uiState by viewModel.uiState.collectAsState()
     val cart = (uiState as? CartUiState.Success)?.cart
+    var promoCode by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.background(Background)) {
         Column(
@@ -44,28 +50,32 @@ fun CartReceipt(paddingValues: PaddingValues, viewModel: CartViewModel) {
                 .padding(0.dp)
         ) {
             PromoCodeInput(
-                promoCode = "",
-                onPromoCodeChange = {},
-                onApplyClick = {},
+                promoCode = promoCode,
+                onPromoCodeChange = { promoCode = it },
+                onApplyClick = {
+                    viewModel.applyCoupon(promoCode)
+                },
                 modifier = Modifier.padding(16.dp)
             )
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 cart?.let {
+                    val exchangeRate by currencyViewModel.exchangeRate.collectAsState()
+
                     val receiptItems = listOf(
-                        ReceiptItem("Subtotal", "${it.subtotalAmount} ${it.currency}"),
-                        ReceiptItem("Tax", "${it.totalTaxAmount ?: "0.00"} ${it.currency}"),
-                        ReceiptItem("Duties", "${it.totalDutyAmount ?: "0.00"} ${it.currency}")
-                    )
+                        ReceiptItem("Subtotal",  currencyViewModel.formatPrice(it.subtotalAmount)),
+                        ReceiptItem("Tax", currencyViewModel.formatPrice(it.totalTaxAmount ?: "0.00")),
+                        ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" )))
                     receiptItems.forEach { item ->
                         CartReceiptItem(item)
                     }
 
                     Divider(Modifier.padding(vertical = 8.dp, horizontal = 8.dp))
 
+                    val convertedTotal = (it.totalAmount.toFloatOrNull() ?: 0f) * exchangeRate
+
                     CartReceiptItem(
-                        ReceiptItem("Total", "${it.totalAmount} ${it.currency}")
-                    )
+                        ReceiptItem("Total",   currencyViewModel.formatPrice(it.totalAmount ?: "0.00" )))
                 }
             }
 

@@ -13,7 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class CouponModule {
+abstract class RepositoryModule {
 
     @Binds
     abstract fun bindCartRemoteDataSource(impl: CouponRemoteDataSourceImpl): CouponRemoteDataSource

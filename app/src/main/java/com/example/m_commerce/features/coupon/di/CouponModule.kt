@@ -10,7 +10,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object CartModule {
+object CouponModule {
 
     @Provides
     fun provideApplyCouponUUseCase(couponRepository: CouponRepository): ApplyCouponUseCase {

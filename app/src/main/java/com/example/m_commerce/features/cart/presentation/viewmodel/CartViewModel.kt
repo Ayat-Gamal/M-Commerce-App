@@ -7,6 +7,7 @@ import com.example.m_commerce.features.cart.domain.usecases.GetCartByIdUseCase
 import com.example.m_commerce.features.cart.domain.usecases.RemoveProductVariantUseCase
 import com.example.m_commerce.features.cart.domain.usecases.UpdateCartUseCase
 import com.example.m_commerce.features.cart.presentation.CartUiState
+import com.example.m_commerce.features.coupon.domain.usecases.ApplyCouponUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,14 +19,13 @@ class CartViewModel @Inject constructor(
     private val getCartByIdUseCase: GetCartByIdUseCase,
     private val updateCartUseCase: UpdateCartUseCase,
     private val removeProductVariantUseCase: RemoveProductVariantUseCase,
+    private val applyCouponUseCase: ApplyCouponUseCase,
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private var cartId: String? = null
-
     fun getCartById() = viewModelScope.launch {
-        _uiState.value = CartUiState.Loading
         try {
             getCartByIdUseCase.invoke("cartId").collect { cart ->
                 when {
@@ -79,7 +79,6 @@ class CartViewModel @Inject constructor(
     }
 
     fun removeLine(cartLineId: String) = viewModelScope.launch {
-        _uiState.value = CartUiState.Loading
         try {
             removeProductVariantUseCase(cartLineId).collect { success ->
                 if (success) {
@@ -93,21 +92,35 @@ class CartViewModel @Inject constructor(
         }
     }
 
-
-    private suspend fun updateLineQuantity(lineId: String, newQuantity: Int) {
-        _uiState.value = CartUiState.Loading
+    fun applyCoupon(couponCode: String) = viewModelScope.launch {
         try {
-            updateCartUseCase.invoke(productVariantId = lineId, quantity = newQuantity).collect { success ->
+            applyCouponUseCase(couponCode).collect { success ->
                 if (success) {
                     getCartById()
                 } else {
-                    _uiState.value = CartUiState.Error("Update failed")
+                    _uiState.value = CartUiState.Error("Failed to apply coupon")
                 }
             }
+        } catch (e: Exception) {
+            _uiState.value = CartUiState.Error(e.message ?: "Apply failed")
+        }
+    }
+
+    private suspend fun updateLineQuantity(lineId: String, newQuantity: Int) {
+        try {
+            updateCartUseCase.invoke(productVariantId = lineId, quantity = newQuantity)
+                .collect { success ->
+                    if (success) {
+                        getCartById()
+                    } else {
+                        _uiState.value = CartUiState.Error("Update failed")
+                    }
+                }
         } catch (e: Exception) {
             _uiState.value = CartUiState.Error(e.message ?: "Update failed")
         }
     }
+
 
 }
 

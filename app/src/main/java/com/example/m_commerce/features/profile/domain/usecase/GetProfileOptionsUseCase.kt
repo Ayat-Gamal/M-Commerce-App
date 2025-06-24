@@ -9,7 +9,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
-import com.example.m_commerce.features.profile.domain.model.ProfileOption
+import com.example.m_commerce.features.profile.domain.entity.ProfileOption
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

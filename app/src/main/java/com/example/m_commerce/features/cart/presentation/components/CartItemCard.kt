@@ -36,11 +36,12 @@ import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 @Composable
 fun CartItemCard(
     prodct: ProductVariant, onIncrease: () -> Unit,
-    onDecrease: () -> Unit, onRemove: () -> Unit
+    onDecrease: () -> Unit, onRemove: () -> Unit, currencyViewModel: CurrencyViewModel
 ) {
     Box {
         Card(
@@ -88,7 +89,7 @@ fun CartItemCard(
                             ?: "No Title" )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${prodct.price} ${prodct.currency}",
+                        text = currencyViewModel.formatPrice(prodct.price),
                     )
                 }
 

@@ -3,6 +3,7 @@ package com.example.m_commerce.features.coupon.data.remote
 
 import android.util.Log
 import com.example.m_commerce.features.coupon.domain.entity.Coupon
+import com.example.m_commerce.features.orders.data.remote.ShopifyAdminApiService
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
@@ -14,16 +15,47 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class CouponRemoteDataSourceImpl @Inject constructor(
-    private val clientGraph: GraphClient
+    private val clientGraph: GraphClient , private val service: ShopifyAdminApiService
 ) : CouponRemoteDataSource {
-    override suspend fun getCoupons(): Flow<List<Coupon>> {
-        TODO("Not yet implemented")
-    }
+
+    override suspend fun getCoupons(token: String): Flow<List<Coupon>> = flow {
+        val allCoupons = mutableListOf<Coupon>()
+
+        val priceRulesResponse = service.getPriceRules(token)
+        if (!priceRulesResponse.isSuccessful) {
+            throw Exception("Failed to fetch price rules: ${priceRulesResponse.errorBody()?.string()}")
+        }
+
+        val priceRules = priceRulesResponse.body()?.priceRules
+
+        if (priceRules != null) {
+            for (rule in priceRules) {
+                val codesResponse = service.getDiscountCodes(rule.id.toString(), token)
+                if (!codesResponse.isSuccessful) continue
+
+                val codes = codesResponse.body()?.discountCodes ?: continue
+
+                allCoupons.addAll(
+                    codes.map {
+                        Coupon(
+                            id = it.id,
+                            code = it.code,
+                            usageCount = it.usage_count,
+                            status = it.status ?: ""
+                        )
+                    }
+                )
+            }
+        }
+
+        emit(allCoupons)
+    }.flowOn(Dispatchers.IO)
 
 
     override suspend fun applyCoupon(discountCode: String): Flow<Boolean> = callbackFlow {

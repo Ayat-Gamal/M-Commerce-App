@@ -13,10 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.CurrencyExchange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,7 +31,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -33,6 +39,7 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.features.profile.domain.entity.ProfileOption
 import com.example.m_commerce.features.profile.presentation.components.profile.ProfileOptionsList
 import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
 
@@ -43,10 +50,18 @@ fun ProfileScreenUI(
     viewModel: ProfileViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    val state by viewModel.profileState.collectAsStateWithLifecycle()
-
+    val options = listOf(
+        ProfileOption("Your profile", Icons.Default.Person),
+        ProfileOption("Manage Address", Icons.Default.LocationOn),
+        ProfileOption("Payment Methods", Icons.Default.CreditCard),
+        ProfileOption("My Orders", Icons.Default.ShoppingCart),
+        ProfileOption("My Wishlist", Icons.Default.Favorite),
+        ProfileOption("Currency", Icons.Default.CurrencyExchange),
+        ProfileOption("Settings", Icons.Default.Settings),
+        ProfileOption("Help Center", Icons.Default.LocationOn),
+    )
     Scaffold(topBar = {
-        DefaultTopBar(title = "Profile", navController = null)
+        DefaultTopBar(title = "Profile ", navController = null)
 
     }) { padding ->
         Column(
@@ -55,7 +70,10 @@ fun ProfileScreenUI(
                 .background(Background)
                 .padding(16.dp)
         ) {
-            Column(modifier = Modifier.padding(padding), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.padding(padding),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
@@ -74,24 +92,23 @@ fun ProfileScreenUI(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Welcome name"
+                    "Welcome "
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val options = viewModel.profileState.value.profileOptions
 
             ProfileOptionsList(items = options) { option ->
                 when (option.title) {
                     "Manage Address" -> navController.navigate(AppRoutes.ManageAddressScreen)
 //                "Your profile" -> navController.navigate("your_profile")
-                "Payment Methods" -> navController.navigate(AppRoutes.PaymentScreen)
+                    "Payment Methods" -> navController.navigate(AppRoutes.PaymentScreen)
 //                "My Orders" -> navController.navigate("my_orders")
-                "My Wishlist" -> navController.navigate(AppRoutes.WishListScreen)
-                //"My Coupons" -> navController.navigate("my_coupons")
-                "Currency" -> navController.navigate(AppRoutes.CurrencyScreen)
-                "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
+                    "My Wishlist" -> navController.navigate(AppRoutes.WishListScreen)
+                    //"My Coupons" -> navController.navigate("my_coupons")
+                    "Currency" -> navController.navigate(AppRoutes.CurrencyScreen)
+                    "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
                 }
             }
         }

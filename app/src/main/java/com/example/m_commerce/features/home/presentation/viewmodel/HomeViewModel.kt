@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
 import com.example.m_commerce.features.categories.domain.usecases.GetCategoriesUseCase
+import com.example.m_commerce.features.coupon.domain.usecases.GetCouponsUseCase
 import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
-import com.example.m_commerce.features.wishlist.presentation.WishlistUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getBrandsUseCase: GetBrandsUseCase,
-    private val getCategoriesUseCase: GetCategoriesUseCase
+    private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getCouponsUseCase: GetCouponsUseCase
 ) : ViewModel() {
 
     private val _dataState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
@@ -29,6 +30,12 @@ class HomeViewModel @Inject constructor(
     fun getHomeData() = viewModelScope.launch {
 
         try {
+            val coupons = getCouponsUseCase()
+                .catch { emit(emptyList()) }
+                .firstOrNull() ?: emptyList()
+
+            val couponCodes = coupons.map { it.code }
+
             val brands = getBrandsUseCase(7).catch { emit(null) }.firstOrNull()
             val categories = getCategoriesUseCase(Unit).catch { emit(null) }.firstOrNull()
 
@@ -38,7 +45,7 @@ class HomeViewModel @Inject constructor(
             } else if (categories.isNullOrEmpty()) {
                 _dataState.value = HomeUiState.Error("No Categories Found")
             } else {
-                _dataState.value = HomeUiState.Success(brands, categories)
+                _dataState.value = HomeUiState.Success(brands, categories , couponCodes)
             }
         } catch (e: Exception) {
             Log.e("Error", e.message.toString())
@@ -56,4 +63,7 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+
+
 }

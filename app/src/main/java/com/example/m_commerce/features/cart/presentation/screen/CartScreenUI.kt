@@ -36,18 +36,20 @@ import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 @Composable
 fun CartScreenUI(
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
-    viewModel: CartViewModel = hiltViewModel()
+    cartViewModel: CartViewModel = hiltViewModel(),
+    currencyViewModel: CurrencyViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by cartViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.getCartById()
+        cartViewModel.getCartById()
     }
 
     Scaffold(
@@ -59,7 +61,8 @@ fun CartScreenUI(
             if (uiState is CartUiState.Success) {
                 CartReceipt(
                     paddingValues,
-                    viewModel = viewModel
+                    viewModel = cartViewModel,
+                    currencyViewModel = currencyViewModel
                 )
             }
         },
@@ -79,12 +82,12 @@ fun CartScreenUI(
                         color = Teal
                     )
                 }
-
                 is CartUiState.Success -> {
                     val cart = (uiState as CartUiState.Success).cart
                     CartContent(
                         cartLines = cart.lines,
-                        viewModel = viewModel
+                        viewModel = cartViewModel,
+                        currencyViewModel = currencyViewModel
                     )
                 }
 
@@ -131,7 +134,11 @@ fun CartScreenUI(
 
 
 @Composable
-fun CartContent(cartLines: List<ProductVariant>, viewModel: CartViewModel) {
+fun CartContent(
+    cartLines: List<ProductVariant>,
+    viewModel: CartViewModel,
+    currencyViewModel: CurrencyViewModel
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -149,7 +156,8 @@ fun CartContent(cartLines: List<ProductVariant>, viewModel: CartViewModel) {
                     onDecrease = {
                         viewModel.decreaseQuantity(line.lineId) },
                     onRemove = {
-                        viewModel.removeLine(line.lineId) }
+                        viewModel.removeLine(line.lineId) },
+                    currencyViewModel
                 )
 
                 if (cartLines.indexOf(line) < cartLines.size - 1) {

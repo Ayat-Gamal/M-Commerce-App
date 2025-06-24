@@ -25,10 +25,10 @@ import com.example.m_commerce.features.categories.presentation.screen.CategorySc
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
 import com.example.m_commerce.features.orders.presentation.screen.CheckoutScreenUI
 import com.example.m_commerce.features.orders.presentation.screen.UserOrdersScreenUI
-import com.example.m_commerce.features.payment.presentation.screen.PaymentScreenUI
 import com.example.m_commerce.features.payment.presentation.screen.CreditCardDetailsUiLayout
+import com.example.m_commerce.features.payment.presentation.screen.PaymentScreenUI
 import com.example.m_commerce.features.product.presentation.screen.ProductDetailsScreenUI
-import com.example.m_commerce.features.profile.presentation.screen.CurrencyUiLayout
+import com.example.m_commerce.features.profile.presentation.screen.CurrencyScreenUi
 import com.example.m_commerce.features.profile.presentation.screen.HelpCenterScreenUiLayout
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
 import com.example.m_commerce.features.wishlist.presentation.WishListScreen
@@ -160,7 +160,7 @@ fun NavSetup(
             WishListScreen(navController, paddingValues)
         }
         composable<AppRoutes.CurrencyScreen> {
-            CurrencyUiLayout(navController)
+            CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
             MapScreenUi(navController,)

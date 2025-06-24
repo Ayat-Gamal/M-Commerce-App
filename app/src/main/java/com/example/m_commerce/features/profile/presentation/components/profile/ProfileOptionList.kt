@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.config.theme.dividerGray
-import com.example.m_commerce.features.profile.domain.model.ProfileOption
+import com.example.m_commerce.features.profile.domain.entity.ProfileOption
 
 @Composable
 fun ProfileOptionsList(
