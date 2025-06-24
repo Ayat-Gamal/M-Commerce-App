@@ -88,13 +88,14 @@ fun ProfileScreenUI(
 //            Text("No data found.")
 //        }
 //    }
+
 }
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-
 fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUiState.Success*/) {
+
     val options = listOf(
         ProfileOption("Your profile", Icons.Default.Person),
         ProfileOption("Manage Address", Icons.Default.LocationOn),
@@ -105,9 +106,12 @@ fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUi
         ProfileOption("Settings", Icons.Default.Settings),
         ProfileOption("Help Center", Icons.Default.LocationOn),
     )
+
+
     Scaffold(topBar = {
         DefaultTopBar(title = "Profile ", navController = null)
     }) { padding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -130,15 +134,7 @@ fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUi
                             .clip(CircleShape)
                             .border(2.dp, Gray, CircleShape)
                     )
-//
-////                    Image(
-//                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-//                        contentDescription = "Profile photo",
-//                        modifier = Modifier
-//                            .size(100.dp)
-//
-//                        contentScale = ContentScale.Crop
-//                    )
+
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
