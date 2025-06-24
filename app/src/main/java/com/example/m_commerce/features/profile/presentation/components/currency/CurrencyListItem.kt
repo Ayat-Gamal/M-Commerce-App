@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -18,14 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import com.example.m_commerce.features.profile.domain.model.CurrencyDetails
+import com.example.m_commerce.features.profile.domain.entity.SymbolResponse
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CurrencyListItem(
-    currency: CurrencyDetails,
-    onCurrencyClick: (currency: CurrencyDetails) -> Unit
+    currency: SymbolResponse,
+    onCurrencyClick: (currency: SymbolResponse) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -46,21 +44,21 @@ fun CurrencyListItem(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            AsyncImage(
-                currency.icon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .size(24.dp)
-            )
+//            AsyncImage(
+//                currency.icon,
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .padding(start = 16.dp)
+//                    .size(24.dp)
+//            )
             Text(
-                currency.countryCode,
+                currency.symbols.keys.first(),
                 modifier = Modifier.padding(start = 12.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                currency.currencyName,
+                currency.symbols.values.first(),
                 modifier = Modifier.padding(start = 12.dp),
                 fontSize = 16.sp,
             )

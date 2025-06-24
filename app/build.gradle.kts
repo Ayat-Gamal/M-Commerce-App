@@ -30,6 +30,11 @@ android {
     val accessToken = localProperties.getProperty("ACCESS_TOKEN")
     val shopDomain = localProperties.getProperty("SHOP_DOMAIN")
     val adminToken = localProperties.getProperty("ADMIN_TOKEN")
+    val emailServiceId = localProperties.getProperty("EMAIL_SERVICE_ID")
+    val emailTemplateId = localProperties.getProperty("EMAIL_TEMPLATE_ID")
+    val emailPublicKey = localProperties.getProperty("EMAIL_PUBLIC_KEY")
+    val paymentPublishable = localProperties.getProperty("PAYMENT_PUBLISHABLE_KEY")
+    val paymentSecretKey = localProperties.getProperty("PAYMENT_SECRET_KEY")
 
     defaultConfig {
         applicationId = "com.example.m_commerce"
@@ -43,6 +48,12 @@ android {
         buildConfigField("String", "ACCESS_TOKEN", accessToken)
         buildConfigField("String", "SHOP_DOMAIN", shopDomain)
         buildConfigField("String", "ADMIN_TOKEN", adminToken)
+//        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
+//        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
+//        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
+        buildConfigField("String", "PAYMENT_SECRET_KEY", paymentSecretKey)
+        buildConfigField("String", "PAYMENT_PUBLISHABLE_KEY", paymentPublishable)
+
     }
 
     buildTypes {
@@ -92,6 +103,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("com.stripe:stripe-android:21.18.0")
+
 
     //!Database
     //*Room

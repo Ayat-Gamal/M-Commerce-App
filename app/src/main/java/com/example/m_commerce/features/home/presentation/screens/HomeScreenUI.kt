@@ -3,24 +3,16 @@ package com.example.m_commerce.features.home.presentation.screens
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,7 +56,7 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands, categories) = (state as HomeUiState.Success)
+            val (brands, categories , couponCodes) = (state as HomeUiState.Success)
             if (brands.isNotEmpty() && categories.isNotEmpty()) {
                 LoadedData(
                     scrollState,
@@ -74,7 +66,8 @@ fun HomeScreenUI(
                     navigateToBrands,
                     navigateToBrand,
                     brands,
-                    categories
+                    categories,
+                    couponCodes
                 )
             } else {
                 FailedScreenCase(msg = "No Data Found")
@@ -95,7 +88,8 @@ private fun LoadedData(
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
-    categories: List<Category>
+    categories: List<Category>,
+    couponCodes: List<String>
 ) {
     Column(
         Modifier
@@ -105,9 +99,10 @@ private fun LoadedData(
         SearchSection()
 
         SpecialOffersSection(
-            Modifier
+           modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp), navigateToSpecialOffers
+                .height(200.dp), navigateToSpecialOffers,
+            couponCodes
         )
 
         CategorySection(

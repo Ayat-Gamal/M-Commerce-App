@@ -71,7 +71,7 @@ private fun LoadedData(navController: NavHostController, orders: List<OrderHisto
         ) {
             items(orders.size) {
                 OrderTrackingCard(order = orders[it])
-                if (it != 8) HorizontalDivider()
+                if (it != orders.size -1) HorizontalDivider()
             }
         }
     }
