@@ -70,7 +70,7 @@ fun NavSetup(
                 navController.navigate(AppRoutes.BrandDetailsScreen(brand.name ?: "Empty"))
             },
                 navigateToCategory = { category ->
-                    navController.navigate(AppRoutes.CategoryDetailsScreen(category.id ?: "Empty ID"))
+                    navController.navigate(AppRoutes.CategoryDetailsScreen(category.name ?: "Empty ID"))
                 }
             )
         }
@@ -102,7 +102,7 @@ fun NavSetup(
             showBottomNavbar.value = false
             val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
             CategoryDetailsScreenUI(
-                categoryId = categoryArgs.categoryId,
+                categoryName = categoryArgs.categoryId,
                 navController = navController
             )
         }
