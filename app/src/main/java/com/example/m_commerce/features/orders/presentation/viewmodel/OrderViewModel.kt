@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaultAddressUseCase
 import com.example.m_commerce.features.orders.data.PaymentMethod
 import com.example.m_commerce.features.orders.data.model.variables.DraftOrderCreateVariables
 import com.example.m_commerce.features.orders.data.model.GraphQLRequest
@@ -16,6 +17,7 @@ import com.example.m_commerce.features.orders.data.model.variables.CompleteOrder
 import com.example.m_commerce.features.orders.domain.usecases.CompleteOrderUseCase
 import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,16 +26,20 @@ import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateOrderUseCase, private val completeOrderUseCase: CompleteOrderUseCase) : ViewModel() {
+class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateOrderUseCase, private val completeOrderUseCase: CompleteOrderUseCase, private val userAddressUseCase: GetDefaultAddressUseCase) : ViewModel() {
 
     private val _state = MutableStateFlow<OrderUiState>(OrderUiState.Idle)
     val state: StateFlow<OrderUiState> = _state
 
 
-    fun createOrderAndSendEmail(items: List<LineItem>, shippingAddress: ShippingAddress, paymentMethod: PaymentMethod) {
+
+    fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {
+        val user = FirebaseAuth.getInstance().currentUser
+
+
         val variables = DraftOrderCreateVariables(
-            email = "youssifn.mostafa@gmail.com", //!GET
-            shippingAddress = shippingAddress,
+            email = user?.email ?: "",
+            shippingAddress = ShippingAddress(firstName = user?.displayName ?: "", lastName = "", address1 = "shippingAddress.address1", city = "shippingAddress.city", country = "shippingAddress.country", zip = "shippingAddress.zip"),
             lineItems = items,
             note = null
         )
