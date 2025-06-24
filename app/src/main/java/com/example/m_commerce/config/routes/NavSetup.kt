@@ -94,7 +94,7 @@ fun NavSetup(
         composable<AppRoutes.CategoryScreen> {
             showBottomNavbar.value = true
             CategoryScreenUI { category ->
-                navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
+                navController.navigate(AppRoutes.CategoryDetailsScreen(category.name ?: "Empty ID"))
             }
         }
 
