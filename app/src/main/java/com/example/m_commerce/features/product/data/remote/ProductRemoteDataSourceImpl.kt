@@ -31,6 +31,7 @@ class ProductRemoteDataSourceImpl @Inject constructor(
                         .title()
                         .description()
                         .productType()
+                        .vendor()
                         .variants({ args -> args.first(10) }) { variants ->
                             variants.edges { edges ->
                                 edges.node { node ->

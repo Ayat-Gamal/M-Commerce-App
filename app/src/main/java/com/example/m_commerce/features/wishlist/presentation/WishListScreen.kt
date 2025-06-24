@@ -3,7 +3,6 @@ package com.example.m_commerce.features.wishlist.presentation
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,14 +32,13 @@ import com.example.m_commerce.features.search.presentation.SearchScreen
 @Composable
 fun WishListScreen(
     navController: NavHostController,
-    paddingValues: PaddingValues,
     viewModel: WishlistViewModel = hiltViewModel()
 ) {
     LaunchedEffect(Unit) {
         viewModel.getProducts()
     }
 
-    var query by remember { mutableStateOf("") }
+    val query = remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -52,13 +49,13 @@ fun WishListScreen(
             ) {
                 BackButton(navController)
                 SearchBarWithClear(
-                    query = query,
+                    query = query.value,
                     onQueryChange = {
-                        query = it
+                        query.value = it
                         viewModel.search(it)
                     },
                     onClear = {
-                        query = ""
+                        query.value = ""
                         viewModel.search("")
                     }
                 )
@@ -66,44 +63,56 @@ fun WishListScreen(
         }
     ) { padding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-        Column(Modifier.padding(padding)) {
+
+//        Column(Modifier.padding(padding)) {
 //            DefaultTopBar(title = "WishList", navController = navController)
 
-            when (uiState) {
-                is WishlistUiState.Success -> {
+        when (uiState) {
+            is WishlistUiState.Success -> {
+                Column(Modifier.padding(padding)) {
                     LoadData((uiState as WishlistUiState.Success).data, navController)
                 }
-
-                WishlistUiState.Empty -> {
-                    Log.i("TAG", "WishlistUiState.Empty")
-                    Empty("No products added yet")
-                }
-
-                is WishlistUiState.Error -> {
-                    Log.i(
-                        "TAG",
-                        "WishlistUiState.Error/ ${(uiState as WishlistUiState.Error).error}"
-                    )
-                }
-
-                WishlistUiState.Loading -> {
-                    Box(
-                        Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator() }
-                    Log.i("TAG", "WishlistUiState.Loading")
-                }
-
-                WishlistUiState.NoNetwork -> {
-                    Log.i("TAG", "WishlistUiState.NoNetwork")
-                    NoNetwork()
-                }
-
-                WishlistUiState.Search -> SearchScreen()
-                WishlistUiState.Guest -> {}
             }
+
+            WishlistUiState.Empty -> {
+                Log.d("TAG", "WishlistUiState.Empty")
+                Empty("No products added yet")
+            }
+
+            is WishlistUiState.Error -> {
+                Log.i(
+                    "TAG",
+                    "WishlistUiState.Error/ ${(uiState as WishlistUiState.Error).error}"
+                )
+            }
+
+            WishlistUiState.Loading -> {
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+                Log.d("TAG", "WishlistUiState.Loading")
+            }
+
+            WishlistUiState.NoNetwork -> {
+                Log.d("TAG", "WishlistUiState.NoNetwork")
+                NoNetwork()
+            }
+
+            WishlistUiState.Search -> {
+                Log.d("TAG", "WishListScreen: WishlistUiState.Search")
+                SearchScreen(query, padding, navigateToProductDetails = { productId ->
+                    navController.navigate(AppRoutes.ProductDetailsScreen(productId))
+                }, {product ->
+                    viewModel.deleteProductFromWishlist(product.id)
+                    viewModel.getProducts()
+                })
+            }
+
+            WishlistUiState.Guest -> {}
         }
     }
+//    }
 
 
 }
@@ -118,7 +127,6 @@ fun LoadData(
         modifier = Modifier,
         products = data/*products*/,
         deleteFromWishList = {
-            Log.d("TAG", "LoadData: product id: ${it.id}")
             viewModel.deleteProductFromWishlist(it.id)
             viewModel.getProducts()
         }) { product ->

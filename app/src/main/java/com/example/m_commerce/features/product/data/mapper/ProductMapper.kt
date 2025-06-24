@@ -36,6 +36,11 @@ fun Storefront.Product.toDomain(): Product {
         category = productType,
         sizes = sizes,
         colors = colors,
-        variants = variantList
+        variants = variantList,
+        brand = vendor
     )
+}
+
+fun Storefront. ProductEdge.toDomain(): Product {
+   return this.node!!.toDomain()
 }

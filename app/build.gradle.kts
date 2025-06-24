@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.androidx.foundation.android)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.benchmark.common)
     val room_version = "2.6.1"
     val nav_version = "2.8.8"
 

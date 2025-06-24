@@ -6,6 +6,9 @@ import com.example.m_commerce.features.orders.data.remote.ShopifyAdminApiService
 import com.example.m_commerce.features.orders.data.repository.OrderRepositoryImpl
 import com.example.m_commerce.features.orders.domain.repository.OrderRepository
 import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.shopify.buy3.GraphClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +22,7 @@ object OrderProviderModule {
 
     @Singleton
     @Provides
-    fun provideOrderDataSource(service: ShopifyAdminApiService): OrderDataSource = OrderDataSourceImpl(service)
+    fun provideOrderDataSource(service: ShopifyAdminApiService, graphClient: GraphClient, firestore: FirebaseFirestore, firebaseAuth: FirebaseAuth): OrderDataSource = OrderDataSourceImpl(service, graphClient, firestore,firebaseAuth)
 
     @Singleton
     @Provides

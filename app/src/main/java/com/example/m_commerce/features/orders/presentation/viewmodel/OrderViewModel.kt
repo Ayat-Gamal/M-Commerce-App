@@ -9,31 +9,57 @@ import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaultAddressUseCase
 import com.example.m_commerce.features.orders.data.PaymentMethod
-import com.example.m_commerce.features.orders.data.model.variables.DraftOrderCreateVariables
 import com.example.m_commerce.features.orders.data.model.GraphQLRequest
-import com.example.m_commerce.features.orders.data.model.variables.LineItem
-import com.example.m_commerce.features.orders.data.model.variables.ShippingAddress
 import com.example.m_commerce.features.orders.data.model.completeDraftOrderQuery
 import com.example.m_commerce.features.orders.data.model.createDraftOrderQuery
 import com.example.m_commerce.features.orders.data.model.variables.CompleteOrderVariables
+import com.example.m_commerce.features.orders.data.model.variables.DraftOrderCreateVariables
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.data.model.variables.ShippingAddress
+import com.example.m_commerce.features.orders.domain.entity.OrderHistory
 import com.example.m_commerce.features.orders.domain.usecases.CompleteOrderUseCase
 import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
+import com.example.m_commerce.features.orders.domain.usecases.GetOrdersUseCase
+import com.example.m_commerce.features.orders.presentation.ui_state.OrderHistoryUiState
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateOrderUseCase, private val completeOrderUseCase: CompleteOrderUseCase, private val getDefaultAddressUseCase: GetDefaultAddressUseCase) : ViewModel() {
+class OrderViewModel @Inject constructor(
+    private val createOrderUseCase: CreateOrderUseCase,
+    private val completeOrderUseCase: CompleteOrderUseCase,
+    private val getDefaultAddressUseCase: GetDefaultAddressUseCase,
+    private val getOrdersUseCase: GetOrdersUseCase
+) : ViewModel() {
 
     private val _state = MutableStateFlow<OrderUiState>(OrderUiState.Idle)
     val state: StateFlow<OrderUiState> = _state
 
+
+    private val _ordersState = MutableStateFlow<OrderHistoryUiState>(OrderHistoryUiState.Loading)
+    val ordersState: StateFlow<OrderHistoryUiState> = _ordersState
+
+    fun loadOrders() =
+        viewModelScope.launch {
+            Log.d("OrderHistory", "ViewModel loading orders")
+
+
+            getOrdersUseCase()
+                .catch { e -> _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error") }
+                .collect { result ->
+                    Log.i("OrderHistory", "loadOrders: ${_ordersState.value}")
+                    _ordersState.value = result
+                }
+
+        }
 
     fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {
         viewModelScope.launch {
@@ -44,11 +70,11 @@ class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateO
             try {
                 val user = FirebaseAuth.getInstance().currentUser ?: run {
                     _state.value = OrderUiState.Error("User not authenticated")
-            Log.d("RETURN DEFAULT ADDRESS", "TEST 2")
+                    Log.d("RETURN DEFAULT ADDRESS", "TEST 2")
                     return@launch
                 }
 
-            Log.d("RETURN DEFAULT ADDRESS", "TEST 2")
+                Log.d("RETURN DEFAULT ADDRESS", "TEST 2")
                 var defaultAddress: Address? = null
                 getDefaultAddressUseCase().collect { response ->
                     when (response) {
@@ -56,11 +82,13 @@ class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateO
                             defaultAddress = response.data
                             return@collect
                         }
+
                         is Response.Error -> {
                             _state.value = OrderUiState.Error(response.message)
                             return@collect
                         }
-                        Response.Loading -> { }
+
+                        Response.Loading -> {}
                     }
                 }
 
@@ -71,7 +99,7 @@ class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateO
                 Log.d("RETURN DEFAULT ADDRESS", "createOrderAndSendEmail: ${defaultAddress}")
 
                 val shippingAddress = ShippingAddress(
-                    address1 = defaultAddress!!.address1 ,
+                    address1 = defaultAddress!!.address1,
                     city = defaultAddress!!.city,
                     country = defaultAddress!!.country,
                     firstName = user.displayName ?: "Guest",
@@ -100,6 +128,7 @@ class OrderViewModel @Inject constructor(private val createOrderUseCase: CreateO
                             //sendOrderConfirmationEmail(order.id)
                             _state.value = OrderUiState.Success(order)
                         }
+
                         else -> {
                             completeOrder(order.id)
                         }

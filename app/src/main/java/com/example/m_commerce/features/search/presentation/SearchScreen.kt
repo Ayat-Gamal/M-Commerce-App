@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.search.presentation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -7,18 +8,25 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -31,10 +39,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,72 +54,128 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
-import com.example.m_commerce.features.brand.presentation.screen.products
-import com.example.m_commerce.features.product.presentation.components.ProductsGridView
+import com.example.m_commerce.core.shared.components.Empty
+import com.example.m_commerce.features.product.domain.entities.Product
+import com.example.m_commerce.features.product.presentation.components.ProductCard
 
 @Composable
-fun SearchScreen() {
-    val query = "t-shirt"
-    var showFilterDropDownMenu by remember { mutableStateOf(false) }
-    Column(Modifier.padding(16.dp)) {
-        LabelRangeSlider()
-        Spacer(Modifier.height(24.dp))
-        FilterBar {
-            showFilterDropDownMenu = !showFilterDropDownMenu
-        }
-        CustomDivider()
-        AnimatedVisibility(
-            visible = showFilterDropDownMenu,
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            FilterDropMenu()
-        }
-        Text("Showing Results for $query", style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(16.dp))
-        ProductsGridView(
-            modifier = Modifier,
-            products = products,
-            deleteFromWishList = null,
-            navigateToProduct = {}
-        )
+fun SearchScreen(
+    query: MutableState<String>,
+    paddingValues: PaddingValues,
+    navigateToProductDetails: (String) -> Unit,
+    deleteProduct: (Product) -> Unit = {},
+    viewModel: SearchViewModel = hiltViewModel()
+) {
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllProducts(false)
     }
 
-}
+    LaunchedEffect(query.value) {
+        viewModel.search(query.value)
+    }
 
-@Composable
-fun FilterDropMenu() {
-    val list = listOf("Red", "Blue", "Yellow", "Yellow", "Yellow")
-    val categoryName = "Color"
-    Column {
-        Text(
-            categoryName,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
+    var expandedFilter by remember { mutableStateOf<String?>(null) }
+    val selectedFilters = remember { mutableStateMapOf<String, String>() }
 
-        FlowRow {
-            list.forEach {
-                Button(
-                    onClick = {},
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = White,
-                        contentColor = Black
-                    ),
-                    border = BorderStroke(1.dp, Color.LightGray),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+    val showFilterDropDownMenu = expandedFilter != null
+
+    LazyVerticalGrid(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        columns = GridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp)
+    ) {
+
+        // header
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Column {
+                LabelRangeSlider()
+                Spacer(Modifier.height(24.dp))
+                FilterBar(
+                    selectedFilters = selectedFilters,
+                    expandedFilter = expandedFilter,
+                    onFilterClicked = { filter ->
+                        expandedFilter = if (expandedFilter == filter) null else filter
+                    }
+                )
+                CustomDivider()
+                AnimatedVisibility(
+                    visible = showFilterDropDownMenu,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
                 ) {
-                    Text(text = it)
+                    FilterDropMenu(
+                        filterType = expandedFilter ?: "",
+                        selectedFilters = selectedFilters,
+                        onItemSelected = { selected ->
+                            val isExist = selectedFilters.containsValue(selected)
+                            if (isExist) {
+                                selectedFilters.remove(expandedFilter)
+                                viewModel.filter(selectedFilters)
+                            } else {
+                                selectedFilters[expandedFilter!!] = selected
+                                viewModel.filter(selectedFilters)
+                            }
+
+                            expandedFilter = null
+                        },
+                        viewModel = viewModel
+                    )
                 }
+
+                Text(
+                    "Showing Results for ${query.value}",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(Modifier.height(16.dp))
             }
         }
 
-        CustomDivider()
+        when (uiState) {
+            is SearchUiState.Success -> {
+                val data = (uiState as SearchUiState.Success).products
+                Log.d("TAG", "SearchScreen: SearchUiState.Success")
+
+                items(data.size) {
+                    ProductCard(
+                        product = data[it],
+                        onClick = {
+                            navigateToProductDetails(data[it].id)
+                        },
+                        deleteFromWishList = { deleteProduct(data[it]) },
+                    )
+                }
+
+            }
+
+            is SearchUiState.Empty -> {
+                Log.d("TAG", "SearchScreen: SearchUiState.Empty")
+                item {
+                    Empty("No result found")
+                }
+            }
+
+            is SearchUiState.Error -> {
+                Log.d("TAG", "SearchScreen: SearchUiState.Error")
+            }
+
+            is SearchUiState.Loading -> {
+                Log.d("TAG", "SearchScreen: SearchUiState.Loading")
+            }
+        }
     }
+
 
 }
 
@@ -126,7 +192,6 @@ fun LabelRangeSlider() {
     val minValue = 0f
     val maxValue = 100f
     var priceRange by remember { mutableStateOf(minValue..maxValue) }
-    val labelSteps = (minValue.toInt()..maxValue.toInt() step 10).toList()
 
     Row(
         Modifier.fillMaxWidth(),
@@ -199,29 +264,21 @@ fun ThumbRectangularShape() {
 }
 
 @Composable
-fun FilterBar(showMenu: () -> Unit) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        item {
-            FilterButton(label = "Category") {
-                // Expand Gender filter
-            }
+fun FilterBar(
+    selectedFilters: Map<String, String>,
+    expandedFilter: String?,
+    onFilterClicked: (String) -> Unit
+) {
+    val filters = listOf("Category", "Brand", "Color")
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(filters) { filter ->
+            FilterButton(
+                label = filter,
+                isSelected = expandedFilter == filter,
+                badgeCount = if (selectedFilters.containsKey(filter)) 1 else 0,
+                onClick = { onFilterClicked(filter) }
+            )
         }
-
-        item {
-            FilterButton(label = "Brand") {
-                // Expand Gender filter
-            }
-        }
-
-        item {
-            FilterButton(label = "Color") {
-                showMenu()
-                // Expand Gender filter
-            }
-        }
-
     }
 }
 
@@ -229,42 +286,95 @@ fun FilterBar(showMenu: () -> Unit) {
 @Composable
 fun FilterButton(
     label: String,
+    isSelected: Boolean,
+    badgeCount: Int = 0,
     onClick: () -> Unit
 ) {
-    var flag by remember { mutableStateOf(true) }
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color.LightGray),
-        color = if (flag) Color.Unspecified else Teal.copy(0.2f),
-        modifier = Modifier
-            .clickable {
-                flag = !flag
-                onClick()
-            }
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(Color.Transparent)
-                .padding(horizontal = 12.dp, vertical = 6.dp)
+    Box {
+        Button(
+            onClick = onClick,
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isSelected) Teal else White,
+                contentColor = if (isSelected) Color.White else Color.Black
+            ),
+            border = if (isSelected) null else BorderStroke(1.dp, Color.Gray)
         ) {
-            Text(
-                text = label,
-                color = Color.Black,
-                fontSize = 18.sp
-            )
+            Text(text = label, fontSize = 16.sp)
+            Spacer(modifier = Modifier.width(4.dp))
             Icon(
-                imageVector = if (flag) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                contentDescription = "Dropdown",
-                tint = Color.Gray
+                imageVector = if (isSelected) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
             )
+        }
+
+        if (badgeCount > 0) {
+            Box(
+                modifier = Modifier
+                    //.offset(x = 40.dp, y = (-6).dp)
+                    .size(16.dp)
+                    .background(Color.Black, shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = badgeCount.toString(),
+                    style = MaterialTheme.typography.labelSmall.copy(color = Color.White)
+                )
+            }
         }
     }
 }
 
 
-//@Preview(showSystemUi = true)
-//@Composable
-//private fun SearchScreenPreview() {
-//    SearchScreen()
-//}
+@Composable
+fun FilterDropMenu(
+    filterType: String,
+    selectedFilters: Map<String, String>,
+    onItemSelected: (String) -> Unit,
+    viewModel : SearchViewModel
+) {
+    val options = when (filterType) {
+        "Color" -> viewModel.colors
+        "Category" -> listOf("Shoes", "Accessories", "T-Shirts")
+        "Brand" -> viewModel.brands
+        else -> emptyList()
+    }
+    Log.i("TAG", "FilterDropMenu: brands list size: ${viewModel.brands}")
+
+    val selected = selectedFilters[filterType]
+
+    Column {
+        Text(
+            filterType,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        FlowRow(
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            options.forEach { option ->
+                val isSelected = selected == option
+
+                Button(
+                    onClick = { onItemSelected(option) },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSelected) Teal else White,
+                        contentColor = if (isSelected) Color.White else Black
+                    ),
+                    border = BorderStroke(1.dp, Color.LightGray),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(text = option)
+                }
+            }
+        }
+        CustomDivider()
+    }
+}
+
+
+
+
