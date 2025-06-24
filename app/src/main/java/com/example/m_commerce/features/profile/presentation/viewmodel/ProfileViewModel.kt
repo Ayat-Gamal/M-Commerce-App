@@ -20,13 +20,13 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
 
     private fun loadProfile() {
         val currentUser = FirebaseAuth.getInstance().currentUser
-        _profileState.value = when {
-            currentUser == null -> ProfileUiState.Guest
-            else -> ProfileUiState.Success(
-                profileName = currentUser.displayName ?: "",
-                profileImageUrl = currentUser.photoUrl?.toString()
-                    ?: "https://default-profile-image.jpg"
-            )
-        }
+//        _profileState.value = when {
+////            currentUser == null -> ProfileUiState.Guest
+//            else -> ProfileUiState.Success(
+//                profileName = currentUser.displayName ?: "",
+//                profileImageUrl = currentUser.photoUrl?.toString()
+//                    ?: "https://default-profile-image.jpg"
+//            )
+//        }
     }
 }

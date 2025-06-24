@@ -105,7 +105,7 @@ fun NavSetup(
         }
 
         composable<AppRoutes.CartScreen> {
-            CartScreenUI(paddingValues)
+            CartScreenUI(paddingValues, navController = navController)
         }
 
         composable<AppRoutes.ProfileScreen> {
