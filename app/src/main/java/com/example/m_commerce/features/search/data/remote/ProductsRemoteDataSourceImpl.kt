@@ -24,6 +24,7 @@ class ProductsRemoteDataSourceImpl @Inject constructor(
                             node.title()
                                 .description()
                                 .productType()
+                                .vendor()
                                 .variants({ args -> args.first(10) }) { variants ->
                                     variants.edges { edges ->
                                         edges.node { node ->
@@ -40,7 +41,6 @@ class ProductsRemoteDataSourceImpl @Inject constructor(
                         }
                     }
                 }
-
             }
 
             graphClient.queryGraph(query).enqueue { result ->

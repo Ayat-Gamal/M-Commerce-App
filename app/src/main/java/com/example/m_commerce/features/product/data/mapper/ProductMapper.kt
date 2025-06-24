@@ -36,7 +36,8 @@ fun Storefront.Product.toDomain(): Product {
         category = productType,
         sizes = sizes,
         colors = colors,
-        variants = variantList
+        variants = variantList,
+        brand = vendor
     )
 }
 

@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,9 +71,7 @@ fun SearchScreen(
     deleteProduct: (Product) -> Unit = {},
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-//    var showFilterDropDownMenu by remember {
-//        mutableStateOf(false)
-//    }
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -91,8 +86,6 @@ fun SearchScreen(
     val selectedFilters = remember { mutableStateMapOf<String, String>() }
 
     val showFilterDropDownMenu = expandedFilter != null
-
-
 
     LazyVerticalGrid(
         modifier = Modifier
@@ -126,23 +119,21 @@ fun SearchScreen(
                         filterType = expandedFilter ?: "",
                         selectedFilters = selectedFilters,
                         onItemSelected = { selected ->
-                            selectedFilters[expandedFilter!!] = selected
-//                            viewModel.filter(expandedFilter!!, selected)
+                            val isExist = selectedFilters.containsValue(selected)
+                            if (isExist) {
+                                selectedFilters.remove(expandedFilter)
+                                viewModel.filter(selectedFilters)
+                            } else {
+                                selectedFilters[expandedFilter!!] = selected
+                                viewModel.filter(selectedFilters)
+                            }
+
                             expandedFilter = null
-                        }
+                        },
+                        viewModel = viewModel
                     )
                 }
-//                FilterBar {
-//                    showFilterDropDownMenu = !showFilterDropDownMenu
-//                }
 
-//                AnimatedVisibility(
-//                    visible = showFilterDropDownMenu,
-//                    enter = fadeIn() + expandVertically(),
-//                    exit = fadeOut() + shrinkVertically()
-//                ) {
-//                    FilterDropMenu()
-//                }
                 Text(
                     "Showing Results for ${query.value}",
                     style = MaterialTheme.typography.titleLarge
@@ -189,39 +180,6 @@ fun SearchScreen(
 }
 
 @Composable
-fun FilterDropMenu() {
-    val list = listOf("Red", "Blue", "Yellow", "Yellow", "Yellow")
-    val categoryName = "Color"
-    Column {
-        Text(
-            categoryName,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-
-        FlowRow {
-            list.forEach {
-                Button(
-                    onClick = {},
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = White,
-                        contentColor = Black
-                    ),
-                    border = BorderStroke(1.dp, Color.LightGray),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Text(text = it)
-                }
-            }
-        }
-
-        CustomDivider()
-    }
-
-}
-
-@Composable
 fun CustomDivider() {
     Spacer(Modifier.height(16.dp))
     HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 2.dp)
@@ -234,7 +192,6 @@ fun LabelRangeSlider() {
     val minValue = 0f
     val maxValue = 100f
     var priceRange by remember { mutableStateOf(minValue..maxValue) }
-    val labelSteps = (minValue.toInt()..maxValue.toInt() step 10).toList()
 
     Row(
         Modifier.fillMaxWidth(),
@@ -306,117 +263,6 @@ fun ThumbRectangularShape() {
     )
 }
 
-//@Composable
-//fun FilterBar(
-//    selectedFilters: Map<String, String>,
-//    onFilterClicked: (String) -> Unit
-//) {
-//    val filters = listOf("Category", "Brand", "Color")
-//    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-//        items(filters) { filter ->
-//            FilterButton(
-//                label = filter,
-//                badgeCount = if (selectedFilters.containsKey(filter)) 1 else 0,
-//                onClick = { onFilterClicked(filter) }
-//            )
-//        }
-//    }
-//}
-
-/*@Composable
-fun FilterButton(label: String, badgeCount: Int = 0, onClick: () -> Unit) {
-    Box {
-        Button(onClick = onClick, shape = RoundedCornerShape(12.dp)) {
-            Text(text = label)
-        }
-
-        if (badgeCount > 0) {
-            Box(
-                modifier = Modifier
-                    .offset(x = 40.dp, y = (-6).dp)
-                    .size(16.dp)
-                    .background(Color.Black, shape = CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("1", style = MaterialTheme.typography.labelSmall.copy(color = Color.White))
-            }
-        }
-    }
-}*/
-
-
-
-//@Composable
-//fun FilterBar(showMenu: () -> Unit) {
-//    LazyRow(
-//        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//    ) {
-//        item {
-//            FilterButton(label = "Category") {
-//                // Expand Gender filter
-//            }
-//        }
-//
-//        item {
-//            FilterButton(label = "Brand") {
-//                // Expand Gender filter
-//            }
-//        }
-//
-//        item {
-//            FilterButton(label = "Color") {
-//                showMenu()
-//                // Expand Gender filter
-//            }
-//        }
-//
-//    }
-//}
-
-
-/*@Composable
-fun FilterButton(
-    label: String,
-    onClick: () -> Unit
-) {
-    var flag by remember { mutableStateOf(true) }
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color.LightGray),
-        color = if (flag) Color.Unspecified else Teal.copy(0.2f),
-        modifier = Modifier
-            .clickable {
-                flag = !flag
-                onClick()
-            }
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(Color.Transparent)
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-        ) {
-            Text(
-                text = label,
-                color = Color.Black,
-                fontSize = 18.sp
-            )
-            Icon(
-                imageVector = if (flag) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                contentDescription = "Dropdown",
-                tint = Color.Gray
-            )
-        }
-    }
-}*/
-
-
-//@Preview(showSystemUi = true)
-//@Composable
-//private fun SearchScreenPreview() {
-//    SearchScreen()
-//}
-
 @Composable
 fun FilterBar(
     selectedFilters: Map<String, String>,
@@ -428,7 +274,7 @@ fun FilterBar(
         items(filters) { filter ->
             FilterButton(
                 label = filter,
-                isSelected = expandedFilter == filter, // <- highlight when expanded
+                isSelected = expandedFilter == filter,
                 badgeCount = if (selectedFilters.containsKey(filter)) 1 else 0,
                 onClick = { onFilterClicked(filter) }
             )
@@ -451,9 +297,10 @@ fun FilterButton(
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (isSelected) Teal else White,
                 contentColor = if (isSelected) Color.White else Color.Black
-            )
+            ),
+            border = if (isSelected) null else BorderStroke(1.dp, Color.Gray)
         ) {
-            Text(text = label)
+            Text(text = label, fontSize = 16.sp)
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
                 imageVector = if (isSelected) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -465,7 +312,7 @@ fun FilterButton(
         if (badgeCount > 0) {
             Box(
                 modifier = Modifier
-                    .offset(x = 40.dp, y = (-6).dp)
+                    //.offset(x = 40.dp, y = (-6).dp)
                     .size(16.dp)
                     .background(Color.Black, shape = CircleShape),
                 contentAlignment = Alignment.Center
@@ -480,19 +327,20 @@ fun FilterButton(
 }
 
 
-
 @Composable
 fun FilterDropMenu(
     filterType: String,
     selectedFilters: Map<String, String>,
-    onItemSelected: (String) -> Unit
+    onItemSelected: (String) -> Unit,
+    viewModel : SearchViewModel
 ) {
     val options = when (filterType) {
-        "Color" -> listOf("Red", "Blue", "Yellow")
-        "Category" -> listOf("Shoes", "Shirts", "Pants")
-        "Brand" -> listOf("Nike", "Adidas", "Puma")
+        "Color" -> viewModel.colors
+        "Category" -> listOf("Shoes", "Accessories", "T-Shirts")
+        "Brand" -> viewModel.brands
         else -> emptyList()
     }
+    Log.i("TAG", "FilterDropMenu: brands list size: ${viewModel.brands}")
 
     val selected = selectedFilters[filterType]
 
@@ -504,8 +352,7 @@ fun FilterDropMenu(
         )
 
         FlowRow(
-            modifier = Modifier.padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(vertical = 8.dp)
         ) {
             options.forEach { option ->
                 val isSelected = selected == option
@@ -524,7 +371,6 @@ fun FilterDropMenu(
                 }
             }
         }
-
         CustomDivider()
     }
 }
