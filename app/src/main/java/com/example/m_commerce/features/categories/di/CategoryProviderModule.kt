@@ -1,9 +1,9 @@
 package com.example.m_commerce.features.categories.di
 
-import com.example.m_commerce.features.categories.data.datasources.remote.CategoryRemoteDataSource
-import com.example.m_commerce.features.categories.data.datasources.remote.CategoryRemoteDataSourceImpl
-import com.example.m_commerce.features.categories.domain.repository.CategoryRepository
-import com.example.m_commerce.features.categories.domain.usecases.GetCategoriesUseCase
+import com.example.m_commerce.features.categories.data.datasources.remote.SubCategoryRemoteDataSource
+import com.example.m_commerce.features.categories.data.datasources.remote.SubSubCategoryRemoteDataSourceImpl
+import com.example.m_commerce.features.categories.domain.repository.SubCategoryRepository
+import com.example.m_commerce.features.categories.domain.usecases.GetSubCategoriesUseCase
 import com.shopify.buy3.GraphClient
 import dagger.Module
 import dagger.Provides
@@ -18,14 +18,14 @@ object CategoryProviderModule {
 
     @Provides
     @Singleton
-    fun provideCategoryRemoteDataSource(graphClient: GraphClient): CategoryRemoteDataSource {
-        return CategoryRemoteDataSourceImpl(graphClient)
+    fun provideCategoryRemoteDataSource(graphClient: GraphClient): SubCategoryRemoteDataSource {
+        return SubSubCategoryRemoteDataSourceImpl(graphClient)
     }
 
     @Provides
     @Singleton
-    fun provideCategoryUseCase(repo: CategoryRepository): GetCategoriesUseCase {
-        return GetCategoriesUseCase(repo)
+    fun provideCategoryUseCase(repo: SubCategoryRepository): GetSubCategoriesUseCase {
+        return GetSubCategoriesUseCase(repo)
     }
 
 

@@ -21,10 +21,11 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.categories.domain.entity.Category
 
 @Composable
-fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
+fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Brand) {
     Column(modifier = modifier.clip( RoundedCornerShape(topStart = 100.dp, topEnd = 100.dp, bottomStart = 12.dp, bottomEnd = 12.dp)).clickable {  onClick() }) {
         AsyncImage(
             modifier = Modifier
@@ -38,7 +39,7 @@ fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, categor
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text(category.name,
+        Text(category.name ?: "NULL BRAND",
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             modifier = Modifier

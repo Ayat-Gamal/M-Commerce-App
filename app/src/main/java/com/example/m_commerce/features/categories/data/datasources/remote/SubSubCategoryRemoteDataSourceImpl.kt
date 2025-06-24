@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class CategoryRemoteDataSourceImpl @Inject constructor(private val client: GraphClient) : CategoryRemoteDataSource {
+class SubSubCategoryRemoteDataSourceImpl @Inject constructor(private val client: GraphClient) : SubCategoryRemoteDataSource {
     override fun getCategories(): Flow<List<CategoryDto>> = callbackFlow {
 
         val query = Storefront.query { root ->

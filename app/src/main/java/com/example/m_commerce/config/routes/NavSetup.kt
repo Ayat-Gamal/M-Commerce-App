@@ -1,6 +1,8 @@
 package com.example.m_commerce.config.routes
 
 import CartScreenUI
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
@@ -35,6 +37,7 @@ import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.stripe.android.paymentsheet.PaymentSheet
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavSetup(
     navController: NavHostController,
@@ -67,7 +70,7 @@ fun NavSetup(
                 navController.navigate(AppRoutes.BrandDetailsScreen(brand.name ?: "Empty"))
             },
                 navigateToCategory = { category ->
-                    navController.navigate(AppRoutes.CategoryDetailsScreen(category.id))
+                    navController.navigate(AppRoutes.CategoryDetailsScreen(category.id ?: "Empty ID"))
                 }
             )
         }

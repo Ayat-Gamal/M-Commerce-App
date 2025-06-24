@@ -38,7 +38,7 @@ import com.example.m_commerce.features.search.presentation.SearchScreen
 fun HomeScreenUI(
     modifier: Modifier = Modifier,
     navigateToCategories: () -> Unit,
-    navigateToCategory: (Category) -> Unit,
+    navigateToCategory: (Brand) -> Unit,
     navigateToSpecialOffers: () -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
@@ -61,8 +61,9 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands, categories , couponCodes) = (state as HomeUiState.Success)
-            if (brands.isNotEmpty() && categories.isNotEmpty()) {
+            val (brands , couponCodes) = (state as HomeUiState.Success)
+            val categories = brands.takeLast(4)
+            if (brands.isNotEmpty()) {
                 LoadedData(
                     scrollState,
                     navigateToSpecialOffers,
@@ -89,11 +90,11 @@ private fun LoadedData(
     scrollState: ScrollState,
     navigateToSpecialOffers: () -> Unit,
     navigateToCategories: () -> Unit,
-    navigateToCategory: (Category) -> Unit,
+    navigateToCategory: (Brand) -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
-    categories: List<Category>,
+    categories: List<Brand>,
     couponCodes: List<String>
 ) {
     Column(
