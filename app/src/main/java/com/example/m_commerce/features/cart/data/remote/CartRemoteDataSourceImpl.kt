@@ -23,6 +23,9 @@ class CartRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getCartById(id: String): Flow<Cart> = callbackFlow {
 
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            return@callbackFlow
+        }
         val userDocument = Firebase.firestore.collection("users").document(FirebaseAuth.getInstance().currentUser!!.uid).get().await()
         val cartId  = userDocument.getString("cartId")
 

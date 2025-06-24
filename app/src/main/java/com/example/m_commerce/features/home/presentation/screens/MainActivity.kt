@@ -23,57 +23,65 @@ import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.config.routes.NavSetup
 import com.example.m_commerce.config.theme.MCommerceTheme
 import com.example.m_commerce.core.shared.components.bottom_nav_bar.BottomNavBar
+import com.example.m_commerce.features.payment.presentation.paymentResultcallback
+import com.stripe.android.paymentsheet.PaymentSheet
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var paymentSheet: PaymentSheet
+
     private lateinit var showBottomNavbar: MutableState<Boolean>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        paymentSheet = PaymentSheet(this, paymentResultcallback)
         enableEdgeToEdge()
-        setContent {
-            MCommerceTheme {
-                showBottomNavbar = remember { mutableStateOf(false) }
-                MainLayout(showBottomNavbar = showBottomNavbar)
+            setContent {
+                MCommerceTheme {
+                    showBottomNavbar = remember { mutableStateOf(false) }
+                    MainLayout(
+                        showBottomNavbar = showBottomNavbar,
+                        paymentSheet = paymentSheet
+                    )
+                }
             }
+    }
+
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @Composable
+    fun MainLayout(
+        navController: NavHostController = rememberNavController(),
+        showBottomNavbar: MutableState<Boolean>,
+        paymentSheet: PaymentSheet
+    ) {
+
+        val snackBarHostState = remember { SnackbarHostState() }
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackBarHostState)
+            },
+            bottomBar = {
+                if (showBottomNavbar.value) {
+                    BottomNavBar(navController)
+                }
+            }
+        ) { innerPadding ->
+            val noBottomPadding = Modifier.padding(
+                start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+                top = innerPadding.calculateTopPadding(),
+                end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                bottom = 16.dp
+            )
+            NavSetup(
+                navController,
+                snackBarHostState,
+                modifier = noBottomPadding,
+                showBottomNavbar,
+                paddingValues = innerPadding,
+                paymentSheet = paymentSheet
+            )
         }
     }
+
 }
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-fun MainLayout(
-    navController: NavHostController = rememberNavController(),
-    showBottomNavbar: MutableState<Boolean>
-) {
-
-    val snackBarHostState = remember { SnackbarHostState() }
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackBarHostState)
-        },
-        bottomBar = {
-            if (showBottomNavbar.value) {
-                BottomNavBar(navController)
-            }
-        }
-    ) { innerPadding ->
-        val noBottomPadding = Modifier.padding(
-            start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-            top = innerPadding.calculateTopPadding(),
-            end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-            bottom = 16.dp
-        )
-        NavSetup(
-            navController,
-            snackBarHostState,
-            modifier = noBottomPadding,
-            showBottomNavbar,
-            paddingValues = innerPadding
-        )
-    }
-}
-
-
-
 

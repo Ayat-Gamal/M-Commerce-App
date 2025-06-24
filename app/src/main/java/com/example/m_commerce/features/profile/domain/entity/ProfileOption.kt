@@ -1,4 +1,4 @@
-package com.example.m_commerce.features.profile.domain.model
+package com.example.m_commerce.features.profile.domain.entity
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

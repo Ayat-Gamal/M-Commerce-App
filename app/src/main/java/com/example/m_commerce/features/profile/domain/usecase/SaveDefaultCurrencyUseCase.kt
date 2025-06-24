@@ -1,11 +1,12 @@
 package com.example.m_commerce.features.profile.domain.usecase
 
-import com.example.m_commerce.features.profile.domain.model.CurrencyDetails
-import com.example.m_commerce.features.profile.domain.repository.CurrencyPreferencesRepository
+import com.example.m_commerce.features.profile.domain.repository.CurrencyRepository
 import javax.inject.Inject
 
-class SaveDefaultCurrencyUseCase @Inject constructor (private val repository: CurrencyPreferencesRepository) {
-    suspend operator fun invoke(details: CurrencyDetails) {
-        repository.saveCurrencyDetails(details)
+class SaveDefaultCurrencyUseCase @Inject constructor(
+    private val repo: CurrencyRepository
+) {
+    suspend operator fun invoke(code: String) {
+        repo.saveDefaultCurrencyCode(code)
     }
 }

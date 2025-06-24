@@ -1,6 +1,4 @@
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,25 +36,21 @@ import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
-import com.example.m_commerce.features.orders.data.PaymentMethod
-import com.example.m_commerce.features.orders.data.model.variables.LineItem
-import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartScreenUI(
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
-    viewModel: CartViewModel = hiltViewModel(),
-    orderViewModel: OrderViewModel = hiltViewModel()
+    cartViewModel: CartViewModel = hiltViewModel(),
+    currencyViewModel: CurrencyViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by cartViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.getCartById()
+        cartViewModel.getCartById()
     }
-
 
     Scaffold(
         modifier = modifier.background(Teal),
@@ -67,7 +61,8 @@ fun CartScreenUI(
             if (uiState is CartUiState.Success) {
                 CartReceipt(
                     paddingValues,
-                    // cart = (uiState as CartUiState.Success).cart
+                    viewModel = cartViewModel,
+                    currencyViewModel = currencyViewModel
                 )
             }
         },
@@ -87,12 +82,12 @@ fun CartScreenUI(
                         color = Teal
                     )
                 }
-
                 is CartUiState.Success -> {
                     val cart = (uiState as CartUiState.Success).cart
                     CartContent(
                         cartLines = cart.lines,
-                        viewModel = viewModel
+                        viewModel = cartViewModel,
+                        currencyViewModel = currencyViewModel
                     )
                 }
 
@@ -139,7 +134,11 @@ fun CartScreenUI(
 
 
 @Composable
-fun CartContent(cartLines: List<ProductVariant>, viewModel: CartViewModel) {
+fun CartContent(
+    cartLines: List<ProductVariant>,
+    viewModel: CartViewModel,
+    currencyViewModel: CurrencyViewModel
+) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -157,7 +156,8 @@ fun CartContent(cartLines: List<ProductVariant>, viewModel: CartViewModel) {
                     onDecrease = {
                         viewModel.decreaseQuantity(line.lineId) },
                     onRemove = {
-                        viewModel.removeLine(line.lineId) }
+                        viewModel.removeLine(line.lineId) },
+                    currencyViewModel
                 )
 
                 if (cartLines.indexOf(line) < cartLines.size - 1) {
