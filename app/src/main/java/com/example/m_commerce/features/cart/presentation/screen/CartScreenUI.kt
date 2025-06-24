@@ -1,4 +1,6 @@
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,12 +38,17 @@ import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.orders.data.PaymentMethod
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartScreenUI(
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
-    viewModel: CartViewModel = hiltViewModel()
+    viewModel: CartViewModel = hiltViewModel(),
+    orderViewModel: OrderViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -49,6 +56,7 @@ fun CartScreenUI(
     LaunchedEffect(Unit) {
         viewModel.getCartById()
     }
+
 
     Scaffold(
         modifier = modifier.background(Teal),
