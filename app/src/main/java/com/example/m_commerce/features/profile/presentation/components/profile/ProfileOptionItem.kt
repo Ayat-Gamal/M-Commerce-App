@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Teal
-import com.example.m_commerce.features.profile.domain.model.ProfileOption
+import com.example.m_commerce.features.profile.domain.entity.ProfileOption
 
 @Composable
 fun ProfileOptionItem(option: ProfileOption, onClick: () -> Unit = {}) {

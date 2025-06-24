@@ -2,11 +2,14 @@
 
 package com.example.m_commerce.features.profile.presentation.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -34,107 +37,192 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.example.m_commerce.features.profile.presentation.components.currency.CurrencyList
-import com.example.m_commerce.features.profile.presentation.components.currency.CurrencyListItem
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrencyUiLayout(
+fun CurrencyScreenUi(
     navController: NavHostController,
     viewModel: CurrencyViewModel = hiltViewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
     val state = viewModel.state
-    val filteredCurrencies = state.currencies.filter {
-        it.currencyName.contains(query, ignoreCase = true) ||
-                it.currencyCode.contains(query, ignoreCase = true)
-    }
+
     Scaffold(
         topBar = {
-            Column() {
-                DefaultTopBar(
-                    title = "Choose Default Currency",
-                    navController = navController,
-                )
-            }
-
-
+            DefaultTopBar(title = "Choose Default Currency", navController = navController)
         }
-    ) { innerPadding ->
+    ) { padding ->
         when {
-            state.isLoading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
-                }
+            state.isLoading -> Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
             }
 
-            state.error.isNotEmpty() -> {
-                // TODO: Handle error UI
+            state.error.isNotEmpty() -> Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                Text("Error: ${state.error}", Modifier.align(Alignment.Center))
             }
 
             else -> {
-                var defaultCurrency by remember { mutableStateOf(viewModel.defaultCurrencyState.defaultCurrency) }
-                var pendingCurrency by remember { mutableStateOf(defaultCurrency) }
+                val defaultCode = viewModel.defaultCurrencyCode
+                val symbolsMap = state.currencies.firstOrNull()?.symbols ?: emptyMap()
+                val filtered = symbolsMap.filter { (code, name) ->
+                    code.contains(query, true) || name.contains(query, true)
+                }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
-
+                Column(Modifier.padding(padding)) {
                     CustomDialog(
                         showDialog = showDialog,
-                        title = "Confirmation",
-                        message = "Are you sure you want to change the default currency?",
+                        title = "Confirm Change",
+                        message = "Set $query as default currency?",
                         onConfirm = {
                             showDialog = false
-                            defaultCurrency = pendingCurrency
-                            defaultCurrency?.let { viewModel.saveDefaultCurrency(it) }
+                            viewModel.saveDefaultCurrency(query)
                         },
-                        onDismiss = {
-                            showDialog = false
+                        onDismiss = { showDialog = false }
+                    )
+
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text("Search") },
+                        leadingIcon = { Icon(Icons.Default.Search, null) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+
+                    Text(
+                        text = "Your Default: ${defaultCode ?: "None"}",
+                        modifier = Modifier.padding(16.dp)
+                    )
+
+                    LazyColumn(Modifier.fillMaxSize()) {
+                        items(filtered.entries.toList()) { (code, name) ->
+                            Text(
+                                text = "$code – $name",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        query = code
+                                        showDialog = true
+                                    }
+                                    .padding(12.dp)
+                            )
                         }
-                    )
-
-                    InlineSearchBar(
-                        query = query,
-                        onQueryChange = { query = it },
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    Text(
-                        text = "Your Default Currency",
-                        modifier = Modifier.padding(16.dp)
-                    )
-
-                    defaultCurrency?.let {
-                        CurrencyListItem(it, onCurrencyClick = {
-                            print("we clicked on ${it.currencyName}")
-                            showDialog = true
-                            defaultCurrency = it
-                        })
                     }
-                    Text(
-                        text = "Available Currencies",
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    CurrencyList(
-                        filteredCurrencies,
-                        modifier = Modifier.weight(1f), onCurrencyClick = {
-                            showDialog = true
-                            pendingCurrency = it
-                        })
                 }
             }
         }
     }
-
 }
+
+
+
+//@Composable
+//fun CurrencyUiLayout(
+//    navController: NavHostController,
+//    viewModel: CurrencyViewModel = hiltViewModel()
+//) {
+//    var showDialog by remember { mutableStateOf(false) }
+//    var query by rememberSaveable { mutableStateOf("") }
+//    val state = viewModel.state
+////    val filteredCurrencies = state.currencies.filter {
+////        it.currencyName.contains(query, ignoreCase = true) ||
+////                it.currencyCode.contains(query, ignoreCase = true)
+////    }
+//    Scaffold(
+//        topBar = {
+//            Column() {
+//                DefaultTopBar(
+//                    title = "Choose Default Currency",
+//                    navController = navController,
+//                )
+//            }
+//
+//
+//        }
+//    ) { innerPadding ->
+//        when {
+//            state.isLoading -> {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(innerPadding)
+//                ) {
+//                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+//                }
+//            }
+//
+//            state.error.isNotEmpty() -> {
+//                // TODO: Handle error UI
+//            }
+//
+//            else -> {
+//                var defaultCurrency by remember { mutableStateOf(viewModel.defaultCurrencyState.defaultCurrency) }
+//                var pendingCurrency by remember { mutableStateOf(defaultCurrency) }
+//
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(innerPadding)
+//                ) {
+//
+//                    CustomDialog(
+//                        showDialog = showDialog,
+//                        title = "Confirmation",
+//                        message = "Are you sure you want to change the default currency?",
+//                        onConfirm = {
+//                            showDialog = false
+//                            defaultCurrency = pendingCurrency
+//                            defaultCurrency?.let { viewModel.saveDefaultCurrency(it) }
+//                        },
+//                        onDismiss = {
+//                            showDialog = false
+//                        }
+//                    )
+//
+//                    InlineSearchBar(
+//                        query = query,
+//                        onQueryChange = { query = it },
+//                        modifier = Modifier.padding(horizontal = 16.dp)
+//                    )
+//                    Text(
+//                        text = "Your Default Currency",
+//                        modifier = Modifier.padding(16.dp)
+//                    )
+//
+//                    defaultCurrency?.let {
+//                        CurrencyListItem(it, onCurrencyClick = {
+//                            print("we clicked on ${it.currencyName}")
+//                            showDialog = true
+//                            defaultCurrency = it
+//                        })
+//                    }
+//                    Text(
+//                        text = "Available Currencies",
+//                        modifier = Modifier.padding(16.dp)
+//                    )
+//                    CurrencyList(
+//                        filteredCurrencies,
+//                        modifier = Modifier.weight(1f), onCurrencyClick = {
+//                            showDialog = true
+//                            pendingCurrency = it
+//                        })
+//                }
+//            }
+//        }
+//    }
+//
+//}
 
 
 @Composable

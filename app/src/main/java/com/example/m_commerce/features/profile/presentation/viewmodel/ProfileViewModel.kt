@@ -1,21 +1,17 @@
 package com.example.m_commerce.features.profile.presentation.viewmodel
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.CurrencyExchange
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.lifecycle.ViewModel
-import com.example.m_commerce.features.profile.domain.model.ProfileOption
+import com.example.m_commerce.features.profile.presentation.state.ProfileUiState
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class ProfileViewModel : ViewModel() {
-    private val _profileState = MutableStateFlow(ProfileUiState())
+@HiltViewModel
+class ProfileViewModel @Inject constructor() : ViewModel() {
+    private val _profileState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
     val profileState: StateFlow<ProfileUiState> = _profileState.asStateFlow()
 
     init {
@@ -23,27 +19,14 @@ class ProfileViewModel : ViewModel() {
     }
 
     private fun loadProfile() {
-        _profileState.value = ProfileUiState(
-            profileName = "UserName",
-            profileOptions = getProfileOptions()
-        )
-    }
-
-    private fun getProfileOptions(): List<ProfileOption> {
-        return listOf(
-            ProfileOption("Your profile", Icons.Default.Person),
-            ProfileOption("Manage Address", Icons.Default.LocationOn),
-            ProfileOption("Payment Methods", Icons.Default.CreditCard),
-            ProfileOption("My Orders", Icons.Default.ShoppingCart),
-            ProfileOption("My Wishlist", Icons.Default.Favorite),
-            ProfileOption("Currency", Icons.Default.CurrencyExchange),
-            ProfileOption("Settings", Icons.Default.Settings),
-            ProfileOption("Help Center", Icons.Default.LocationOn),
-        )
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        _profileState.value = when {
+            currentUser == null -> ProfileUiState.Guest
+            else -> ProfileUiState.Success(
+                profileName = currentUser.displayName ?: "",
+                profileImageUrl = currentUser.photoUrl?.toString()
+                    ?: "https://default-profile-image.jpg"
+            )
+        }
     }
 }
-
-data class ProfileUiState(
-    val profileName: String = "",
-    val profileOptions: List<ProfileOption> = emptyList()
-)

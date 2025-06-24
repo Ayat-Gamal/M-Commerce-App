@@ -29,10 +29,11 @@ import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.SmallButton
 import com.example.m_commerce.features.brand.presentation.screen.img
+import com.example.m_commerce.features.orders.domain.entity.OrderHistory
 
 
 @Composable
-fun OrderTrackingCard(modifier: Modifier = Modifier) {
+fun OrderTrackingCard(modifier: Modifier = Modifier, order: OrderHistory) {
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -61,10 +62,10 @@ fun OrderTrackingCard(modifier: Modifier = Modifier) {
                     .padding(12.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Product Name", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+                Text(text = order.id, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
                 Text(text = "Product Desc", style = TextStyle(color = Gray, fontSize = 12.sp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(text = "EGP 1000.00")
+                    Text(text = order.totalPrice)
                     SmallButton(label = "Order Details", onClick = {expanded = !expanded })
                 }
             }

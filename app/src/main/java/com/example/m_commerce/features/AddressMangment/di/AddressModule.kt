@@ -1,7 +1,7 @@
 package com.example.m_commerce.features.AddressMangment.di
 
 import com.example.m_commerce.features.AddressMangment.domain.repository.AddressRepository
-import com.example.m_commerce.features.AddressMangment.domain.usecases.GetCustomerAddressesUseCase
+import com.example.m_commerce.features.AddressMangment.domain.usecases.GetAddressesUseCase
 import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaultAddressUseCase
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SaveAddressUseCase
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SetDefaultAddressUseCase
@@ -20,7 +20,7 @@ object AppModule {
     fun provideSaveAddressUseCase(repo: AddressRepository) = SaveAddressUseCase(repo)
 
     @Provides
-    fun provideGetCustomerAddressesUseCase(repo: AddressRepository) = GetCustomerAddressesUseCase(repo)
+    fun provideGetCustomerAddressesUseCase(repo: AddressRepository) = GetAddressesUseCase(repo)
 
     @Provides
     fun provideSetDefaultAddressUseCase(repo: AddressRepository) = SetDefaultAddressUseCase(repo)

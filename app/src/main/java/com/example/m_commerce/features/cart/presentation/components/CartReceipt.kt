@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
@@ -26,23 +26,22 @@ import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
+import com.example.m_commerce.features.cart.presentation.CartUiState
+import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 
 @Composable
-fun CartReceipt(paddingValues: PaddingValues) {
-    val receiptItems = listOf(
-        ReceiptItem("Subtotal:", "$20.00"),
-        ReceiptItem("Shipping:", "$5.00"),
-        ReceiptItem("Discount:", "-$3.00"),
-        ReceiptItem("Tax:", "$2.50"),
-    )
+fun CartReceipt(
+    paddingValues: PaddingValues,
+    viewModel: CartViewModel,
+    currencyViewModel: CurrencyViewModel
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val cart = (uiState as? CartUiState.Success)?.cart
+    var promoCode by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.background(Background)) {
-//        HorizontalDivider(
-//            thickness = 1.dp,
-//            modifier = Modifier.padding(0.dp)
-//        )
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -51,19 +50,34 @@ fun CartReceipt(paddingValues: PaddingValues) {
                 .padding(0.dp)
         ) {
             PromoCodeInput(
-                promoCode = "",
-                onPromoCodeChange = {},
-                onApplyClick = {},
+                promoCode = promoCode,
+                onPromoCodeChange = { promoCode = it },
+                onApplyClick = {
+                    viewModel.applyCoupon(promoCode)
+                },
                 modifier = Modifier.padding(16.dp)
             )
+
             Column(modifier = Modifier.fillMaxWidth()) {
-                receiptItems.forEach { item ->
-                    CartReceiptItem(item)
+                cart?.let {
+                    val exchangeRate by currencyViewModel.exchangeRate.collectAsState()
+
+                    val receiptItems = listOf(
+                        ReceiptItem("Subtotal",  currencyViewModel.formatPrice(it.subtotalAmount)),
+                        ReceiptItem("Tax", currencyViewModel.formatPrice(it.totalTaxAmount ?: "0.00")),
+                        ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" )))
+                    receiptItems.forEach { item ->
+                        CartReceiptItem(item)
+                    }
+
+                    Divider(Modifier.padding(vertical = 8.dp, horizontal = 8.dp))
+
+                    val convertedTotal = (it.totalAmount.toFloatOrNull() ?: 0f) * exchangeRate
+
+                    CartReceiptItem(
+                        ReceiptItem("Total",   currencyViewModel.formatPrice(it.totalAmount ?: "0.00" )))
                 }
             }
-
-            Divider(Modifier.padding(vertical = 8.dp, horizontal = 8.dp))
-            CartReceiptItem(ReceiptItem("Total", "$27.50"))
 
             var state by remember { mutableStateOf(false) }
 
@@ -75,7 +89,7 @@ fun CartReceipt(paddingValues: PaddingValues) {
                     top = 16.dp
                 ),
                 isLoading = state,
-                text = "Ceckout",
+                text = "Checkout",
                 backgroundColor = Teal,
                 textColor = White,
                 height = 50,
@@ -85,6 +99,7 @@ fun CartReceipt(paddingValues: PaddingValues) {
         }
     }
 }
+
 
 @Composable
 fun CartReceiptItem(item: ReceiptItem) {
@@ -97,12 +112,6 @@ fun CartReceiptItem(item: ReceiptItem) {
         Text(text = item.title, fontWeight = FontWeight.Bold)
         Text(text = item.price)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun CartReceiptPreviewItem() {
-    CartReceiptItem(ReceiptItem("Subtotal", "$20.00"))
 }
 
 

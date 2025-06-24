@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -61,7 +60,7 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands, categories) = (state as HomeUiState.Success)
+            val (brands, categories , couponCodes) = (state as HomeUiState.Success)
             if (brands.isNotEmpty() && categories.isNotEmpty()) {
                 LoadedData(
                     scrollState,
@@ -71,7 +70,8 @@ fun HomeScreenUI(
                     navigateToBrands,
                     navigateToBrand,
                     brands,
-                    categories
+                    categories,
+                    couponCodes
                 )
             } else {
                 FailedScreenCase(msg = "No Data Found")
@@ -92,7 +92,8 @@ private fun LoadedData(
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
-    categories: List<Category>
+    categories: List<Category>,
+    couponCodes: List<String>
 ) {
     Column(
         Modifier
@@ -102,9 +103,10 @@ private fun LoadedData(
         SearchSection()
 
         SpecialOffersSection(
-            Modifier
+           modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp), navigateToSpecialOffers
+                .height(200.dp), navigateToSpecialOffers,
+            couponCodes
         )
 
         CategorySection(

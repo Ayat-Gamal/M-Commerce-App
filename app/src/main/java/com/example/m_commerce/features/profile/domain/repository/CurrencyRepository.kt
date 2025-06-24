@@ -1,8 +1,12 @@
 package com.example.m_commerce.features.profile.domain.repository
 
-import com.example.m_commerce.features.profile.domain.model.CurrencyDetails
+import kotlinx.coroutines.flow.StateFlow
 
 interface CurrencyRepository {
-    suspend fun getCurrencies(): List<CurrencyDetails>
-
+    val exchangeRateFlow: StateFlow<Float>
+    suspend fun fetchExchangeRate(symbol: String): Float
+    fun getCachedExchangeRate(): Float
+    suspend fun getSupportedCurrencies(): Map<String, String>
+    fun getDefaultCurrencyCode(): String?
+    suspend fun saveDefaultCurrencyCode(code: String)
 }
