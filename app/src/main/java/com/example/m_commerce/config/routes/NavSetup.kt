@@ -154,7 +154,7 @@ fun NavSetup(
 
         composable<AppRoutes.WishListScreen> {
             showBottomNavbar.value = false
-            WishListScreen(navController, paddingValues)
+            WishListScreen(navController)
         }
         composable<AppRoutes.CurrencyScreen> {
             CurrencyUiLayout(navController)

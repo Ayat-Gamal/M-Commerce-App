@@ -39,3 +39,7 @@ fun Storefront.Product.toDomain(): Product {
         variants = variantList
     )
 }
+
+fun Storefront. ProductEdge.toDomain(): Product {
+   return this.node!!.toDomain()
+}
