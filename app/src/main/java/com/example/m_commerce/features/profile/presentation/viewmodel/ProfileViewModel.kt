@@ -1,13 +1,17 @@
 package com.example.m_commerce.features.profile.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.m_commerce.features.profile.domain.entity.ProfileOption
+import com.example.m_commerce.features.profile.presentation.state.ProfileUiState
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class ProfileViewModel : ViewModel() {
-    private val _profileState = MutableStateFlow(ProfileUiState())
+@HiltViewModel
+class ProfileViewModel @Inject constructor() : ViewModel() {
+    private val _profileState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
     val profileState: StateFlow<ProfileUiState> = _profileState.asStateFlow()
 
     init {
@@ -15,13 +19,14 @@ class ProfileViewModel : ViewModel() {
     }
 
     private fun loadProfile() {
-        _profileState.value = ProfileUiState(
-            profileName = "UserName",
-        )
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        _profileState.value = when {
+            currentUser == null -> ProfileUiState.Guest
+            else -> ProfileUiState.Success(
+                profileName = currentUser.displayName ?: "",
+                profileImageUrl = currentUser.photoUrl?.toString()
+                    ?: "https://default-profile-image.jpg"
+            )
+        }
     }
 }
-
-data class ProfileUiState(
-    val profileName: String = "",
-    val profileOptions: List<ProfileOption> = emptyList()
-)
