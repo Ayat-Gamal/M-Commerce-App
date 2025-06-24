@@ -2,6 +2,8 @@
 
 package com.example.m_commerce.features.profile.presentation.screen
 
+
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,9 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,15 +33,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyScreenUi(
     navController: NavHostController,
@@ -47,76 +50,92 @@ fun CurrencyScreenUi(
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
+    var selectedCurrencyCode by remember { mutableStateOf<String?>(null) }
+
     val state = viewModel.state
 
     Scaffold(
         topBar = {
-            DefaultTopBar(title = "Choose Default Currency", navController = navController)
+            Column {
+                DefaultTopBar(
+                    title = "Choose Default Currency",
+                    navController = navController
+                )
+            }
         }
     ) { padding ->
-        when {
-            state.isLoading -> Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            }
-
-            state.error.isNotEmpty() -> Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                Text("Error: ${state.error}", Modifier.align(Alignment.Center))
-            }
-
-            else -> {
-                val defaultCode = viewModel.defaultCurrencyCode
-                val symbolsMap = state.currencies.firstOrNull()?.symbols ?: emptyMap()
-                val filtered = symbolsMap.filter { (code, name) ->
-                    code.contains(query, true) || name.contains(query, true)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Background)
+                .padding(padding)
+        ) {
+            when {
+                state.isLoading -> {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
 
-                Column(Modifier.padding(padding)) {
-                    CustomDialog(
-                        showDialog = showDialog,
-                        title = "Confirm Change",
-                        message = "Set $query as default currency?",
-                        onConfirm = {
-                            showDialog = false
-                            viewModel.saveDefaultCurrency(query)
-                        },
-                        onDismiss = { showDialog = false }
-                    )
+                state.error.isNotEmpty() -> {
+                    Text("Error: ${state.error}", Modifier.align(Alignment.Center))
+                }
 
-                    OutlinedTextField(
-                        value = query,
-                        onValueChange = { query = it },
-                        label = { Text("Search") },
-                        leadingIcon = { Icon(Icons.Default.Search, null) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    )
+                else -> {
+                    val defaultCode = viewModel.defaultCurrencyCode
+                    val symbolsMap = state.currencies.firstOrNull()?.symbols ?: emptyMap()
 
-                    Text(
-                        text = "Your Default: ${defaultCode ?: "None"}",
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    val filtered = symbolsMap.filter { (code, name) ->
+                        code.contains(query, ignoreCase = true) ||
+                                name.contains(query, ignoreCase = true)
+                    }
 
-                    LazyColumn(Modifier.fillMaxSize()) {
-                        items(filtered.entries.toList()) { (code, name) ->
-                            Text(
-                                text = "$code – $name",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        query = code
-                                        showDialog = true
-                                    }
-                                    .padding(12.dp)
-                            )
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+
+                        CustomDialog(
+                            showDialog = showDialog,
+                            title = "Confirm Change",
+                            message = "Set $selectedCurrencyCode as default currency?",
+                            onConfirm = {
+                                showDialog = false
+                                selectedCurrencyCode?.let { viewModel.saveDefaultCurrency(it) }
+                            },
+                            onDismiss = {
+                                showDialog = false
+                            }
+                        )
+
+                        InlineSearchBar(
+                            query = query,
+                            onQueryChange = { query = it },
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+
+                        Text(
+                            text = "Your Default: ${defaultCode ?: "None"}", fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(16.dp)
+                        )
+
+                        Text(
+                            text = "Available Currencies",
+                            modifier = Modifier.padding(16.dp),
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        LazyColumn(modifier = Modifier.weight(1f)) {
+                            items(filtered.entries.toList()) {
+                                (code, name) ->
+                                Text(
+                                    text = "$code – $name",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            selectedCurrencyCode = code
+                                            showDialog = true
+                                        }
+                                        .padding(12.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -124,106 +143,6 @@ fun CurrencyScreenUi(
         }
     }
 }
-
-
-
-//@Composable
-//fun CurrencyUiLayout(
-//    navController: NavHostController,
-//    viewModel: CurrencyViewModel = hiltViewModel()
-//) {
-//    var showDialog by remember { mutableStateOf(false) }
-//    var query by rememberSaveable { mutableStateOf("") }
-//    val state = viewModel.state
-////    val filteredCurrencies = state.currencies.filter {
-////        it.currencyName.contains(query, ignoreCase = true) ||
-////                it.currencyCode.contains(query, ignoreCase = true)
-////    }
-//    Scaffold(
-//        topBar = {
-//            Column() {
-//                DefaultTopBar(
-//                    title = "Choose Default Currency",
-//                    navController = navController,
-//                )
-//            }
-//
-//
-//        }
-//    ) { innerPadding ->
-//        when {
-//            state.isLoading -> {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(innerPadding)
-//                ) {
-//                    CircularProgressIndicator(Modifier.align(Alignment.Center))
-//                }
-//            }
-//
-//            state.error.isNotEmpty() -> {
-//                // TODO: Handle error UI
-//            }
-//
-//            else -> {
-//                var defaultCurrency by remember { mutableStateOf(viewModel.defaultCurrencyState.defaultCurrency) }
-//                var pendingCurrency by remember { mutableStateOf(defaultCurrency) }
-//
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(innerPadding)
-//                ) {
-//
-//                    CustomDialog(
-//                        showDialog = showDialog,
-//                        title = "Confirmation",
-//                        message = "Are you sure you want to change the default currency?",
-//                        onConfirm = {
-//                            showDialog = false
-//                            defaultCurrency = pendingCurrency
-//                            defaultCurrency?.let { viewModel.saveDefaultCurrency(it) }
-//                        },
-//                        onDismiss = {
-//                            showDialog = false
-//                        }
-//                    )
-//
-//                    InlineSearchBar(
-//                        query = query,
-//                        onQueryChange = { query = it },
-//                        modifier = Modifier.padding(horizontal = 16.dp)
-//                    )
-//                    Text(
-//                        text = "Your Default Currency",
-//                        modifier = Modifier.padding(16.dp)
-//                    )
-//
-//                    defaultCurrency?.let {
-//                        CurrencyListItem(it, onCurrencyClick = {
-//                            print("we clicked on ${it.currencyName}")
-//                            showDialog = true
-//                            defaultCurrency = it
-//                        })
-//                    }
-//                    Text(
-//                        text = "Available Currencies",
-//                        modifier = Modifier.padding(16.dp)
-//                    )
-//                    CurrencyList(
-//                        filteredCurrencies,
-//                        modifier = Modifier.weight(1f), onCurrencyClick = {
-//                            showDialog = true
-//                            pendingCurrency = it
-//                        })
-//                }
-//            }
-//        }
-//    }
-//
-//}
-
 
 @Composable
 fun InlineSearchBar(
@@ -246,7 +165,9 @@ fun InlineSearchBar(
         placeholder = { Text("Search") },
         singleLine = true,
         modifier = modifier
-            .fillMaxWidth(), shape = RoundedCornerShape(16.dp), colors = outlinedTextFieldColors(
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = Teal,
             unfocusedBorderColor = Teal,
             cursorColor = Teal

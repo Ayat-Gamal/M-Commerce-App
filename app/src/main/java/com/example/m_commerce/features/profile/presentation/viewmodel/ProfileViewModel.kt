@@ -25,7 +25,7 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
             else -> ProfileUiState.Success(
                 profileName = currentUser.displayName ?: "",
                 profileImageUrl = currentUser.photoUrl?.toString()
-                    ?: "https://default-profile-image.jpg"
+                    ?: "https://i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg"
             )
         }
     }

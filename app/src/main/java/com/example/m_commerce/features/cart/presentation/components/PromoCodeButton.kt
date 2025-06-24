@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -41,11 +42,15 @@ fun PromoCodeInput(
             placeholder = { Text("Promo Code") },
             colors = textFieldColors(
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
+                focusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = White,
+                unfocusedContainerColor = Color.Transparent,
+                cursorColor = Teal
             ),
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 16.dp),
+                .padding(end = 8.dp)
+                .height(56.dp),
             singleLine = true
         )
 
@@ -56,9 +61,11 @@ fun PromoCodeInput(
                 containerColor = Teal,
                 contentColor = White
             ),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.height(45.dp).padding(start = 8.dp)
         ) {
             Text("Apply")
         }
+
     }
 }

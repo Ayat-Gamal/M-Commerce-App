@@ -58,7 +58,6 @@ fun ProfileScreenUI(
 
     when (uiState) {
         is ProfileUiState.Loading -> {
-            // Show loading spinner
             Text("Loading...")
         }
 
@@ -79,7 +78,7 @@ fun ProfileScreenUI(
 
             ProfileContent(navController , ProfileUiState.Success(
                 profileName = "Mohamed",
-                profileImageUrl = "https://cdn.example.com/image.jpg"
+                profileImageUrl = "https://i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg"
             ))
         }
 
@@ -91,9 +90,14 @@ fun ProfileScreenUI(
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
-@Composable
 
-fun ProfileContent(navController: NavHostController  , profileuistate: ProfileUiState.Success ) {
+val user = FirebaseAuth.getInstance().currentUser
+//var userName =  "Anonymous"
+var userName = user?.displayName ?: "Anonymous"
+var imageUrl = user?.photoUrl ?: " "
+
+@Composable
+fun ProfileContent(navController: NavHostController, profileuistate: ProfileUiState.Success ) {
     val options = listOf(
         ProfileOption("Your profile", Icons.Default.Person),
         ProfileOption("Manage Address", Icons.Default.LocationOn),
@@ -104,9 +108,12 @@ fun ProfileContent(navController: NavHostController  , profileuistate: ProfileUi
         ProfileOption("Settings", Icons.Default.Settings),
         ProfileOption("Help Center", Icons.Default.LocationOn),
     )
+
+
     Scaffold(topBar = {
         DefaultTopBar(title = "Profile ", navController = null)
     }) { padding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -122,28 +129,20 @@ fun ProfileContent(navController: NavHostController  , profileuistate: ProfileUi
                     contentAlignment = Alignment.Center
                 ) {
                     NetworkImage(
-                        url = profileuistate.profileImageUrl,
+                        url = "https://i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg",
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
                             .clip(CircleShape)
                             .border(2.dp, Gray, CircleShape)
                     )
-//
-////                    Image(
-//                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-//                        contentDescription = "Profile photo",
-//                        modifier = Modifier
-//                            .size(100.dp)
-//
-//                        contentScale = ContentScale.Crop
-//                    )
+
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    "Welcome "
+                    "Welcome ${userName} "
                 )
             }
 
