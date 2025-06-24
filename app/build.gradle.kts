@@ -18,9 +18,6 @@ android {
     namespace = "com.example.m_commerce"
     compileSdk = 35
 
-//    val localProperties = Properties().apply {
-//        load(File(rootProject.projectDir, "local.properties").inputStream())
-//    }
 
     val localProperties = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
@@ -32,6 +29,7 @@ android {
 
     val accessToken = localProperties.getProperty("ACCESS_TOKEN")
     val shopDomain = localProperties.getProperty("SHOP_DOMAIN")
+    val adminToken = localProperties.getProperty("ADMIN_TOKEN")
     val emailServiceId = localProperties.getProperty("EMAIL_SERVICE_ID")
     val emailTemplateId = localProperties.getProperty("EMAIL_TEMPLATE_ID")
     val emailPublicKey = localProperties.getProperty("EMAIL_PUBLIC_KEY")
@@ -49,6 +47,7 @@ android {
 
         buildConfigField("String", "ACCESS_TOKEN", accessToken)
         buildConfigField("String", "SHOP_DOMAIN", shopDomain)
+        buildConfigField("String", "ADMIN_TOKEN", adminToken)
 //        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
 //        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
 //        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
