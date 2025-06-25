@@ -7,11 +7,13 @@ import com.example.m_commerce.features.cart.domain.usecases.GetCartByIdUseCase
 import com.example.m_commerce.features.cart.domain.usecases.RemoveProductVariantUseCase
 import com.example.m_commerce.features.cart.domain.usecases.UpdateCartUseCase
 import com.example.m_commerce.features.cart.presentation.CartUiState
+import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.coupon.domain.usecases.ApplyCouponUseCase
-import com.example.m_commerce.features.wishlist.presentation.WishlistUiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +29,10 @@ class CartViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private val _snackBarFlow = MutableSharedFlow<UiEvent>()
+    val snackBarFlow = _snackBarFlow.asSharedFlow()
+
+
     init {
         if (FirebaseAuth.getInstance().currentUser == null) {
             _uiState.tryEmit(CartUiState.Guest)
@@ -41,7 +47,7 @@ class CartViewModel @Inject constructor(
         }
 
         try {
-            getCartByIdUseCase.invoke("cartId").collect { cart ->
+            getCartByIdUseCase.invoke().collect { cart ->
                 when {
                     cart.lines.isEmpty() -> _uiState.value = CartUiState.Empty
                     else -> {
@@ -71,7 +77,10 @@ class CartViewModel @Inject constructor(
                         updateLineQuantity(lineId, newQuantity)
                     }
                     else {
-                        _uiState.value = CartUiState.Error("Maximum quantity reached")
+                            viewModelScope.launch {
+                                _snackBarFlow.emit(UiEvent.ShowSnackbar("Maximum quantity reached"))
+                            }
+
                     }
                 }
             }
@@ -116,10 +125,11 @@ class CartViewModel @Inject constructor(
         try {
             applyCouponUseCase(couponCode).collect { success ->
                 if (success) {
-
                     getCartById()
                 } else {
-                    _uiState.value = CartUiState.Error("Failed to apply coupon")
+                    viewModelScope.launch {
+                        _snackBarFlow.emit(UiEvent.ShowSnackbar("Failed to apply coupon"))
+                    }
                 }
             }
         } catch (e: Exception) {

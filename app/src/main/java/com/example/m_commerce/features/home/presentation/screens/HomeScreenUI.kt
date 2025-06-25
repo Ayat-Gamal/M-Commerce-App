@@ -4,13 +4,13 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,7 +24,6 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.features.brand.domain.entity.Brand
-import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.coupon.domain.entity.Coupon
 import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
@@ -44,7 +43,8 @@ fun HomeScreenUI(
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     navController: NavHostController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    snackBarHostState: SnackbarHostState,
 ) {
 
     val scrollState = rememberScrollState()
@@ -76,7 +76,8 @@ fun HomeScreenUI(
                     brands,
                     categories,
                     couponCodes,
-                    navController
+                    navController,
+                    snackBarHostState
                 )
             } else {
                 FailedScreenCase(msg = "No Data Found")
@@ -102,7 +103,8 @@ private fun LoadedData(
     brands: List<Brand>,
     categories: List<Brand>,
     couponCodes: List<Coupon>,
-    navController: NavHostController
+    navController: NavHostController,
+    snackBarHostState: SnackbarHostState
 ) {
     Column(
         Modifier
@@ -115,7 +117,8 @@ private fun LoadedData(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp), navigateToSpecialOffers,
-            couponCodes
+            couponCodes,
+            snackBarHostState
         )
 
         CategorySection(
