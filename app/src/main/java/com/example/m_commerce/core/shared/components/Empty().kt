@@ -27,7 +27,7 @@ fun Empty(message: String) {
         AnimateLottie(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp),
+                .height(350.dp),
             resourceId = R.raw.empty
         )
         Text(

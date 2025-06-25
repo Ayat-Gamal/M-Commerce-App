@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +38,7 @@ fun HomeScreenUI(
     navigateToCategory: (Brand) -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
+    navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -69,14 +69,18 @@ fun HomeScreenUI(
                     navigateToBrand,
                     brands,
                     categories,
-                    couponCodes
+                    couponCodes,
+                    navController
                 )
             } else {
                 FailedScreenCase(msg = "No Data Found")
             }
         }
 
-        HomeUiState.Search -> SearchScreen(query, PaddingValues(), {}) // TODO Edit PaddingValues
+        HomeUiState.Search -> SearchScreen(
+            navController = navController,
+            isWishlist = false
+        )
     }
 
 }
@@ -90,14 +94,15 @@ private fun LoadedData(
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
     categories: List<Brand>,
-    couponCodes: List<String>
+    couponCodes: List<String>,
+    navController: NavHostController
 ) {
     Column(
         Modifier
             .verticalScroll(scrollState)
             .wrapContentHeight()
     ) {
-        SearchSection()
+        SearchSection(navController = navController)
 
         SpecialOffersSection(
             modifier = Modifier

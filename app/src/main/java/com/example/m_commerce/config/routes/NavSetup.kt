@@ -33,6 +33,7 @@ import com.example.m_commerce.features.product.presentation.screen.ProductDetail
 import com.example.m_commerce.features.profile.presentation.screen.CurrencyScreenUi
 import com.example.m_commerce.features.profile.presentation.screen.HelpCenterScreenUiLayout
 import com.example.m_commerce.features.profile.presentation.screen.ProfileScreenUI
+import com.example.m_commerce.features.search.presentation.SearchScreen
 import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.stripe.android.paymentsheet.PaymentSheet
@@ -69,7 +70,7 @@ fun NavSetup(
             },
                 navigateToCategory = { category ->
                     navController.navigate(AppRoutes.CategoryDetailsScreen(category.name ?: "Empty ID"))
-                }
+                },navController = navController
             )
         }
 
@@ -164,11 +165,18 @@ fun NavSetup(
             CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
-            MapScreenUi(navController,)
+            MapScreenUi(navController)
         }
         composable<AppRoutes.HelpCenterScreen> {
             showBottomNavbar.value = false
-            HelpCenterScreenUiLayout(navController,)
+            HelpCenterScreenUiLayout(navController)
+        }
+
+        composable<AppRoutes.SearchScreen> {
+            showBottomNavbar.value = false
+            val args = it.toRoute<AppRoutes.SearchScreen>()
+
+            SearchScreen(navController, isWishlist = args.isWishlist)
         }
 
     }

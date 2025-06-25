@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,9 +25,8 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.GuestMode
 import com.example.m_commerce.core.shared.components.NoNetwork
+import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
-import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.example.m_commerce.features.home.presentation.components.SearchBarWithClear
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.components.ProductsGridView
 import com.example.m_commerce.features.search.presentation.SearchScreen
@@ -51,19 +49,18 @@ fun WishListScreen(
                 ) {
                     BackButton(navController)
                     SearchBarWithClear(
-                        query = query.value,
-                        onQueryChange = {
-                            query.value = it
-                            viewModel.search(it)
+                        onQueryChange = {},
+                        onClear = {},
+                        enabled = false,
+                        placeholder = "Search in wishlist...",
+                        onclick = {
+                            navController.navigate(AppRoutes.SearchScreen(true))
                         },
-                        onClear = {
-                            query.value = ""
-                            viewModel.search("")
-                        }
+                        modifier = Modifier.padding(end = 16.dp)
                     )
                 }
             } else {
-                DefaultTopBar(title = "", navController = navController)
+                BackButton(navController)
             }
         }
     ) { padding ->
@@ -106,12 +103,16 @@ fun WishListScreen(
 
             WishlistUiState.Search -> {
                 Log.d("TAG", "WishListScreen: WishlistUiState.Search")
-                SearchScreen(query, padding, navigateToProductDetails = { productId ->
-                    navController.navigate(AppRoutes.ProductDetailsScreen(productId))
-                }, { product ->
-                    viewModel.deleteProductFromWishlist(product.id)
-                    viewModel.getProducts()
-                })
+                SearchScreen(
+                    navController,
+                    isWishlist = false
+//                    query, padding, navigateToProductDetails = { productId ->
+//                    navController.navigate(AppRoutes.ProductDetailsScreen(productId))
+//                }, { product ->
+//                    viewModel.deleteProductFromWishlist(product.id)
+//                    viewModel.getProducts()
+//                }
+                )
             }
 
             WishlistUiState.Guest -> {
