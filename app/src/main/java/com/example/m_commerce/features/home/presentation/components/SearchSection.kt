@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.home.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,22 +13,24 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.m_commerce.config.routes.AppRoutes
+import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.features.home.presentation.viewmodel.HomeViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchSection(modifier: Modifier = Modifier, viewModel: HomeViewModel = hiltViewModel()) {
-    var searchQuery by remember { mutableStateOf("") }
+fun SearchSection(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
 
     Column(
         modifier
@@ -47,13 +48,15 @@ fun SearchSection(modifier: Modifier = Modifier, viewModel: HomeViewModel = hilt
             Text("New York, USA")
         }
 
-        SearchBarWithClear(query = searchQuery, onQueryChange = {
-            searchQuery = it
-            viewModel.search(it)
-        }, onClear = {
-            searchQuery = ""
-            viewModel.search("")
-        })
+        SearchBarWithClear(
+            onQueryChange = {},
+            onClear = {},
+            enabled = false,
+            placeholder = "Search...",
+            onclick = {
+                navController.navigate(AppRoutes.SearchScreen(false))
+            },
+        )
 
     }
 }

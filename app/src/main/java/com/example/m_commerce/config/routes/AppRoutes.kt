@@ -28,6 +28,7 @@ sealed class AppRoutes {
     @Serializable
     object CheckoutScreen : AppRoutes()
 
+
     @Serializable
     object PaymentScreen : AppRoutes()
 
@@ -63,6 +64,9 @@ sealed class AppRoutes {
 
     @Serializable
     object HelpCenterScreen : AppRoutes()
+
+    @Serializable
+    data class SearchScreen(val isWishlist: Boolean) : AppRoutes()
 
     // data class AddAddressScreen(val lat: Double, val lng: Double) : AppRoutes
 
