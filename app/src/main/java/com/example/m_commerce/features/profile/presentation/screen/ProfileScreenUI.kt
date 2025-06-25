@@ -51,67 +51,28 @@ fun ProfileScreenUI(
     viewModel: ProfileViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-//    val uiState = viewModel.profileState.collectAsState().value
-    ProfileContent(navController)
+    val user = FirebaseAuth.getInstance().currentUser
+    val options: List<ProfileOption> = if (user != null) {
+        listOf(
+            ProfileOption("Manage Address", Icons.Default.LocationOn),
+            ProfileOption("My Orders", Icons.Default.ShoppingCart),
+            ProfileOption("My Wishlist", Icons.Default.Favorite),
+            ProfileOption("Currency", Icons.Default.CurrencyExchange),
+            ProfileOption("Help Center", Icons.Default.LocationOn),
+        )
+    } else {
+        listOf(
+            ProfileOption("Currency", Icons.Default.CurrencyExchange),
+            ProfileOption("Help Center", Icons.Default.LocationOn),
+            ProfileOption("Login", Icons.Default.LocationOn),
+        )
+    }
 
 
-//    when (uiState) {
-//        is ProfileUiState.Loading -> {
-//            // Show loading spinner
-//            Text("Loading...")
-//        }
-//
-//        is ProfileUiState.Guest -> {
-//            //Text("You're browsing as a guest. Please log in.")
-//        }
-//
-//        is ProfileUiState.NoNetwork -> {
-//            Text("No internet connection. Please try again later.")
-//        }
-//
-//        is ProfileUiState.Error -> {
-//            // Show error message
-//            Text("Error: ${uiState.error}")
-//        }
-//
-//        is ProfileUiState.Success -> {
-//
-//            ProfileContent(
-//                navController, ProfileUiState.Success(
-//                    profileName = "Mohamed",
-//                    profileImageUrl = "https://cdn.example.com/image.jpg"
-//                )
-//            )
-//        }
-//
-//        ProfileUiState.Empty -> {
-//            Text("No data found.")
-//        }
-//    }
-
-}
-
-
-@SuppressLint("StateFlowValueCalledInComposition")
-@Composable
-fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUiState.Success*/) {
-
-    val options = listOf(
-        ProfileOption("Your profile", Icons.Default.Person),
-        ProfileOption("Manage Address", Icons.Default.LocationOn),
-        ProfileOption("Payment Methods", Icons.Default.CreditCard),
-        ProfileOption("My Orders", Icons.Default.ShoppingCart),
-        ProfileOption("My Wishlist", Icons.Default.Favorite),
-        ProfileOption("Currency", Icons.Default.CurrencyExchange),
-        ProfileOption("Settings", Icons.Default.Settings),
-        ProfileOption("Help Center", Icons.Default.LocationOn),
-    )
-
-
-    Scaffold(topBar = {
+    Scaffold(
+        topBar = {
         DefaultTopBar(title = "Profile ", navController = null)
     }) { padding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -127,7 +88,8 @@ fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUi
                     contentAlignment = Alignment.Center
                 ) {
                     NetworkImage(
-                        url = (FirebaseAuth.getInstance().currentUser?.photoUrl ?: "https://images-ext-1.discordapp.net/external/7VlXibo_9bX2x9sVjwk_f6vnZxdJveVCOPfiohEzkho/https/i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg?format=webp&width=920&height=920").toString(),
+                        url = (user?.photoUrl
+                            ?: "https://images-ext-1.discordapp.net/external/7VlXibo_9bX2x9sVjwk_f6vnZxdJveVCOPfiohEzkho/https/i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg?format=webp&width=920&height=920").toString(),
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
@@ -139,9 +101,8 @@ fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUi
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-
                 Text(
-                    "Welcome ${(FirebaseAuth.getInstance().currentUser?.displayName ?: "Guest")}"
+                    (user?.displayName ?: "Guest")
                 )
             }
 
@@ -151,13 +112,11 @@ fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUi
             ProfileOptionsList(items = options) { option ->
                 when (option.title) {
                     "Manage Address" -> navController.navigate(AppRoutes.ManageAddressScreen)
-//                "Your profile" -> navController.navigate("your_profile")
-                    "Payment Methods" -> navController.navigate(AppRoutes.PaymentScreen)
                     "My Orders" -> navController.navigate(AppRoutes.UserOrdersScreen)
                     "My Wishlist" -> navController.navigate(AppRoutes.WishListScreen)
-                    //"My Coupons" -> navController.navigate("my_coupons")
                     "Currency" -> navController.navigate(AppRoutes.CurrencyScreen)
                     "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
+                    "Login" -> navController.navigate(AppRoutes.LoginScreen)
                 }
             }
             if (FirebaseAuth.getInstance().currentUser != null) {
@@ -181,4 +140,6 @@ fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUi
             }
         }
     }
+
 }
+
