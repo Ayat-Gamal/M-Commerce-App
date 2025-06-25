@@ -71,8 +71,13 @@ fun NavSetup(
                 navController.navigate(AppRoutes.BrandDetailsScreen(brand.name ?: "Empty"))
             },
                 navigateToCategory = { category ->
-                    navController.navigate(AppRoutes.CategoryDetailsScreen(category.name ?: "Empty ID"))
-                },navController = navController
+                    navController.navigate(
+                        AppRoutes.CategoryDetailsScreen(
+                            category.name ?: "Empty ID"
+                        )
+                    )
+                }, navController = navController,
+                snackBarHostState = snackBarHostState
             )
         }
 
@@ -103,13 +108,13 @@ fun NavSetup(
             showBottomNavbar.value = false
             val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
             CategoryDetailsScreenUI(
-                categoryId = categoryArgs.categoryId,
+                categoryName = categoryArgs.categoryId,
                 navController = navController
             )
         }
 
         composable<AppRoutes.CartScreen> {
-            CartScreenUI(paddingValues, paymentSheet = paymentSheet , navController = navController )
+            CartScreenUI(paddingValues, paymentSheet = paymentSheet, navController = navController)
         }
 
         composable<AppRoutes.ProfileScreen> {
@@ -132,7 +137,7 @@ fun NavSetup(
         composable<AppRoutes.PaymentScreen> {
             showBottomNavbar.value = false
 
-            PaymentScreenUI(navController , paymentSheet = paymentSheet)
+            PaymentScreenUI(navController, paymentSheet = paymentSheet)
         }
 
         composable<AppRoutes.UserOrdersScreen> {
@@ -152,7 +157,7 @@ fun NavSetup(
         }
         composable<AppRoutes.AddAddressScreen> {
             val args = it.toRoute<AppRoutes.AddAddressScreen>()
-            AddAddressScreen(navController, lat = args.lat , lng = args.lng)
+            AddAddressScreen(navController, lat = args.lat, lng = args.lng)
         }
         composable<AppRoutes.CreditCardDetails> {
             showBottomNavbar.value = false
@@ -167,7 +172,7 @@ fun NavSetup(
             CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
-            MapScreenUi(navController,)
+            MapScreenUi(navController)
         }
         composable<AppRoutes.HelpCenterScreen> {
             showBottomNavbar.value = false

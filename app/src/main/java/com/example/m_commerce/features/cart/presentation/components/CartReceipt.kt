@@ -16,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +31,7 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
+import com.example.m_commerce.core.utils.containsPositiveNumber
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
@@ -48,7 +50,7 @@ fun CartReceipt(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val cart = (uiState as? CartUiState.Success)?.cart
-    var promoCode by remember { mutableStateOf("") }
+    var promoCode by rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
 
@@ -88,20 +90,35 @@ fun CartReceipt(
                     val exchangeRate by currencyViewModel.exchangeRate.collectAsState()
 
                     val receiptItems = listOf(
-                        ReceiptItem("Subtotal",  currencyViewModel.formatPrice(it.subtotalAmount)),
-                        ReceiptItem("Tax", currencyViewModel.formatPrice(it.totalTaxAmount ?: "0.00")),
+                        ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
+                        ReceiptItem(
+                            "Tax",
+                            currencyViewModel.formatPrice(it.totalTaxAmount ?: "0.00")
+                        ),
                         //ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" ))
-                         ReceiptItem("Discount", currencyViewModel.formatPrice(((it.totalAmount.toFloatOrNull() ?: 0f) - (it.subtotalAmount?.toFloatOrNull() ?: 0f)).toString()), isDiscount = true) )
+                        ReceiptItem(
+                            "Discount",
+                            currencyViewModel.formatPrice(
+                                ((it.totalAmount.toFloatOrNull()
+                                    ?: 0f) - (it.subtotalAmount?.toFloatOrNull() ?: 0f)).toString()
+                            ),
+                            isDiscount = true
+                        )
+                    )
                     receiptItems.forEach { item ->
                         CartReceiptItem(item)
                     }
 
                     Divider(Modifier.padding(vertical = 8.dp, horizontal = 8.dp))
 
-                    val convertedTotal = (it.totalAmount.toFloatOrNull() ?: 0f) * exchangeRate
+                    //val convertedTotal = (it.totalAmount.toFloatOrNull() ?: 0f) * exchangeRate
 
                     CartReceiptItem(
-                        ReceiptItem("Total",   currencyViewModel.formatPrice(it.totalAmount ?: "0.00" )))
+                        ReceiptItem(
+                            "Total",
+                            currencyViewModel.formatPrice(it.totalAmount ?: "0.00")
+                        )
+                    )
                 }
             }
 
@@ -120,7 +137,8 @@ fun CartReceipt(
                 textColor = White,
                 height = 50,
                 cornerRadius = 12,
-                onClick = { state = true
+                onClick = {
+                    state = true
                     paymentIntentClientSecret?.let {
                         paymentSheet.presentWithPaymentIntent(
                             it,
@@ -143,10 +161,20 @@ fun CartReceiptItem(item: ReceiptItem) {
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = item.title, fontWeight = FontWeight.Bold , color = if (item.isDiscount)  OfferColor else Teal  )
-        Text(text = item.price , color = if (item.isDiscount)  OfferColor else Black
-        )
+        if (containsPositiveNumber(item.price)) {
+            Text(
+                text = item.title,
+                fontWeight = FontWeight.Bold,
+                color = if (item.isDiscount) OfferColor else Teal
+            )
+            Text(
+                text = item.price, color = if (item.isDiscount) OfferColor else Black
+            )
+
+        }
     }
+
+
 }
 
 
