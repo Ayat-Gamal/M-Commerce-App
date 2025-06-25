@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun SectionTemplate(title: String, hasSeeAll: Boolean = true, seeAllOnClick: () -> Unit, content: @Composable () -> Unit) {
+fun SectionTemplate(title: String, seeAllOnClick: (() -> Unit)?, content: @Composable () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(Modifier.height(12.dp))
         Row(
@@ -29,7 +29,7 @@ fun SectionTemplate(title: String, hasSeeAll: Boolean = true, seeAllOnClick: () 
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = title, style = MaterialTheme.typography.headlineSmall)
-            if (hasSeeAll) Text(
+            if (seeAllOnClick != null) Text(
                 text = "See All", style = MaterialTheme.typography.bodyMedium.copy(
                     textDecoration = TextDecoration.Underline,
                 ), modifier = Modifier.clickable(onClick = seeAllOnClick)

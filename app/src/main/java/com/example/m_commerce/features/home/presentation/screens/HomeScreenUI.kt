@@ -20,11 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.features.brand.domain.entity.Brand
-import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.category.CategorySection
@@ -39,7 +37,6 @@ fun HomeScreenUI(
     modifier: Modifier = Modifier,
     navigateToCategories: () -> Unit,
     navigateToCategory: (Brand) -> Unit,
-    navigateToSpecialOffers: () -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
@@ -61,12 +58,11 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands , couponCodes) = (state as HomeUiState.Success)
+            val (brands, couponCodes) = (state as HomeUiState.Success)
             val categories = brands.takeLast(4)
             if (brands.isNotEmpty()) {
                 LoadedData(
                     scrollState,
-                    navigateToSpecialOffers,
                     navigateToCategories,
                     navigateToCategory,
                     navigateToBrands,
@@ -88,7 +84,6 @@ fun HomeScreenUI(
 @Composable
 private fun LoadedData(
     scrollState: ScrollState,
-    navigateToSpecialOffers: () -> Unit,
     navigateToCategories: () -> Unit,
     navigateToCategory: (Brand) -> Unit,
     navigateToBrands: () -> Unit,
@@ -105,9 +100,10 @@ private fun LoadedData(
         SearchSection()
 
         SpecialOffersSection(
-           modifier = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp), navigateToSpecialOffers,
+                .height(200.dp),
+            couponCodes =
             couponCodes
         )
 

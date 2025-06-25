@@ -53,9 +53,6 @@ fun CartScreenUI(
     val uiState by cartViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-//    LaunchedEffect(Unit) {
-//        cartViewModel.getCartById()
-//    }
 
     Scaffold(
         modifier = modifier.background(Teal),

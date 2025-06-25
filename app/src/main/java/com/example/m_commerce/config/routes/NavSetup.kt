@@ -62,8 +62,6 @@ fun NavSetup(
             showBottomNavbar.value = true
             HomeScreenUI(navigateToCategories = {
                 navController.navigateAndClear(AppRoutes.CategoryScreen)
-            }, navigateToSpecialOffers = {
-                //TODO: @Tag - navigate to special offers here
             }, navigateToBrands = {
                 navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->

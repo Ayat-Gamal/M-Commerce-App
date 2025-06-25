@@ -8,10 +8,10 @@ import com.example.m_commerce.features.home.presentation.components.SectionTempl
 @Composable
 fun SpecialOffersSection(
     modifier: Modifier = Modifier,
-    navigateToSpecialOffers: () -> Unit,
+    navigateToSpecialOffers: (() -> Unit)? = null,
     couponCodes: List<String>
 ) {
-    SectionTemplate(title = "Special Offers", hasSeeAll = false, seeAllOnClick = navigateToSpecialOffers) {
+    SectionTemplate(title = "Special Offers", seeAllOnClick = navigateToSpecialOffers) {
         SpecialOfferCard(couponCodes = couponCodes)
     }
 }
