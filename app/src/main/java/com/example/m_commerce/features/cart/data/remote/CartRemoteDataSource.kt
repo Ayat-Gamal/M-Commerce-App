@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CartRemoteDataSource {
 
-    suspend fun getCartById(id: String) : Flow<Cart>
+    suspend fun getCartById() : Flow<Cart>
     suspend fun updateCart(productVariantId: String, quantity: Int) : Flow<Boolean>
     suspend fun removeProductVariant(productVariantId: String ) : Flow<Boolean>
 

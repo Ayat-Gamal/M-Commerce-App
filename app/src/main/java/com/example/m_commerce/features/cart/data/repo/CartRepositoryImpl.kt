@@ -9,8 +9,8 @@ import javax.inject.Inject
 class CartRepositoryImpl @Inject constructor(
     private val cartRemoteDataSource: CartRemoteDataSource
 ) : CartRepository  {
-    override suspend fun getCartById(id: String): Flow<Cart> {
-        return cartRemoteDataSource.getCartById(id)
+    override suspend fun getCartById(): Flow<Cart> {
+        return cartRemoteDataSource.getCartById()
     }
 
     override suspend fun updateCart(

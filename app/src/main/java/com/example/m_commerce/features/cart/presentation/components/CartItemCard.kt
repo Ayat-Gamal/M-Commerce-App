@@ -40,7 +40,7 @@ import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyVi
 
 @Composable
 fun CartItemCard(
-    prodct: ProductVariant, onIncrease: () -> Unit,
+    product: ProductVariant, onIncrease: () -> Unit,
     onDecrease: () -> Unit, onRemove: () -> Unit, currencyViewModel: CurrencyViewModel
 ) {
     Box {
@@ -59,7 +59,7 @@ fun CartItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = prodct.imageUrl,
+                    model = product.imageUrl,
                     contentDescription = "Product Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -73,13 +73,14 @@ fun CartItemCard(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = prodct.productTitle ,
+                        text = product.productTitle ,
                         fontWeight = FontWeight.Bold)
                     Text(
-                        text = prodct.title)
+                        text = product.title)
                     Spacer(modifier = Modifier.height(4.dp))
+                    Log.i("TAG", "CartItemCard:${currencyViewModel.formatPrice(product.price)}")
                     Text(
-                        text = currencyViewModel.formatPrice(prodct.price),
+                        text = "${currencyViewModel.formatPrice(product.price)}",
                     )
                 }
 
@@ -106,7 +107,7 @@ fun CartItemCard(
                     }
 
                     Text(
-                        text = (prodct.quantity).toString(),
+                        text = (product.quantity).toString(),
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
 
@@ -139,7 +140,7 @@ fun CartItemCard(
                 .padding(8.dp)
                 .size(20.dp)
                 .clickable {
-                    Log.i("TAG", "CartItemCard:${prodct.toString()} ")
+                    Log.i("TAG", "CartItemCard:${product.toString()} ")
                     onRemove()
                 }
         )

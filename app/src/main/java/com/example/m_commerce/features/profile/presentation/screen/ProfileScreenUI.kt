@@ -140,9 +140,8 @@ fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUi
                 Spacer(modifier = Modifier.height(8.dp))
 
 
-
                 Text(
-                    "Welcome ${FirebaseAuth.getInstance().currentUser?.displayName ?: "Guest"}"
+                    "Welcome ${(FirebaseAuth.getInstance().currentUser?.displayName ?: "Guest")}"
                 )
             }
 

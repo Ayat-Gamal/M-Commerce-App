@@ -21,7 +21,7 @@ class CartRemoteDataSourceImpl @Inject constructor(
     private val clientGraph: GraphClient
 ) : CartRemoteDataSource  {
 
-    override suspend fun getCartById(id: String): Flow<Cart> = callbackFlow {
+    override suspend fun getCartById(): Flow<Cart> = callbackFlow {
 
         if (FirebaseAuth.getInstance().currentUser == null) {
             return@callbackFlow

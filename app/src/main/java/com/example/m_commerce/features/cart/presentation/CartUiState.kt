@@ -10,7 +10,11 @@ sealed class CartUiState {
     data object Guest : CartUiState()
     data object NoNetwork : CartUiState()
     data class Success(val cart: Cart) : CartUiState()
-    data object couponApplied : CartUiState()
 }
+
+sealed class UiEvent {
+    data class ShowSnackbar(val message: String): UiEvent()
+}
+
 
 

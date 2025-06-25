@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetCartByIdUseCase @Inject constructor(
     private val cartRepository: CartRepository
 )  {
-    suspend operator fun invoke(id: String) : Flow<Cart> {
-        return cartRepository.getCartById(id)
+    suspend operator fun invoke() : Flow<Cart> {
+        return cartRepository.getCartById()
     }
 }
