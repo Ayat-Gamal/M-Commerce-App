@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,8 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.m_commerce.BuildConfig
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.TextBackground
@@ -28,18 +31,39 @@ import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.payment.presentation.screen.createPaymentIntent
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
+import com.stripe.android.PaymentConfiguration
+import com.stripe.android.paymentsheet.PaymentSheet
 
 
 @Composable
 fun CartReceipt(
     paddingValues: PaddingValues,
     viewModel: CartViewModel,
-    currencyViewModel: CurrencyViewModel
+    currencyViewModel: CurrencyViewModel,
+    paymentSheet: PaymentSheet
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val cart = (uiState as? CartUiState.Success)?.cart
     var promoCode by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    var paymentIntentClientSecret by remember { mutableStateOf<String?>(null) }
+
+    val publishableKey = BuildConfig.PAYMENT_PUBLISHABLE_KEY
+
+    LaunchedEffect(Unit) {
+        PaymentConfiguration.init(context, publishableKey)
+
+        createPaymentIntent { result ->
+            result.onSuccess { clientSecret ->
+                paymentIntentClientSecret = clientSecret
+            }.onFailure { error ->
+                error.printStackTrace()
+            }
+        }
+    }
 
     Column(modifier = Modifier.background(Background)) {
         Column(
@@ -94,7 +118,15 @@ fun CartReceipt(
                 textColor = White,
                 height = 50,
                 cornerRadius = 12,
-                onClick = { state = true }
+                onClick = { state = true
+                    paymentIntentClientSecret?.let {
+                        paymentSheet.presentWithPaymentIntent(
+                            it,
+                            PaymentSheet.Configuration("My Test Store")
+                        )
+                    }
+                    state = false
+                }
             )
         }
     }

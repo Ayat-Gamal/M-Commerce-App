@@ -112,12 +112,12 @@ fun SpecialOfferCard(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = "Up to",
+                                text = "get Gifts",
                                 fontSize = 14.sp,
                                 color = Color.White
                             )
                             Text(
-                                text = "5% OFF",
+                                text = "Now",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White

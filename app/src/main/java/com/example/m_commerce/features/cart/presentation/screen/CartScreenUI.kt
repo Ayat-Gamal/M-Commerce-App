@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,13 +36,15 @@ import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
+import com.stripe.android.paymentsheet.PaymentSheet
 
 @Composable
 fun CartScreenUI(
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
     cartViewModel: CartViewModel = hiltViewModel(),
-    currencyViewModel: CurrencyViewModel = hiltViewModel()
+    currencyViewModel: CurrencyViewModel = hiltViewModel(),
+    paymentSheet: PaymentSheet
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -63,7 +63,8 @@ fun CartScreenUI(
                 CartReceipt(
                     paddingValues,
                     viewModel = cartViewModel,
-                    currencyViewModel = currencyViewModel
+                    currencyViewModel = currencyViewModel,
+                    paymentSheet = paymentSheet
                 )
             }
         },
@@ -83,6 +84,7 @@ fun CartScreenUI(
                         color = Teal
                     )
                 }
+
                 is CartUiState.Success -> {
                     val cart = (uiState as CartUiState.Success).cart
                     CartContent(
@@ -104,7 +106,6 @@ fun CartScreenUI(
                 is CartUiState.Guest -> {
                     Text(
                         text = "Please login to view your cart",
-                        style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(24.dp)
                     )
@@ -113,7 +114,6 @@ fun CartScreenUI(
                 is CartUiState.NoNetwork -> {
                     Text(
                         text = "No internet connection",
-                        style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(24.dp)
                     )
@@ -122,12 +122,19 @@ fun CartScreenUI(
                 is CartUiState.Error -> {
                     Text(
                         text = "Error loading cart",
-                        style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(24.dp)
                     )
                 }
 
+                CartUiState.couponApplied -> {
+                    LaunchedEffect(Unit) {
+                        snackbarHostState.showSnackbar(
+                            message = "Coupon applied successfully",
+                            withDismissAction = true
+                        )
+                    }
+                }
             }
         }
     }
@@ -153,11 +160,14 @@ fun CartContent(
                 CartItemCard(
                     prodct = line,
                     onIncrease = {
-                        viewModel.increaseQuantity(line.lineId) },
+                        viewModel.increaseQuantity(line.lineId)
+                    },
                     onDecrease = {
-                        viewModel.decreaseQuantity(line.lineId) },
+                        viewModel.decreaseQuantity(line.lineId)
+                    },
                     onRemove = {
-                        viewModel.removeLine(line.lineId) },
+                        viewModel.removeLine(line.lineId)
+                    },
                     currencyViewModel
                 )
 

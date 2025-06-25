@@ -103,6 +103,7 @@ class CartViewModel @Inject constructor(
         try {
             applyCouponUseCase(couponCode).collect { success ->
                 if (success) {
+
                     getCartById()
                 } else {
                     _uiState.value = CartUiState.Error("Failed to apply coupon")

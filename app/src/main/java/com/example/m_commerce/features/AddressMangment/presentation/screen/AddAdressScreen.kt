@@ -2,7 +2,6 @@ package com.example.m_commerce.features.AddressMangment.presentation.screen
 
 import android.location.Geocoder
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,7 +33,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
@@ -42,11 +40,9 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
-import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.presentation.viewmodel.AddressViewModel
-import com.shopify.buy3.Storefront
-import kotlinx.coroutines.launch
 import java.util.Locale
+
 @Composable
 fun AddAddressScreen(
     navController: NavHostController,
@@ -211,6 +207,7 @@ fun AddAddressScreen(
                             fieldErrors[field] = "This field is required"
                             isValid = false
                         }
+
                     }
 
                     if (isValid) {
@@ -222,6 +219,9 @@ fun AddAddressScreen(
                             zip = zipCode,
                             phone = phone
                         )
+                    }
+                    navController.navigate(AppRoutes.ManageAddressScreen) {
+                        popUpTo(AppRoutes.ManageAddressScreen) { inclusive = true }
                     }
                 }
             )

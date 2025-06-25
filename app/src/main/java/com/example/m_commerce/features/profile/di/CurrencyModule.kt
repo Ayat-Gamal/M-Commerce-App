@@ -29,7 +29,7 @@ object CurrencyModule {
     @Singleton
     fun provideCurrencyApiService(): CurrencyApiService =
         Retrofit.Builder()
-            .baseUrl("https://api.exchangeratesapi.io/v1/")
+            .baseUrl("https://v6.exchangerate-api.com/v6/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(CurrencyApiService::class.java)
