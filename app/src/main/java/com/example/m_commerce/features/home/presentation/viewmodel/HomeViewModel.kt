@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getBrandsUseCase: GetBrandsUseCase,
-//    private val getSubCategoryUseCase: GetSubCategoriesUseCase,
     private val getCouponsUseCase: GetCouponsUseCase
 ) : ViewModel() {
 

@@ -40,7 +40,6 @@ fun HomeScreenUI(
     modifier: Modifier = Modifier,
     navigateToCategories: () -> Unit,
     navigateToCategory: (Brand) -> Unit,
-    navigateToSpecialOffers: () -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     navController: NavHostController,
@@ -63,12 +62,11 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands , couponCodes) = (state as HomeUiState.Success)
+            val (brands, couponCodes) = (state as HomeUiState.Success)
             val categories = brands.takeLast(4)
             if (brands.isNotEmpty()) {
                 LoadedData(
                     scrollState,
-                    navigateToSpecialOffers,
                     navigateToCategories,
                     navigateToCategory,
                     navigateToBrands,
@@ -94,7 +92,6 @@ fun HomeScreenUI(
 @Composable
 private fun LoadedData(
     scrollState: ScrollState,
-    navigateToSpecialOffers: () -> Unit,
     navigateToCategories: () -> Unit,
     navigateToCategory: (Brand) -> Unit,
     navigateToBrands: () -> Unit,
@@ -114,7 +111,8 @@ private fun LoadedData(
         SpecialOffersSection(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp), navigateToSpecialOffers,
+                .height(200.dp),
+            couponCodes =
             couponCodes
         )
 

@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
@@ -40,6 +41,9 @@ import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
+import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.stripe.android.paymentsheet.PaymentSheet
 
@@ -50,14 +54,42 @@ fun CartScreenUI(
     navController: NavHostController,
     cartViewModel: CartViewModel = hiltViewModel(),
     currencyViewModel: CurrencyViewModel = hiltViewModel(),
+    orderViewModel: OrderViewModel = hiltViewModel(),
     paymentSheet: PaymentSheet
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-//    LaunchedEffect(Unit) {
-//        cartViewModel.getCartById()
-//    }
+    val orderState = orderViewModel.state.collectAsStateWithLifecycle()
+
+    val lineItems = listOf(
+        LineItem(
+            variantId = "gid://shopify/ProductVariant/46559944376569",
+            title = "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
+            quantity = 2,
+            originalUnitPrice = "150",
+            specs = "",
+            image = "",
+        )
+    )
+
+    Log.d(
+        "Order",
+        "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}"
+    )
+
+
+
+
+    LaunchedEffect(Unit) {
+        if (orderState.value is OrderUiState.Success) {
+            snackbarHostState.showSnackbar("Order completed")
+        } else if (orderState.value is OrderUiState.Error) {
+            snackbarHostState.showSnackbar((orderState.value as OrderUiState.Error).message)
+        } else {
+            snackbarHostState.showSnackbar("Loading")
+        }
+    }
 
     Scaffold(
         modifier = modifier.background(Teal),
@@ -66,11 +98,14 @@ fun CartScreenUI(
         },
         bottomBar = {
             if (uiState is CartUiState.Success) {
+                val cart = (uiState as CartUiState.Success).cart
                 CartReceipt(
                     paddingValues,
-                    viewModel = cartViewModel,
+                    cartViewModel = cartViewModel,
                     currencyViewModel = currencyViewModel,
-                    paymentSheet = paymentSheet
+                    paymentSheet = paymentSheet,
+                    cart = cart,
+                    orderViewModel = orderViewModel
                 )
             }
         },

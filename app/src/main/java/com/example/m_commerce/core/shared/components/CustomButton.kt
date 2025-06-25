@@ -18,8 +18,8 @@ import com.example.m_commerce.config.theme.White
 
 @Composable
 fun CustomButton(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     height: Int = 56,
     cornerRadius: Int = 24,
     backgroundColor: Color = Teal,

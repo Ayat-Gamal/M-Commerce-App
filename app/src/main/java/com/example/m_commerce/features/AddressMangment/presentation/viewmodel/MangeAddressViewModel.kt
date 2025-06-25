@@ -124,7 +124,7 @@ class AddressViewModel @Inject constructor(
             }
         }
     }
-    private suspend fun getDefaultAddress() {
+     fun getDefaultAddress() = viewModelScope.launch {
         getDefaultAddressUseCase().collect { response ->
             Log.i("TAG", "getDefaultAddress ${response}: ")
             when (response) {
@@ -179,7 +179,7 @@ class AddressViewModel @Inject constructor(
             getAddressesUseCase().collect { response ->
                 when (response) {
                     is Response.Success -> {
-                        Log.i("TAG", "loadAddresses: here ${response} ")
+//                        Log.i("TAG", "loadAddresses: here ${response} ")
                         _isLoading.value = true
                         getDefaultAddressUseCase().collect(){
                                 response ->

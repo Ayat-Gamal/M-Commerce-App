@@ -41,9 +41,7 @@ fun UserOrdersScreenUI(modifier: Modifier = Modifier, navController: NavHostCont
             val msg = (state as OrderHistoryUiState.Error).message
             Log.d("OrderHistory", "UserOrdersScreenUI: ${msg}")
 
-            FailedScreenCase(
-                msg = msg
-            )
+            FailedScreenCase(msg = msg)
 
         }
 
@@ -67,11 +65,10 @@ private fun LoadedData(navController: NavHostController, orders: List<OrderHisto
     }) { padding ->
         LazyColumn(
             modifier = Modifier.padding(padding),
-            contentPadding = PaddingValues(vertical = 18.dp)
+            contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             items(orders.size) {
                 OrderTrackingCard(order = orders[it])
-                if (it != orders.size -1) HorizontalDivider()
             }
         }
     }

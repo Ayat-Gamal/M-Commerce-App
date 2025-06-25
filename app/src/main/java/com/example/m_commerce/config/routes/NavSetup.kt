@@ -63,8 +63,6 @@ fun NavSetup(
             showBottomNavbar.value = true
             HomeScreenUI(navigateToCategories = {
                 navController.navigateAndClear(AppRoutes.CategoryScreen)
-            }, navigateToSpecialOffers = {
-                //TODO: @Tag - navigate to special offers here
             }, navigateToBrands = {
                 navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->
@@ -106,7 +104,7 @@ fun NavSetup(
             showBottomNavbar.value = false
             val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
             CategoryDetailsScreenUI(
-                categoryId = categoryArgs.categoryId,
+                categoryName = categoryArgs.categoryId,
                 navController = navController
             )
         }

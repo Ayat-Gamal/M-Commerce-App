@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.cart.presentation.viewmodel
 
+import ProductVariant
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,11 +9,13 @@ import com.example.m_commerce.features.cart.domain.usecases.RemoveProductVariant
 import com.example.m_commerce.features.cart.domain.usecases.UpdateCartUseCase
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.coupon.domain.usecases.ApplyCouponUseCase
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
 import com.example.m_commerce.features.wishlist.presentation.WishlistUiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -111,6 +114,21 @@ class CartViewModel @Inject constructor(
             _uiState.value = CartUiState.Error(e.message ?: "Remove failed")
         }
     }
+    fun clearCart(items: List<ProductVariant>) = viewModelScope.launch {
+        try {
+            for (item in items) {
+                val success = removeProductVariantUseCase(item.lineId).first()
+                if (!success) {
+                    _uiState.value = CartUiState.Error("Failed to remove item: ${item.lineId}")
+                    return@launch
+                }
+            }
+            getCartById()
+        } catch (e: Exception) {
+            _uiState.value = CartUiState.Error(e.message ?: "Clear failed")
+        }
+    }
+
 
     fun applyCoupon(couponCode: String) = viewModelScope.launch {
         try {
