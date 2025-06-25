@@ -73,20 +73,10 @@ fun CartItemCard(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = prodct.productTitle
-                            .split("|")
-                            .getOrNull(2)
-                            ?.trim()
-                            .takeIf { it?.isNotBlank() == true }
-                            ?: "No Title",
+                        text = prodct.productTitle ,
                         fontWeight = FontWeight.Bold)
                     Text(
-                        text = prodct.productTitle
-                            .split("|")
-                            .getOrNull(0)
-                            ?.trim()
-                            .takeIf { it?.isNotBlank() == true }
-                            ?: "No Title" )
+                        text = prodct.title)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = currencyViewModel.formatPrice(prodct.price),

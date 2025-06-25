@@ -8,4 +8,5 @@ data class ProductVariant(
     val imageUrl: String?,
     val imageAlt: String?,
     val productTitle: String,
+    val availableQuantity: Int
 )

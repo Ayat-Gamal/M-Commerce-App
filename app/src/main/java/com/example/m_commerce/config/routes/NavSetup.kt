@@ -107,7 +107,7 @@ fun NavSetup(
         }
 
         composable<AppRoutes.CartScreen> {
-            CartScreenUI(paddingValues, navController = navController)
+            CartScreenUI(paddingValues, paymentSheet = paymentSheet , navController = navController )
         }
 
         composable<AppRoutes.ProfileScreen> {
@@ -165,7 +165,7 @@ fun NavSetup(
             CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
-            MapScreenUi(navController)
+            MapScreenUi(navController,)
         }
         composable<AppRoutes.HelpCenterScreen> {
             showBottomNavbar.value = false

@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,8 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.features.brand.domain.entity.Brand
+import com.example.m_commerce.features.categories.domain.entity.Category
+import com.example.m_commerce.features.coupon.domain.entity.Coupon
 import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
 import com.example.m_commerce.features.home.presentation.components.category.CategorySection
@@ -95,7 +98,7 @@ private fun LoadedData(
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
     categories: List<Brand>,
-    couponCodes: List<String>,
+    couponCodes: List<Coupon>,
     navController: NavHostController
 ) {
     Column(

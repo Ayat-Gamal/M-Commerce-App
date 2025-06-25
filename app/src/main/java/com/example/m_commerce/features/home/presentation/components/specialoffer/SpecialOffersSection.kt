@@ -3,13 +3,14 @@ package com.example.m_commerce.features.home.presentation.components.specialoffe
 import SpecialOfferCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.example.m_commerce.features.coupon.domain.entity.Coupon
 import com.example.m_commerce.features.home.presentation.components.SectionTemplate
 
 @Composable
 fun SpecialOffersSection(
     modifier: Modifier = Modifier,
+    couponCodes: List<Coupon>,
     navigateToSpecialOffers: (() -> Unit)? = null,
-    couponCodes: List<String>
 ) {
     SectionTemplate(title = "Special Offers", seeAllOnClick = navigateToSpecialOffers) {
         SpecialOfferCard(couponCodes = couponCodes)

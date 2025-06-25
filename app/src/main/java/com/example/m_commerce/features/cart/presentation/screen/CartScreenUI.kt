@@ -41,6 +41,7 @@ import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
+import com.stripe.android.paymentsheet.PaymentSheet
 
 @Composable
 fun CartScreenUI(
@@ -48,7 +49,8 @@ fun CartScreenUI(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     cartViewModel: CartViewModel = hiltViewModel(),
-    currencyViewModel: CurrencyViewModel = hiltViewModel()
+    currencyViewModel: CurrencyViewModel = hiltViewModel(),
+    paymentSheet: PaymentSheet
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -64,7 +66,8 @@ fun CartScreenUI(
                 CartReceipt(
                     paddingValues,
                     viewModel = cartViewModel,
-                    currencyViewModel = currencyViewModel
+                    currencyViewModel = currencyViewModel,
+                    paymentSheet = paymentSheet
                 )
             }
         },
@@ -110,7 +113,6 @@ fun CartScreenUI(
                 is CartUiState.NoNetwork -> {
                     Text(
                         text = "No internet connection",
-                        style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(24.dp)
                     )
@@ -125,6 +127,14 @@ fun CartScreenUI(
                     )
                 }
 
+                CartUiState.couponApplied -> {
+                    LaunchedEffect(Unit) {
+                        snackbarHostState.showSnackbar(
+                            message = "Coupon applied successfully",
+                            withDismissAction = true
+                        )
+                    }
+                }
             }
         }
     }

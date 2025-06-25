@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.AddressMangment.data.remote
 
+import android.util.Log
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.domain.entity.DeleteResponse
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
@@ -146,7 +147,6 @@ class AddressDataSourceImpl @Inject constructor(
 
     override suspend fun setDefaultAddress(addressId: String): Flow<Response<Unit>> = callbackFlow {
         trySend(Response.Loading)
-
         try {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
                 ?: throw Exception("User not authenticated")
@@ -185,6 +185,7 @@ class AddressDataSourceImpl @Inject constructor(
                         if (errors.isNullOrEmpty()) {
                             trySend(Response.Success(Unit))
                         } else {
+                            Log.i("TAG", "setDefaultAddress:  ${errors }  ${errors.joinToString()}" )
                             val errorMsg = errors.joinToString { it.message ?: "Unknown error" }
                             trySend(Response.Error("Failed to set default address: $errorMsg"))
                         }
