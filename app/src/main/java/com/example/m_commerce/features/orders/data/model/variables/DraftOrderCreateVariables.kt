@@ -31,6 +31,9 @@ fun Storefront. MailingAddress.toDomain() = ShippingAddress(
 
 data class LineItem(
     val variantId: String,
+    val title: String,
     val quantity: Int,
-    val originalUnitPrice: String
+    val originalUnitPrice: String? = null ,
+    val specs: String? = null ,
+    val image: String? = null ,
 )

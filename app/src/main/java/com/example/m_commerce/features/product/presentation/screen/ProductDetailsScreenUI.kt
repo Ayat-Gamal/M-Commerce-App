@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.product.presentation.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,12 +36,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,23 +65,49 @@ import coil3.request.crossfade
 import com.example.m_commerce.config.theme.DarkestGray
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomButton
-import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.core.shared.components.Failed
+import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
 import com.example.m_commerce.features.product.presentation.components.VariantHeaderText
 import com.example.m_commerce.features.product.presentation.components.VariantValueText
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun ProductDetailsScreenUI(
-    modifier: Modifier = Modifier,
+    snackBarHostState: SnackbarHostState,
     productId: String,
     navController: NavHostController,
     viewModel: ProductViewModel = hiltViewModel()
 ) {
+//    var isClicked by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+//    var favoriteState by remember { mutableStateOf(Icons.Default.FavoriteBorder) }
+    var isFavorite by remember { mutableStateOf(false) }
+    var isFavoriteInitialized by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.getProductById(productId)
+
+        viewModel.message.collect { event ->
+            scope.launch {
+                snackBarHostState.currentSnackbarData?.dismiss()
+
+                val result = snackBarHostState.showSnackbar(
+                    message = event.message,
+                    actionLabel = event.actionLabel,
+                    duration = SnackbarDuration.Short
+                )
+
+                if (result == SnackbarResult.ActionPerformed) {
+                    event.onAction?.invoke()
+                    isFavorite = true
+                }
+            }
+        }
     }
 
     val isLoading = remember { mutableStateOf(false) }
@@ -85,15 +116,22 @@ fun ProductDetailsScreenUI(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold {
+    Scaffold(
+        topBar = { BackButton(navController) }
+    ) {
         when (uiState) {
             is ProductUiState.Success -> {
                 val product = (uiState as ProductUiState.Success).product
                 val pagerState = rememberPagerState(pageCount = { product.images.size })
-                var selectedSize by remember { mutableStateOf(product.sizes[0]) }
-                var selectedColor by remember { mutableStateOf(product.colors[0]) }
-                var favoriteState by remember { mutableStateOf(if ((uiState as ProductUiState.Success).isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder) }
-                var isFavorite by remember { mutableStateOf((uiState as ProductUiState.Success).isFavorite) }
+                var selectedSize by remember { mutableStateOf(if (product.sizes.isNotEmpty()) product.sizes[0] else "") }
+                var selectedColor by remember { mutableStateOf(if (product.sizes.isNotEmpty()) product.colors[0] else "") }
+
+                LaunchedEffect(uiState) {
+                    if (!isFavoriteInitialized ) {
+                        isFavorite = (uiState as ProductUiState.Success).isFavorite
+                        isFavoriteInitialized = true
+                    }
+                }
 
                 Column(
                     modifier = Modifier
@@ -106,8 +144,6 @@ fun ProductDetailsScreenUI(
                             .weight(1f)
                             .verticalScroll(scrollState)
                     ) {
-
-                        DefaultTopBar(title = "", navController = navController)
 
                         // images
                         HorizontalPager(
@@ -142,7 +178,7 @@ fun ProductDetailsScreenUI(
                                 modifier = Modifier.padding(top = 16.dp)
                             )
                             Icon(
-                                imageVector = favoriteState,
+                                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = "Favorite icon",
                                 modifier = Modifier
                                     .size(36.dp)
@@ -150,21 +186,19 @@ fun ProductDetailsScreenUI(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
                                     ) {
+
+//                                        if (isClicked) return@clickable
+
                                         if (isFavorite) {
                                             viewModel.deleteProductFromWishlist(product.id)
-                                            favoriteState = Icons.Default.FavoriteBorder
-                                            isFavorite = false
                                         } else {
                                             viewModel.addProductToWishlist(product.id)
-                                            favoriteState = Icons.Default.Favorite
-                                            isFavorite = true
                                         }
+
+                                        isFavorite = !isFavorite
+//                                        isClicked = true
                                     },
-                                tint = if (favoriteState == Icons.Default.Favorite) {
-                                    Color.Red
-                                } else {
-                                    LocalContentColor.current
-                                }
+                                tint = if (isFavorite) Color.Red else LocalContentColor.current
                             )
                         }
 
@@ -237,13 +271,13 @@ fun ProductDetailsScreenUI(
                             }
                             Spacer(Modifier.height(8.dp))
 
-                            Row(
+                            LazyRow(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 16.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                product.sizes.forEach { size ->
+                                items(product.sizes) { size ->
                                     val isSelected = selectedSize == size
                                     FilterChip(
                                         selected = isSelected,
@@ -350,7 +384,10 @@ fun ProductDetailsScreenUI(
                 }
             }
 
-            is ProductUiState.Error -> {}
+            is ProductUiState.Error -> {
+                Failed((uiState as ProductUiState.Error).message)
+            }
+
             ProductUiState.Loading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()

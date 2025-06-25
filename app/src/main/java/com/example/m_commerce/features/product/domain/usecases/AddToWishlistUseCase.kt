@@ -6,7 +6,5 @@ import javax.inject.Inject
 class AddToWishlistUseCase @Inject constructor(
     private val repo: WishlistRepository
 ) {
-    suspend operator fun invoke(productVariantId: String) {
-        return repo.addToWishlist(productVariantId)
-    }
+    suspend operator fun invoke(productVariantId: String) = repo.addToWishlist(productVariantId)
 }

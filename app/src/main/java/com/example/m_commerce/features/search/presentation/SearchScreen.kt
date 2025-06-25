@@ -419,7 +419,7 @@ fun FilterDropMenu(
 ) {
     val options = when (filterType) {
         "Color" -> viewModel.colors
-        "Category" -> listOf("Shoes", "Accessories", "T-Shirts")
+        "Category" -> viewModel.categories
         "Brand" -> viewModel.brands
         else -> emptyList()
     }

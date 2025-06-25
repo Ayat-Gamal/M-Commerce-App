@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
@@ -45,6 +45,9 @@ import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
+import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.stripe.android.paymentsheet.PaymentSheet
 
@@ -55,6 +58,7 @@ fun CartScreenUI(
     navController: NavHostController,
     cartViewModel: CartViewModel = hiltViewModel(),
     currencyViewModel: CurrencyViewModel = hiltViewModel(),
+    orderViewModel: OrderViewModel = hiltViewModel(),
     paymentSheet: PaymentSheet
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
@@ -79,11 +83,14 @@ fun CartScreenUI(
         },
         bottomBar = {
             if (uiState is CartUiState.Success) {
+                val cart = (uiState as CartUiState.Success).cart
                 CartReceipt(
                     paddingValues,
-                    viewModel = cartViewModel,
+                    cartViewModel = cartViewModel,
                     currencyViewModel = currencyViewModel,
-                    paymentSheet = paymentSheet
+                    paymentSheet = paymentSheet,
+                    cart = cart,
+                    orderViewModel = orderViewModel
                 )
             }
         },

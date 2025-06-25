@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.cart.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,8 +35,11 @@ import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.utils.containsPositiveNumber
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
-import com.example.m_commerce.features.cart.presentation.CartUiState
+import com.example.m_commerce.features.cart.domain.entity.Cart
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.orders.data.PaymentMethod
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.payment.presentation.screen.createPaymentIntent
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.stripe.android.PaymentConfiguration
@@ -44,9 +49,11 @@ import com.stripe.android.paymentsheet.PaymentSheet
 @Composable
 fun CartReceipt(
     paddingValues: PaddingValues,
-    viewModel: CartViewModel,
+    cartViewModel: CartViewModel,
     currencyViewModel: CurrencyViewModel,
-    paymentSheet: PaymentSheet
+    paymentSheet: PaymentSheet,
+    orderViewModel: OrderViewModel,
+    cart: Cart
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val cart = (uiState as? CartUiState.Success)?.cart
@@ -56,6 +63,9 @@ fun CartReceipt(
 
     var paymentIntentClientSecret by remember { mutableStateOf<String?>(null) }
     val publishableKey = BuildConfig.PAYMENT_PUBLISHABLE_KEY
+
+    val showSheet: MutableState<Boolean> = remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         PaymentConfiguration.init(context, publishableKey)
 
@@ -67,6 +77,8 @@ fun CartReceipt(
             }
         }
     }
+
+
 
     Column(modifier = Modifier.background(Background)) {
         Column(
@@ -80,7 +92,7 @@ fun CartReceipt(
                 promoCode = promoCode,
                 onPromoCodeChange = { promoCode = it },
                 onApplyClick = {
-                    viewModel.applyCoupon(promoCode)
+                    cartViewModel.applyCoupon(promoCode)
                 },
                 modifier = Modifier.padding(16.dp)
             )
@@ -124,6 +136,35 @@ fun CartReceipt(
 
             var state by remember { mutableStateOf(false) }
 
+            CheckoutBottomSheet(showSheet = showSheet) { paymentMethod ->
+
+                if (paymentMethod == PaymentMethod.CreditCard) {
+                    state = true
+                    paymentIntentClientSecret?.let {
+                        paymentSheet.presentWithPaymentIntent(
+                            it,
+                            PaymentSheet.Configuration("My Test Store")
+                        )
+                    }
+                    state = false
+                } else {
+                    val lineItems = cart.lines.map {
+                        LineItem(
+                            variantId = it.id,
+                            title = it.productTitle,
+                            quantity = it.quantity,
+                        )
+
+                    }
+                    Log.d("OrderItem", "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}")
+                    orderViewModel.createOrderAndSendEmail(
+                        items = lineItems,
+                        paymentMethod = paymentMethod
+                    )
+                    cartViewModel.clearCart(cart.lines)
+                }
+            }
+
             CustomButton(
                 modifier = Modifier.padding(
                     start = 16.dp,
@@ -138,14 +179,9 @@ fun CartReceipt(
                 height = 50,
                 cornerRadius = 12,
                 onClick = {
-                    state = true
-                    paymentIntentClientSecret?.let {
-                        paymentSheet.presentWithPaymentIntent(
-                            it,
-                            PaymentSheet.Configuration("My Test Store")
-                        )
-                    }
-                    state = false
+                    showSheet.value = true
+
+
                 }
             )
         }

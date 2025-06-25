@@ -2,14 +2,18 @@ package com.example.m_commerce.features.wishlist.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.features.product.domain.usecases.AddToWishlistUseCase
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
+import com.example.m_commerce.features.product.presentation.SnackBarMessage
 import com.example.m_commerce.features.wishlist.domain.usecases.DeleteFromWishlistUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.GetWishlistUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapConcat
@@ -24,9 +28,13 @@ class WishlistViewModel @Inject constructor(
     private val getWishlist: GetWishlistUseCase,
     private val getProductById: GetProductByIdUseCase,
     private val deleteFromWishlist: DeleteFromWishlistUseCase,
+    private val addToWishlist: AddToWishlistUseCase,
 ) : ViewModel() {
     private var _uiState = MutableStateFlow<WishlistUiState>(WishlistUiState.Loading)
     val uiState = _uiState.asStateFlow()
+
+    private var _message = MutableSharedFlow<SnackBarMessage>()
+    val message = _message.asSharedFlow()
 
     init {
         if (FirebaseAuth.getInstance().currentUser == null) {
@@ -72,5 +80,21 @@ class WishlistViewModel @Inject constructor(
 
     fun deleteProductFromWishlist(productVariantId: String) = viewModelScope.launch {
         deleteFromWishlist(productVariantId)
+            .catch { _message.emit(SnackBarMessage("Failed to remove product from wishlist: ${it.message}")) }
+            .collect {
+                _message.emit(SnackBarMessage(
+                    message = it,
+                    actionLabel = "Undo",
+                    onAction = {
+                        viewModelScope.launch {
+                            addToWishlist(productVariantId).catch { e ->
+                                _message.emit(SnackBarMessage("Failed to add product to wishlist: ${e.message}"))
+                            }.collect {
+                                getProducts()
+                            }
+                        }
+                    }
+                ))
+            }
     }
 }

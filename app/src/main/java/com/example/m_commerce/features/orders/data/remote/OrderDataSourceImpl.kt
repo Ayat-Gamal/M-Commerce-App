@@ -71,7 +71,6 @@ class OrderDataSourceImpl @Inject constructor(
 
     override fun fetchOrders(): Flow<OrderHistoryUiState> = callbackFlow {
 
-        val auth = FirebaseAuth.getInstance()
         val userId = auth.currentUser?.uid
 
         val userDocument = firestore.collection("users").document(userId ?: "").get()
@@ -93,6 +92,14 @@ class OrderDataSourceImpl @Inject constructor(
                                 it.nodes { item ->
                                     item.title()
                                     item.quantity()
+                                    item.variant {
+                                        it.title()
+                                        it.image {
+                                            it.url()
+
+                                        }
+
+                                    }
                                 }
                             }
                     }
@@ -123,6 +130,9 @@ class OrderDataSourceImpl @Inject constructor(
                                     variantId = it.title.orEmpty(),
                                     quantity = it.quantity,
                                     originalUnitPrice = "",
+                                    image = it.variant?.image?.url ?: "",
+                                    title = it.title,
+                                    specs = it.variant?.title ?: "",
                                 )
                             }
                         )

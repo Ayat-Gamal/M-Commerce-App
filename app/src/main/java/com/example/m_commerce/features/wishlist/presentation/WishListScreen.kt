@@ -11,10 +11,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,13 +34,32 @@ import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.components.ProductsGridView
 import com.example.m_commerce.features.search.presentation.SearchScreen
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 @Composable
 fun WishListScreen(
+    snackBarHostState: SnackbarHostState,
     navController: NavHostController,
     viewModel: WishlistViewModel = hiltViewModel()
 ) {
-    val query = remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        viewModel.message.collect { event ->
+            scope.launch {
+                snackBarHostState.currentSnackbarData?.dismiss()
+
+                val result = snackBarHostState.showSnackbar(
+                    message = event.message,
+                    actionLabel = event.actionLabel,
+                    duration = SnackbarDuration.Short
+                )
+
+                if (result == SnackbarResult.ActionPerformed) {
+                    event.onAction?.invoke()
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -65,9 +87,6 @@ fun WishListScreen(
         }
     ) { padding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-//        Column(Modifier.padding(padding)) {
-//            DefaultTopBar(title = "WishList", navController = navController)
 
         when (uiState) {
             is WishlistUiState.Success -> {
@@ -106,12 +125,6 @@ fun WishListScreen(
                 SearchScreen(
                     navController,
                     isWishlist = false
-//                    query, padding, navigateToProductDetails = { productId ->
-//                    navController.navigate(AppRoutes.ProductDetailsScreen(productId))
-//                }, { product ->
-//                    viewModel.deleteProductFromWishlist(product.id)
-//                    viewModel.getProducts()
-//                }
                 )
             }
 
@@ -133,7 +146,7 @@ fun LoadData(
 ) {
     ProductsGridView(
         modifier = Modifier,
-        products = data/*products*/,
+        products = data,
         deleteFromWishList = {
             viewModel.deleteProductFromWishlist(it.id)
             viewModel.getProducts()
