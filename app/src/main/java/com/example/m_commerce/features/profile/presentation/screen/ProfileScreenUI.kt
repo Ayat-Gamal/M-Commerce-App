@@ -64,7 +64,7 @@ fun ProfileScreenUI(
         listOf(
             ProfileOption("Currency", Icons.Default.CurrencyExchange),
             ProfileOption("Help Center", Icons.Default.LocationOn),
-            ProfileOption("Register", Icons.Default.LocationOn),
+            ProfileOption("Login", Icons.Default.LocationOn),
         )
     }
 
@@ -116,7 +116,7 @@ fun ProfileScreenUI(
                     "My Wishlist" -> navController.navigate(AppRoutes.WishListScreen)
                     "Currency" -> navController.navigate(AppRoutes.CurrencyScreen)
                     "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
-                    "Register" -> navController.navigate(AppRoutes.RegisterScreen)
+                    "Login" -> navController.navigate(AppRoutes.LoginScreen)
                 }
             }
             if (FirebaseAuth.getInstance().currentUser != null) {
