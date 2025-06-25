@@ -10,6 +10,7 @@ sealed class CartUiState {
     data object Guest : CartUiState()
     data object NoNetwork : CartUiState()
     data class Success(val cart: Cart) : CartUiState()
+    data object couponApplied : CartUiState()
 }
 
 

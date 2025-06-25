@@ -1,11 +1,11 @@
 package com.example.m_commerce.features.AddressMangment.presentation.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
-import com.example.m_commerce.features.AddressMangment.domain.entity.DeleteResponse
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.usecases.DeleteAddressUseCase
 import com.example.m_commerce.features.AddressMangment.domain.usecases.GetAddressesUseCase
@@ -14,10 +14,7 @@ import com.example.m_commerce.features.AddressMangment.domain.usecases.SaveAddre
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SetDefaultAddressUseCase
 import com.example.m_commerce.features.AddressMangment.presentation.ui_states.DeleteState
 import com.google.firebase.auth.FirebaseAuth
-import com.shopify.buy3.Storefront
-import com.shopify.graphql.support.ID
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -129,6 +126,7 @@ class AddressViewModel @Inject constructor(
     }
     private suspend fun getDefaultAddress() {
         getDefaultAddressUseCase().collect { response ->
+            Log.i("TAG", "getDefaultAddress ${response}: ")
             when (response) {
                 is Response.Success -> _defaultAddress.value = response.data
                 is Response.Error -> _errorMessage.value = response.message
@@ -180,13 +178,27 @@ class AddressViewModel @Inject constructor(
             _isLoading.value = true
             getAddressesUseCase().collect { response ->
                 when (response) {
-                    is Response.Success -> _addresses.value = response.data
+                    is Response.Success -> {
+                        Log.i("TAG", "loadAddresses: here ${response} ")
+                        _isLoading.value = true
+                        getDefaultAddressUseCase().collect(){
+                                response ->
+                            when(response){
+                                is Response.Success -> _defaultAddress.value = response.data
+                                is Response.Error -> _errorMessage.value = response.message
+                                Response.Loading -> _isLoading.value = true
+                            }
+                        }
+                        _addresses.value = response.data
+                    }
                     is Response.Error -> _deleteState.value =
                         DeleteState.Error(response.message ?: "Failed to load addresses")
                     Response.Loading -> _isLoading.value = true
                 }
                 _isLoading.value = false
             }
+
+
         }
     }
 

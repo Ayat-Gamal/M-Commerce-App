@@ -3,6 +3,7 @@ package com.example.m_commerce.features.coupon.data.remote
 
 import android.util.Log
 import com.example.m_commerce.features.coupon.domain.entity.Coupon
+import com.example.m_commerce.features.coupon.domain.entity.PriceRuleDto
 import com.example.m_commerce.features.orders.data.remote.ShopifyAdminApiService
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -40,14 +41,16 @@ class CouponRemoteDataSourceImpl @Inject constructor(
                 if (!codesResponse.isSuccessful) continue
 
                 val codes = codesResponse.body()?.discountCodes ?: continue
-
+                val summary = buildSummary(rule)
+                Log.i("TAG", "getCoupons: ${summary}")
                 allCoupons.addAll(
                     codes.map {
                         Coupon(
                             id = it.id,
                             code = it.code,
                             usageCount = it.usage_count,
-                            status = it.status ?: ""
+                            status = it.status ?: "",
+                            summary =summary  ?: ""
                         )
                     }
                 )
@@ -124,4 +127,15 @@ class CouponRemoteDataSourceImpl @Inject constructor(
             null
         }
     }
+
+    private fun buildSummary(rule: PriceRuleDto): String {
+        val value = rule.value?.removePrefix("-") ?: return rule.title
+        return when (rule.value_type) {
+            "percentage" -> "$value% off entire order"
+            "fixed_amount" -> "E£$value off entire order"
+            "shipping" -> "Free shipping"
+            else -> rule.title
+        }
+    }
+
 }

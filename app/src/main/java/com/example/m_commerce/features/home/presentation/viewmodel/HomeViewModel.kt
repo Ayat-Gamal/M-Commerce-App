@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
                 .catch { emit(emptyList()) }
                 .firstOrNull() ?: emptyList()
 
-            val couponCodes = coupons.map { it.code }
+           // val couponCodes = coupons.map { it }
 
             val brands = getBrandsUseCase(50).catch { emit(null) }.firstOrNull()
 
@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(
             if (brands.isNullOrEmpty()) {
                 _dataState.value = HomeUiState.Error("No Brands Found")
             } else {
-                _dataState.value = HomeUiState.Success(brands, couponCodes)
+                _dataState.value = HomeUiState.Success(brands, coupons)
             }
         } catch (e: Exception) {
             Log.e("Error", e.message.toString())

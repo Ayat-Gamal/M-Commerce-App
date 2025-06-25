@@ -103,13 +103,13 @@ fun NavSetup(
             showBottomNavbar.value = false
             val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
             CategoryDetailsScreenUI(
-                categoryName = categoryArgs.categoryId,
+                categoryId = categoryArgs.categoryId,
                 navController = navController
             )
         }
 
         composable<AppRoutes.CartScreen> {
-            CartScreenUI(paddingValues, navController = navController)
+            CartScreenUI(paddingValues, paymentSheet = paymentSheet , navController = navController )
         }
 
         composable<AppRoutes.ProfileScreen> {
@@ -167,7 +167,7 @@ fun NavSetup(
             CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
-            MapScreenUi(navController)
+            MapScreenUi(navController,)
         }
         composable<AppRoutes.HelpCenterScreen> {
             showBottomNavbar.value = false

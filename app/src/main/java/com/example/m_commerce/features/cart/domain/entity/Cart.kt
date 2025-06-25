@@ -33,6 +33,7 @@ data class Cart(
                         imageUrl = m.image?.url,
                         imageAlt = m.image?.altText,
                         productTitle = m.product.title,
+                        availableQuantity = m.quantityAvailable
                     )
                 }
             }
