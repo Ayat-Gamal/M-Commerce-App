@@ -77,13 +77,13 @@ fun CartScreenUI(
 
     Log.d("Order", "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}")
 
-    LaunchedEffect(Unit) {
-        orderViewModel.createOrderAndSendEmail(
-            items = lineItems,
-            paymentMethod = PaymentMethod.CashOnDelivery
-        )
-//        orderViewModel.completeOrder("gid://shopify/DraftOrder/1255200653561")
-    }
+//    LaunchedEffect(Unit) {
+//        orderViewModel.createOrderAndSendEmail(
+//            items = lineItems,
+//            paymentMethod = PaymentMethod.CashOnDelivery
+//        )
+////        orderViewModel.completeOrder("gid://shopify/DraftOrder/1255200653561")
+//    }
 
 
     LaunchedEffect(Unit) {

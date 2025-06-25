@@ -111,7 +111,7 @@ fun LineItemCard(modifier: Modifier = Modifier, item: LineItem, totalPrice: Stri
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = item.title, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-            Text(text = item.specs, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+            Text(text = item.specs ?: "", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
             Text(text = item.quantity.toString(), style = TextStyle(color = Gray, fontSize = 12.sp))
             Text(text = totalPrice)
 

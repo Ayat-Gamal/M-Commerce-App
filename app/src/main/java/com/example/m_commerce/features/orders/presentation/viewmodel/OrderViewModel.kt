@@ -46,6 +46,22 @@ class OrderViewModel @Inject constructor(
     private val _ordersState = MutableStateFlow<OrderHistoryUiState>(OrderHistoryUiState.Loading)
     val ordersState: StateFlow<OrderHistoryUiState> = _ordersState
 
+
+    init {
+
+        val x = listOf(
+            LineItem(
+                variantId = "gid://shopify/ProductVariant/46559944376569",
+                title =  "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
+                quantity = 2,
+            )
+        )
+
+        createOrderAndSendEmail(x, PaymentMethod.CashOnDelivery)
+
+    }
+
+
     fun loadOrders() =
         viewModelScope.launch {
             Log.d("OrderHistory", "ViewModel loading orders")
@@ -101,12 +117,12 @@ class OrderViewModel @Inject constructor(
                 }
 
                 val shippingAddress = ShippingAddress(
-                    address1 = defaultAddress.address1 ?: "",
-                    city = defaultAddress.city ?: "cairo",
-                    country = defaultAddress.country ?: "",
+                    address1 = "TEST",
+                    city = "TEST" ?: "cairo",
+                    country = "TEST" ?: "",
                     firstName = "Guest", // user??.displayName ?: "Guest"
-                    lastName = "",
-                    zip = defaultAddress.zip ?: ""
+                    lastName = "TEST",
+                    zip = "123" ?: ""
                 )
                 Log.i("Order", "address: ${shippingAddress}")
 
@@ -116,7 +132,7 @@ class OrderViewModel @Inject constructor(
                         email = "youssifn.mostafa@gmail.com" /*?: user?.email*/,
                         shippingAddress = shippingAddress,
                         lineItems = items,
-                        note = null
+                        note = ""
                     )
                 )
 
