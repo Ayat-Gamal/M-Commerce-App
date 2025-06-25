@@ -1,4 +1,3 @@
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -35,9 +36,12 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.dividerGray
+import com.example.m_commerce.core.shared.components.CustomDialog
+import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.GuestMode
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.cart.presentation.CartUiState
+import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
@@ -58,38 +62,19 @@ fun CartScreenUI(
     paymentSheet: PaymentSheet
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val orderState = orderViewModel.state.collectAsStateWithLifecycle()
-
-    val lineItems = listOf(
-        LineItem(
-            variantId = "gid://shopify/ProductVariant/46559944376569",
-            title = "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
-            quantity = 2,
-            originalUnitPrice = "150",
-            specs = "",
-            image = "",
-        )
-    )
-
-    Log.d(
-        "Order",
-        "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}"
-    )
-
-
-
+    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        if (orderState.value is OrderUiState.Success) {
-            snackbarHostState.showSnackbar("Order completed")
-        } else if (orderState.value is OrderUiState.Error) {
-            snackbarHostState.showSnackbar((orderState.value as OrderUiState.Error).message)
-        } else {
-            snackbarHostState.showSnackbar("Loading")
+        cartViewModel.snackBarFlow.collect { event ->
+            when (event) {
+                is UiEvent.ShowSnackbar -> {
+                    snackBarHostState.showSnackbar(event.message)
+                }
+            }
         }
     }
+
+
 
     Scaffold(
         modifier = modifier.background(Teal),
@@ -109,7 +94,10 @@ fun CartScreenUI(
                 )
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(snackBarHostState )
+        }
+
     ) { padding ->
         Box(
             modifier = Modifier
@@ -131,16 +119,13 @@ fun CartScreenUI(
                     CartContent(
                         cartLines = cart.lines,
                         viewModel = cartViewModel,
-                        currencyViewModel = currencyViewModel
+                        currencyViewModel = currencyViewModel,
                     )
                 }
 
                 is CartUiState.Empty -> {
-                    Text(
-                        text = "Your cart is empty",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(24.dp)
+                    Empty(
+                        message = "Your Cart is empty"
                     )
                 }
 
@@ -158,36 +143,44 @@ fun CartScreenUI(
 
                 is CartUiState.Error -> {
                     Text(
-                        text = "Error loading cart",
+                        text = "We will come back Soon ",
                         style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(24.dp)
                     )
                 }
 
-                CartUiState.couponApplied -> {
-                    LaunchedEffect(Unit) {
-                        snackbarHostState.showSnackbar(
-                            message = "Coupon applied successfully",
-                            withDismissAction = true
-                        )
-                    }
-                }
+
             }
         }
     }
 }
 
 
+
 @Composable
 fun CartContent(
     cartLines: List<ProductVariant>,
     viewModel: CartViewModel,
-    currencyViewModel: CurrencyViewModel
+    currencyViewModel: CurrencyViewModel,
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+    var pendingRemovalLine: ProductVariant? by remember { mutableStateOf(null) }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        CustomDialog(
+            showDialog = showDialog,
+            title = "Confirm Change",
+            message = "Are you sure you want to remove this item?",
+            onConfirm = {
+                showDialog = false
+                pendingRemovalLine?.let { viewModel.removeLine(it.lineId) }
+            },
+            onDismiss = {
+                showDialog = false
+            }
+        )
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -196,7 +189,7 @@ fun CartContent(
         ) {
             items(cartLines) { line ->
                 CartItemCard(
-                    prodct = line,
+                    product = line,
                     onIncrease = {
                         viewModel.increaseQuantity(line.lineId)
                     },
@@ -204,7 +197,8 @@ fun CartContent(
                         viewModel.decreaseQuantity(line.lineId)
                     },
                     onRemove = {
-                        viewModel.removeLine(line.lineId)
+                        pendingRemovalLine = line
+                        showDialog = true
                     },
                     currencyViewModel
                 )
@@ -216,6 +210,7 @@ fun CartContent(
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
+
             }
         }
     }

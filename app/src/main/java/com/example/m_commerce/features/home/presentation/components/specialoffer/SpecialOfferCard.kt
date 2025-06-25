@@ -1,5 +1,4 @@
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,10 +21,10 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,18 +42,21 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.features.coupon.domain.entity.Coupon
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 @Composable
 fun SpecialOfferCard(
     modifier: Modifier = Modifier,
-    couponCodes: List<Coupon>
+    couponCodes: List<Coupon>,
+    snackBarHostState: SnackbarHostState,
 ) {
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { couponCodes.size })
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         while (isActive) {
             delay(4000)
@@ -83,13 +85,7 @@ fun SpecialOfferCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxSize()
-                    .combinedClickable(
-                        onClick = {},
-                        onLongClick = {
-                            clipboardManager.setText(AnnotatedString(coupon.code))
-                            Toast.makeText(context, "Copied: $coupon", Toast.LENGTH_SHORT).show()
-                        }
-                    ),
+                    ,
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -99,7 +95,7 @@ fun SpecialOfferCard(
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf( Teal, LightTeal)
+                                colors = listOf(Teal, LightTeal)
                             ),
                             shape = RoundedCornerShape(16.dp)
                         )
@@ -133,8 +129,19 @@ fun SpecialOfferCard(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(50))
+                                    .combinedClickable(
+                                        onClick = {
+                                            clipboardManager.setText(AnnotatedString(coupon.code))
+                                           // Toast.makeText(context, "Copied: ${coupon.code}", Toast.LENGTH_SHORT).show()
+                                            CoroutineScope(Dispatchers.Main).launch {
+                                                snackBarHostState.showSnackbar("Copied: ${coupon.code}")
+                                            }
+                                                  },
+                                        onLongClick = {}
+                                    )
                                     .background(White)
                                     .padding(horizontal = 12.dp, vertical = 6.dp)
+
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.ContentCopy,
@@ -151,7 +158,7 @@ fun SpecialOfferCard(
                                 )
                             }
                         }
-//
+
 //                        Icon(
 //                            painter = painterResource(id = R.drawable.coupon),
 //                            contentDescription = null,

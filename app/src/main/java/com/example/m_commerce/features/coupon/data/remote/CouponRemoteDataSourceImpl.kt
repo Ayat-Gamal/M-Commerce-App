@@ -95,13 +95,13 @@ class CouponRemoteDataSourceImpl @Inject constructor(
                         trySend(true)
                     } else {
                         val message = userErrors.joinToString { it.message }
-                        Log.e("CouponRemote", "applyCoupon user error: $message")
+                        Log.e("Tag", "applyCoupon user error: $message")
                         close(Throwable(message))
                     }
                 }
 
                 is GraphCallResult.Failure -> {
-                    Log.e("CouponRemote", "applyCoupon failed", result.error)
+                    Log.e("Tag", "applyCoupon failed", result.error)
                     close(result.error)
                 }
             }
