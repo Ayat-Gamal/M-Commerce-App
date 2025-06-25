@@ -7,6 +7,7 @@ import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
 import com.example.m_commerce.features.search.domain.usecases.GetProductsUseCase
+import com.example.m_commerce.features.wishlist.domain.usecases.DeleteFromWishlistUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.GetWishlistUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,6 +32,7 @@ class SearchViewModel @Inject constructor(
     private val getProductById: GetProductByIdUseCase,
     private val getBrandsUseCase: GetBrandsUseCase,
     private val getProducts: GetProductsUseCase,
+    private val deleteFromWishlist: DeleteFromWishlistUseCase,
 ) : ViewModel() {
 
     private var _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Loading)
@@ -53,6 +55,10 @@ class SearchViewModel @Inject constructor(
         _uiState.tryEmit(SearchUiState.Loading)
         filteredProducts = allProducts
         _uiState.tryEmit(SearchUiState.Success(filteredProducts))
+    }
+
+    suspend fun deleteProduct(productId: String)  {
+        deleteFromWishlist(productId)
     }
 
     fun searchAndFilter(
@@ -129,7 +135,10 @@ class SearchViewModel @Inject constructor(
             .first()
     }
 
-    private suspend fun fetchAllProducts() = getProducts().first()
+    private suspend fun fetchAllProducts() = getProducts()
+        .catch { e -> if (e is SecurityException) _uiState.emit(SearchUiState.Empty)
+        else _uiState.emit(SearchUiState.Error("Unknown error: ${e.message}"))}
+        .first()
 
     private fun getBrands() = viewModelScope.launch {
         getBrandsUseCase(50)
@@ -137,5 +146,9 @@ class SearchViewModel @Inject constructor(
             .collect { brandNames ->
                 _brands.addAll(brandNames)
             }
+    }
+
+    fun showNoNetwork() {
+        _uiState.tryEmit(SearchUiState.NoNetwork)
     }
 }

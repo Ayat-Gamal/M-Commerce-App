@@ -1,5 +1,6 @@
 package com.example.m_commerce.config.routes
 
+import com.example.m_commerce.features.product.domain.entities.Product
 import kotlinx.serialization.Serializable
 
 @Serializable

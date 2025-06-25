@@ -6,5 +6,6 @@ sealed class SearchUiState {
     data class Success(val products: List<Product>) : SearchUiState()
     data object Loading : SearchUiState()
     data object Empty : SearchUiState()
+    data object NoNetwork : SearchUiState()
     data class Error(val err: String) : SearchUiState()
 }

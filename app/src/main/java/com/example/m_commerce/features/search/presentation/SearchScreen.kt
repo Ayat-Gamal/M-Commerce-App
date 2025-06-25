@@ -48,11 +48,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,10 +67,12 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.Failed
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
+import com.example.m_commerce.core.utils.NetworkUtils
 import com.example.m_commerce.features.product.presentation.components.ProductCard
-import kotlin.math.exp
+import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
@@ -83,13 +87,10 @@ fun SearchScreen(
         viewModel.getAllProducts(isWishlist)
     }
 
-//    LaunchedEffect(query.value) {
-//        viewModel.search(query.value)
-//    }
-
     var expandedFilter by remember { mutableStateOf<String?>(null) }
     val selectedFilters = remember { mutableStateMapOf<String, List<String>>() }
     var selectedRange by remember { mutableStateOf(0f..300f) }
+    val scope = rememberCoroutineScope()
     val showFilterDropDownMenu = expandedFilter != null
 
     var query by remember { mutableStateOf("") }
@@ -172,8 +173,12 @@ fun SearchScreen(
                                 if (updatedList.isEmpty()) selectedFilters.remove(expandedFilter)
                                 else selectedFilters[expandedFilter!!] = updatedList
 
-                                    viewModel.searchAndFilter(query, selectedFilters, selectedRange)
+                                viewModel.searchAndFilter(query, selectedFilters, selectedRange)
                                 // expandedFilter = null
+                            },
+                            clearFilter = {
+                                selectedFilters.remove(expandedFilter)
+                                viewModel.searchAndFilter(query, selectedFilters, selectedRange)
                             },
                             viewModel = viewModel
                         )
@@ -196,7 +201,20 @@ fun SearchScreen(
                             onClick = {
                                 navController.navigate(AppRoutes.ProductDetailsScreen(data[it].id))
                             },
-                            deleteFromWishList = { /*deleteProduct(data[it])*/ }, // TODO
+                            deleteFromWishList =
+                            if (isWishlist) {
+                                {
+                                    scope.launch {
+                                        viewModel.deleteProduct(data[it].id)
+                                        viewModel.getAllProducts(true)
+                                        viewModel.searchAndFilter(
+                                            query,
+                                            selectedFilters,
+                                            selectedRange
+                                        )
+                                    }
+                                }
+                            } else null,
                         )
                     }
                 }
@@ -225,6 +243,12 @@ fun SearchScreen(
                         ) {
                             CircularProgressIndicator()
                         }
+                    }
+                }
+
+                SearchUiState.NoNetwork -> {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        NoNetwork()
                     }
                 }
             }
@@ -390,6 +414,7 @@ fun FilterDropMenu(
     filterType: String,
     selectedFilters: Map<String, List<String>>,
     onItemSelected: (String) -> Unit,
+    clearFilter: () -> Unit,
     viewModel: SearchViewModel
 ) {
     val options = when (filterType) {
@@ -427,6 +452,20 @@ fun FilterDropMenu(
                     Text(text = option)
                 }
             }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Button(
+            onClick = clearFilter,
+            shape = RoundedCornerShape(25.dp),
+            colors = ButtonDefaults.buttonColors(
+                contentColor = Color.Gray,
+                containerColor = White
+            ),
+            border = BorderStroke(1.dp, Color.LightGray)
+        ) {
+            Text("Clear All", fontSize = 18.sp, color = Color.Gray)
         }
         CustomDivider()
     }

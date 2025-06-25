@@ -167,11 +167,11 @@ fun NavSetup(
             CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
-            MapScreenUi(navController,)
+            MapScreenUi(navController)
         }
         composable<AppRoutes.HelpCenterScreen> {
             showBottomNavbar.value = false
-            HelpCenterScreenUiLayout(navController,)
+            HelpCenterScreenUiLayout(navController)
         }
 
         composable<AppRoutes.SearchScreen> {
