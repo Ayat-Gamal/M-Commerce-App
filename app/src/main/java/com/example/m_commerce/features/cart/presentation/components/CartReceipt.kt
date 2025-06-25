@@ -1,6 +1,8 @@
 package com.example.m_commerce.features.cart.presentation.components
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +48,7 @@ import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartReceipt(
     paddingValues: PaddingValues,
@@ -55,8 +58,7 @@ fun CartReceipt(
     orderViewModel: OrderViewModel,
     cart: Cart
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val cart = (uiState as? CartUiState.Success)?.cart
+    val uiState by cartViewModel.uiState.collectAsState()
     var promoCode by rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
