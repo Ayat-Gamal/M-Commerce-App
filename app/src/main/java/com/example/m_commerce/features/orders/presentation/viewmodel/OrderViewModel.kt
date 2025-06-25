@@ -47,21 +47,6 @@ class OrderViewModel @Inject constructor(
     val ordersState: StateFlow<OrderHistoryUiState> = _ordersState
 
 
-    init {
-
-        val x = listOf(
-            LineItem(
-                variantId = "gid://shopify/ProductVariant/46559944376569",
-                title =  "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
-                quantity = 2,
-            )
-        )
-
-        createOrderAndSendEmail(x, PaymentMethod.CashOnDelivery)
-
-    }
-
-
     fun loadOrders() =
         viewModelScope.launch {
             Log.d("OrderHistory", "ViewModel loading orders")
@@ -76,88 +61,169 @@ class OrderViewModel @Inject constructor(
 
         }
 
+//    fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {
+//        viewModelScope.launch {
+//            _state.value = OrderUiState.Loading
+//
+//            try {
+//                val user = FirebaseAuth.getInstance().currentUser
+//                val addressResponse = getDefaultAddressUseCase().first()
+//
+//                val defaultAddress = when (addressResponse) {
+//                    is Response.Success -> {
+//                        Log.i("Order", "address SUCCESS: ${addressResponse.data}")
+//                        addressResponse.data
+//                    }
+//
+//                    is Response.Error -> {
+//                        _state.value = OrderUiState.Error(addressResponse.message)
+//                        Log.i("Order", "Test 1: ${addressResponse.message}")
+//                        return@launch
+//                    }
+//
+//                    is Response.Loading -> Address(
+//                        address1 = "asdsdasdasd",
+//                        address2 = "wqweqwe",
+//                        city = "ssss",
+//                        country = "cairo",
+//                        firstName = "joooo",
+//                        lastName = "",
+//                        phone = "222222",
+//                        zip = "123"
+//                    )
+//
+//                }
+//
+//                Log.i("Order", "address: ${defaultAddress}")
+//                if (defaultAddress == null) {
+//                    _state.value = OrderUiState.Error("No default address found")
+//                    Log.i("Order", "No default address found")
+//                    //return@launch
+//                }
+//
+//                val shippingAddress = ShippingAddress(
+//                    address1 = defaultAddress.address1,
+//                    city = defaultAddress.city ?: "cairo",
+//                    country = defaultAddress.country ?: "",
+//                    firstName = defaultAddress.firstName, // user??.displayName ?: "Guest"
+//                    lastName = "",
+//                    zip = defaultAddress.zip ?: ""
+//                )
+//                Log.i("Order", "address: ${shippingAddress}")
+//
+//                val request = GraphQLRequest(
+//                    query = createDraftOrderQuery,
+//                    variables = DraftOrderCreateVariables(
+//                        email = "youssifn.mostafa@gmail.com" /*?: user?.email*/,
+//                        shippingAddress = shippingAddress,
+//                        lineItems = items,
+//                        note = ""
+//                    )
+//                )
+//
+//                createOrderUseCase(request)
+//                    .catch { e -> _state.value = OrderUiState.Error(e.message ?: "Order creation failed")
+//
+//                        Log.e("Order", "Order Error:", e)
+//                    }
+//                    .collect { order ->
+//                        Log.d("Order", "Order created: ${order.id}")
+//
+//                        if (paymentMethod == PaymentMethod.CreditCard) {
+//                            _state.value = OrderUiState.Success(order)
+//                        } else {
+//                            completeOrder(order.id)
+//                        }
+//                    }
+//
+//            } catch (e: Exception) {
+//                Log.e("Order", "Order creation failed", e)
+//                _state.value = OrderUiState.Error(e.message ?: "Failed to create order")
+//            }
+//        }
+//    }
+
     fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {
         viewModelScope.launch {
             _state.value = OrderUiState.Loading
 
+            Log.d("Order", "TEST 1")
+
             try {
-                val user = FirebaseAuth.getInstance().currentUser
-                val addressResponse = getDefaultAddressUseCase().first()
-
-                val defaultAddress = when (addressResponse) {
-                    is Response.Success -> {
-                        Log.i("Order", "address SUCCESS: ${addressResponse.data}")
-                        addressResponse.data
-                    }
-
-                    is Response.Error -> {
-                        _state.value = OrderUiState.Error(addressResponse.message)
-                        Log.i("Order", "Test 1: ${addressResponse.message}")
-                        return@launch
-                    }
-
-                    is Response.Loading -> Address(
-                        address1 = "asdsdasdasd",
-                        address2 = "wqweqwe",
-                        city = "ssss",
-                        country = "cairo",
-                        firstName = "joooo",
-                        lastName = "",
-                        phone = "222222",
-                        zip = "123"
-                    )
-
+                val user = FirebaseAuth.getInstance().currentUser ?: run {
+                    _state.value = OrderUiState.Error("User not authenticated")
+                    Log.d("RETURN DEFAULT ADDRESS", "TEST 2")
+                    return@launch
                 }
 
-                Log.i("Order", "address: ${defaultAddress}")
+                Log.d("Order", "TEST 3")
+                var defaultAddress: Address? = null
+                getDefaultAddressUseCase().collect { response ->
+                    when (response) {
+                        is Response.Success -> {
+                            defaultAddress = response.data
+                            return@collect
+                        }
+
+                        is Response.Error -> {
+                            _state.value = OrderUiState.Error(response.message)
+                            return@collect
+                        }
+
+                        Response.Loading -> {}
+                    }
+                }
+
                 if (defaultAddress == null) {
-                    _state.value = OrderUiState.Error("No default address found")
-                    Log.i("Order", "No default address found")
-                    //return@launch
+                    _state.value = OrderUiState.Error("No address received")
+                    Log.d("Order", "TEST 4")
+                    return@launch
                 }
+//                Log.d("RETURN DEFAULT ADDRESS", "createOrderAndSendEmail: ${defaultAddress}")
 
                 val shippingAddress = ShippingAddress(
-                    address1 = "TEST",
-                    city = "TEST" ?: "cairo",
-                    country = "TEST" ?: "",
-                    firstName = "Guest", // user??.displayName ?: "Guest"
-                    lastName = "TEST",
-                    zip = "123" ?: ""
+                    address1 = defaultAddress!!.address1,
+                    city = defaultAddress!!.city,
+                    country = defaultAddress!!.country,
+                    firstName = user.displayName ?: "Guest",
+                    lastName = "",
+                    zip = defaultAddress!!.zip
                 )
-                Log.i("Order", "address: ${shippingAddress}")
+
+                val variables = DraftOrderCreateVariables(
+//                    email = user.email ?: "",
+                    email = "youssifn.mostafa@gmail.com",
+                    shippingAddress = shippingAddress,
+                    lineItems = items,
+                    note = null
+                )
 
                 val request = GraphQLRequest(
                     query = createDraftOrderQuery,
-                    variables = DraftOrderCreateVariables(
-                        email = "youssifn.mostafa@gmail.com" /*?: user?.email*/,
-                        shippingAddress = shippingAddress,
-                        lineItems = items,
-                        note = ""
-                    )
+                    variables = variables
                 )
 
-                createOrderUseCase(request)
-                    .catch { e -> _state.value = OrderUiState.Error(e.message ?: "Order creation failed")
-
-                        Log.e("Order", "Order Error:", e)
-                    }
-                    .collect { order ->
-                        Log.d("Order", "Order created: ${order.id}")
-
-                        if (paymentMethod == PaymentMethod.CreditCard) {
+                createOrderUseCase(request).collect { order ->
+                    Log.d("Shopify", "Order created: ${order.id}")
+                    when (paymentMethod) {
+                        PaymentMethod.CreditCard -> {
+                            //sendOrderConfirmationEmail(order.id)
                             _state.value = OrderUiState.Success(order)
-                        } else {
+                        }
+
+                        else -> {
+                            Log.i("Order", "createOrderAndSendEmail: ${order.id}")
+//                            completeOrder("gid://shopify/Order/6259465453817")
                             completeOrder(order.id)
                         }
                     }
-
+                }
             } catch (e: Exception) {
                 Log.e("Order", "Order creation failed", e)
                 _state.value = OrderUiState.Error(e.message ?: "Failed to create order")
             }
         }
     }
-
 
     fun completeOrder(draftOrderId: String) {
         Log.i("Order", "completeOrder: $draftOrderId")

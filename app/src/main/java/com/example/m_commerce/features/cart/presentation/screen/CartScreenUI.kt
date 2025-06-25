@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -42,7 +41,6 @@ import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
-import com.example.m_commerce.features.orders.data.PaymentMethod
 import com.example.m_commerce.features.orders.data.model.variables.LineItem
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
@@ -67,31 +65,28 @@ fun CartScreenUI(
     val lineItems = listOf(
         LineItem(
             variantId = "gid://shopify/ProductVariant/46559944376569",
-            title =  "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
+            title = "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
             quantity = 2,
             originalUnitPrice = "150",
             specs = "",
-            image =  "",
+            image = "",
         )
     )
 
-    Log.d("Order", "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}")
+    Log.d(
+        "Order",
+        "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}"
+    )
 
-//    LaunchedEffect(Unit) {
-//        orderViewModel.createOrderAndSendEmail(
-//            items = lineItems,
-//            paymentMethod = PaymentMethod.CashOnDelivery
-//        )
-////        orderViewModel.completeOrder("gid://shopify/DraftOrder/1255200653561")
-//    }
+
 
 
     LaunchedEffect(Unit) {
         if (orderState.value is OrderUiState.Success) {
             snackbarHostState.showSnackbar("Order completed")
-        }else if ( orderState.value is OrderUiState.Error) {
+        } else if (orderState.value is OrderUiState.Error) {
             snackbarHostState.showSnackbar((orderState.value as OrderUiState.Error).message)
-        }else{
+        } else {
             snackbarHostState.showSnackbar("Loading")
         }
     }
@@ -109,7 +104,8 @@ fun CartScreenUI(
                     viewModel = cartViewModel,
                     currencyViewModel = currencyViewModel,
                     paymentSheet = paymentSheet,
-                    cart = cart
+                    cart = cart,
+                    orderViewModel = orderViewModel
                 )
             }
         },

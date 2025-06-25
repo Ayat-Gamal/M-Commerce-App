@@ -52,7 +52,7 @@ fun CartReceipt(
     viewModel: CartViewModel,
     currencyViewModel: CurrencyViewModel,
     paymentSheet: PaymentSheet,
-    orderViewModel: OrderViewModel = hiltViewModel(),
+    orderViewModel: OrderViewModel,
     cart: Cart
 ) {
     var promoCode by remember { mutableStateOf("") }
@@ -139,30 +139,19 @@ fun CartReceipt(
                     }
                     state = false
                 } else {
-//                    val lineItems = cart.lines.map {
-////                        LineItem(
-////                            variantId = "gid://shopify/ProductVariant/1234567890123",
-////                            title =  "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
-////                            quantity = 2,
-////                            originalUnitPrice = "149.98",
-////                            specs = "asd",
-////                            image =  "no img",
-////                        )
-//                        LineItem(
-//                            variantId = it.id,
-//                            title = it.productTitle,
-//                            quantity = it.quantity,
-//                            originalUnitPrice = it.price,
-//                            specs = it.title,
-//                            image = it.imageUrl ?: "",
-//                        )
-//
-//                    }
-//                    Log.d("OrderItem", "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}")
-//                    orderViewModel.createOrderAndSendEmail(
-//                        items = lineItems,
-//                        paymentMethod = paymentMethod
-//                    )
+                    val lineItems = cart.lines.map {
+                        LineItem(
+                            variantId = it.id,
+                            title = it.productTitle,
+                            quantity = it.quantity,
+                        )
+
+                    }
+                    Log.d("OrderItem", "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}")
+                    orderViewModel.createOrderAndSendEmail(
+                        items = lineItems,
+                        paymentMethod = paymentMethod
+                    )
                 }
             }
 
