@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.m_commerce"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -48,9 +48,6 @@ android {
         buildConfigField("String", "ACCESS_TOKEN", accessToken)
         buildConfigField("String", "SHOP_DOMAIN", shopDomain)
         buildConfigField("String", "ADMIN_TOKEN", adminToken)
-//        buildConfigField("String", "EMAIL_SERVICE_ID", emailServiceId)
-//        buildConfigField("String", "EMAIL_TEMPLATE_ID", emailTemplateId)
-//        buildConfigField("String", "EMAIL_PUBLIC_KEY", emailPublicKey)
         buildConfigField("String", "PAYMENT_SECRET_KEY", paymentSecretKey)
         buildConfigField("String", "PAYMENT_PUBLISHABLE_KEY", paymentPublishable)
 

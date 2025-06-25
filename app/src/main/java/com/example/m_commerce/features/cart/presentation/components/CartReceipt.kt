@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.cart.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.m_commerce.BuildConfig
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Black
@@ -31,8 +34,12 @@ import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
+import com.example.m_commerce.features.cart.domain.entity.Cart
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.orders.data.PaymentMethod
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.payment.presentation.screen.createPaymentIntent
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.stripe.android.PaymentConfiguration
@@ -44,16 +51,19 @@ fun CartReceipt(
     paddingValues: PaddingValues,
     viewModel: CartViewModel,
     currencyViewModel: CurrencyViewModel,
-    paymentSheet: PaymentSheet
+    paymentSheet: PaymentSheet,
+    orderViewModel: OrderViewModel = hiltViewModel(),
+    cart: Cart
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val cart = (uiState as? CartUiState.Success)?.cart
     var promoCode by remember { mutableStateOf("") }
 
     val context = LocalContext.current
 
     var paymentIntentClientSecret by remember { mutableStateOf<String?>(null) }
     val publishableKey = BuildConfig.PAYMENT_PUBLISHABLE_KEY
+
+    val showSheet: MutableState<Boolean> = remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         PaymentConfiguration.init(context, publishableKey)
 
@@ -65,6 +75,8 @@ fun CartReceipt(
             }
         }
     }
+
+
 
     Column(modifier = Modifier.background(Background)) {
         Column(
@@ -88,10 +100,17 @@ fun CartReceipt(
                     val exchangeRate by currencyViewModel.exchangeRate.collectAsState()
 
                     val receiptItems = listOf(
-                        ReceiptItem("Subtotal",  currencyViewModel.formatPrice(it.subtotalAmount)),
+                        ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem("Tax", currencyViewModel.formatPrice(it.totalTaxAmount ?: "0.00")),
                         //ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" ))
-                         ReceiptItem("Discount", currencyViewModel.formatPrice(((it.totalAmount.toFloatOrNull() ?: 0f) - (it.subtotalAmount?.toFloatOrNull() ?: 0f)).toString()), isDiscount = true) )
+                        ReceiptItem(
+                            "Discount",
+                            currencyViewModel.formatPrice(
+                                ((it.totalAmount.toFloatOrNull() ?: 0f) - (it.subtotalAmount?.toFloatOrNull() ?: 0f)).toString()
+                            ),
+                            isDiscount = true
+                        )
+                    )
                     receiptItems.forEach { item ->
                         CartReceiptItem(item)
                     }
@@ -101,11 +120,51 @@ fun CartReceipt(
                     val convertedTotal = (it.totalAmount.toFloatOrNull() ?: 0f) * exchangeRate
 
                     CartReceiptItem(
-                        ReceiptItem("Total",   currencyViewModel.formatPrice(it.totalAmount ?: "0.00" )))
+                        ReceiptItem("Total", currencyViewModel.formatPrice(it.totalAmount ?: "0.00"))
+                    )
                 }
             }
 
             var state by remember { mutableStateOf(false) }
+
+            CheckoutBottomSheet(showSheet = showSheet) { paymentMethod ->
+
+                if (paymentMethod == PaymentMethod.CreditCard) {
+                    state = true
+                    paymentIntentClientSecret?.let {
+                        paymentSheet.presentWithPaymentIntent(
+                            it,
+                            PaymentSheet.Configuration("My Test Store")
+                        )
+                    }
+                    state = false
+                } else {
+//                    val lineItems = cart.lines.map {
+////                        LineItem(
+////                            variantId = "gid://shopify/ProductVariant/1234567890123",
+////                            title =  "VANS APPAREL AND ACCESSORIES | CLASSIC SUPER NO SHOW SOCKS 3 PACK WHITE",
+////                            quantity = 2,
+////                            originalUnitPrice = "149.98",
+////                            specs = "asd",
+////                            image =  "no img",
+////                        )
+//                        LineItem(
+//                            variantId = it.id,
+//                            title = it.productTitle,
+//                            quantity = it.quantity,
+//                            originalUnitPrice = it.price,
+//                            specs = it.title,
+//                            image = it.imageUrl ?: "",
+//                        )
+//
+//                    }
+//                    Log.d("OrderItem", "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}")
+//                    orderViewModel.createOrderAndSendEmail(
+//                        items = lineItems,
+//                        paymentMethod = paymentMethod
+//                    )
+                }
+            }
 
             CustomButton(
                 modifier = Modifier.padding(
@@ -120,14 +179,10 @@ fun CartReceipt(
                 textColor = White,
                 height = 50,
                 cornerRadius = 12,
-                onClick = { state = true
-                    paymentIntentClientSecret?.let {
-                        paymentSheet.presentWithPaymentIntent(
-                            it,
-                            PaymentSheet.Configuration("My Test Store")
-                        )
-                    }
-                    state = false
+                onClick = {
+                    showSheet.value = true
+
+
                 }
             )
         }
@@ -143,8 +198,9 @@ fun CartReceiptItem(item: ReceiptItem) {
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = item.title, fontWeight = FontWeight.Bold , color = if (item.isDiscount)  OfferColor else Teal  )
-        Text(text = item.price , color = if (item.isDiscount)  OfferColor else Black
+        Text(text = item.title, fontWeight = FontWeight.Bold, color = if (item.isDiscount) OfferColor else Teal)
+        Text(
+            text = item.price, color = if (item.isDiscount) OfferColor else Black
         )
     }
 }
