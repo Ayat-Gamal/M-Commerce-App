@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.m_commerce.BuildConfig
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Black
@@ -35,7 +34,6 @@ import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
 import com.example.m_commerce.features.cart.domain.entity.Cart
-import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
 import com.example.m_commerce.features.orders.data.PaymentMethod
 import com.example.m_commerce.features.orders.data.model.variables.LineItem
@@ -49,7 +47,7 @@ import com.stripe.android.paymentsheet.PaymentSheet
 @Composable
 fun CartReceipt(
     paddingValues: PaddingValues,
-    viewModel: CartViewModel,
+    cartViewModel: CartViewModel,
     currencyViewModel: CurrencyViewModel,
     paymentSheet: PaymentSheet,
     orderViewModel: OrderViewModel,
@@ -90,7 +88,7 @@ fun CartReceipt(
                 promoCode = promoCode,
                 onPromoCodeChange = { promoCode = it },
                 onApplyClick = {
-                    viewModel.applyCoupon(promoCode)
+                    cartViewModel.applyCoupon(promoCode)
                 },
                 modifier = Modifier.padding(16.dp)
             )
@@ -152,6 +150,7 @@ fun CartReceipt(
                         items = lineItems,
                         paymentMethod = paymentMethod
                     )
+                    cartViewModel.clearCart(cart.lines)
                 }
             }
 

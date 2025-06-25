@@ -101,7 +101,7 @@ fun CartScreenUI(
                 val cart = (uiState as CartUiState.Success).cart
                 CartReceipt(
                     paddingValues,
-                    viewModel = cartViewModel,
+                    cartViewModel = cartViewModel,
                     currencyViewModel = currencyViewModel,
                     paymentSheet = paymentSheet,
                     cart = cart,
