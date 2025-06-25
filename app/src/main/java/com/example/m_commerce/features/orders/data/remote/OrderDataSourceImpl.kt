@@ -82,6 +82,9 @@ class OrderDataSourceImpl @Inject constructor(
                     orders.nodes { order ->
                         order
                             .name()
+                            .currencyCode()
+                            .processedAt()
+                            .financialStatus()
                             .shippingAddress { address ->
                                 address.address1()
                                 address.city()
@@ -115,7 +118,7 @@ class OrderDataSourceImpl @Inject constructor(
             when (result) {
                 is GraphCallResult.Success -> {
                     val orders = result.response.data?.customer?.orders?.nodes?.mapNotNull { order ->
-                        Log.d("OrderHistory", "fetchOrders: $order")
+                        Log.d("OrderHistory", "fetchOrders: ${order.processedAt}")
 
                         OrderHistory(
                             id = order.name.orEmpty(),
@@ -124,6 +127,9 @@ class OrderDataSourceImpl @Inject constructor(
                                 order.shippingAddress?.city,
                                 order.shippingAddress?.zip
                             ).joinToString(", "),
+                            createdAt = order.processedAt.toString(),
+                            status = order.financialStatus.toString(),
+                            currencyCode = (order.currencyCode ?: "").toString(),
                             totalPrice = order.totalPrice.amount.toString(),
                             items = order.lineItems.nodes.map {
                                 LineItem(
@@ -133,8 +139,10 @@ class OrderDataSourceImpl @Inject constructor(
                                     image = it.variant?.image?.url ?: "",
                                     title = it.title,
                                     specs = it.variant?.title ?: "",
+
                                 )
-                            }
+                            },
+
                         )
                     }.orEmpty()
 

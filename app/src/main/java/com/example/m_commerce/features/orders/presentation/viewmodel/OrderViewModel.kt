@@ -191,8 +191,8 @@ class OrderViewModel @Inject constructor(
                 )
 
                 val variables = DraftOrderCreateVariables(
-//                    email = user.email ?: "",
-                    email = "youssifn.mostafa@gmail.com",
+                    email = user.email ?: "youssifn.mostafa@gmail.com",
+//                    email = "youssifn.mostafa@gmail.com",
                     shippingAddress = shippingAddress,
                     lineItems = items,
                     note = null
