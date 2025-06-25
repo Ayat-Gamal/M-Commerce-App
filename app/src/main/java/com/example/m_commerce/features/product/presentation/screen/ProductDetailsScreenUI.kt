@@ -1,7 +1,6 @@
 package com.example.m_commerce.features.product.presentation.screen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -71,6 +70,7 @@ import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
 import com.example.m_commerce.features.product.presentation.components.VariantHeaderText
 import com.example.m_commerce.features.product.presentation.components.VariantValueText
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 
@@ -82,12 +82,10 @@ fun ProductDetailsScreenUI(
     navController: NavHostController,
     viewModel: ProductViewModel = hiltViewModel()
 ) {
-//    var isClicked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-
-//    var favoriteState by remember { mutableStateOf(Icons.Default.FavoriteBorder) }
     var isFavorite by remember { mutableStateOf(false) }
     var isFavoriteInitialized by remember { mutableStateOf(false) }
+    val user = FirebaseAuth.getInstance().currentUser
 
     LaunchedEffect(Unit) {
         viewModel.getProductById(productId)
@@ -127,7 +125,7 @@ fun ProductDetailsScreenUI(
                 var selectedColor by remember { mutableStateOf(if (product.sizes.isNotEmpty()) product.colors[0] else "") }
 
                 LaunchedEffect(uiState) {
-                    if (!isFavoriteInitialized ) {
+                    if (!isFavoriteInitialized) {
                         isFavorite = (uiState as ProductUiState.Success).isFavorite
                         isFavoriteInitialized = true
                     }
@@ -177,29 +175,31 @@ fun ProductDetailsScreenUI(
                                 selectedIndex = pagerState.currentPage,
                                 modifier = Modifier.padding(top = 16.dp)
                             )
-                            Icon(
-                                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                contentDescription = "Favorite icon",
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    ) {
+                            if (user != null) {
+                                Icon(
+                                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = "Favorite icon",
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
 
 //                                        if (isClicked) return@clickable
 
-                                        if (isFavorite) {
-                                            viewModel.deleteProductFromWishlist(product.id)
-                                        } else {
-                                            viewModel.addProductToWishlist(product.id)
-                                        }
+                                            if (isFavorite) {
+                                                viewModel.deleteProductFromWishlist(product.id)
+                                            } else {
+                                                viewModel.addProductToWishlist(product.id)
+                                            }
 
-                                        isFavorite = !isFavorite
+                                            isFavorite = !isFavorite
 //                                        isClicked = true
-                                    },
-                                tint = if (isFavorite) Color.Red else LocalContentColor.current
-                            )
+                                        },
+                                    tint = if (isFavorite) Color.Red else LocalContentColor.current
+                                )
+                            }
                         }
 
                         // Divider
@@ -368,13 +368,19 @@ fun ProductDetailsScreenUI(
 
                         CustomButton(
                             onClick = {
-                                isLoading.value = true
-                                val variantId = viewModel.findSelectedVariantId(
-                                    product.variants,
-                                    selectedSize,
-                                    selectedColor
-                                )
-                                viewModel.addToCart(variantId!!)
+                                if (user != null) {
+                                    isLoading.value = true
+                                    val variantId = viewModel.findSelectedVariantId(
+                                        product.variants,
+                                        selectedSize,
+                                        selectedColor
+                                    )
+                                    viewModel.addToCart(variantId!!)
+                                } else {
+                                    scope.launch {
+                                        snackBarHostState.showSnackbar("Please sign in to add items to your cart")
+                                    }
+                                }
                             },
                             text = "Add to Cart",
                             modifier = Modifier.weight(1f),

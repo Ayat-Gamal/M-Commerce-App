@@ -80,8 +80,6 @@ fun CartReceipt(
         }
     }
 
-
-
     Column(modifier = Modifier.background(Background)) {
         Column(
             modifier = Modifier
