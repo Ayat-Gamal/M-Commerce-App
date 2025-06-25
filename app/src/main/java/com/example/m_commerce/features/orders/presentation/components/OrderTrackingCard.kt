@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.orders.presentation.components
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -12,12 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
-import com.example.m_commerce.core.shared.components.SmallButton
+import com.example.m_commerce.core.utils.extentions.formatDate
 import com.example.m_commerce.features.orders.data.model.variables.LineItem
 import com.example.m_commerce.features.orders.domain.entity.OrderHistory
 
@@ -56,7 +55,7 @@ fun OrderTrackingCard(modifier: Modifier = Modifier, order: OrderHistory) {
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(8.dp), clip = false)
             .background(White, shape = RoundedCornerShape(8.dp))
             .clip(RoundedCornerShape(8.dp))
-            .clickable { expanded = !expanded  }
+            .clickable { expanded = !expanded }
             .padding(12.dp)
     ) {
         Row(
@@ -64,58 +63,71 @@ fun OrderTrackingCard(modifier: Modifier = Modifier, order: OrderHistory) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(text = order.id, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = "Expand",
-                    modifier = Modifier.rotate(rotationAngle)
-                )
+            Text(
+                text = "${order.id}  ${order.status}  ${order.createdAt.formatDate()}",
+                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            )
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = "Expand",
+                modifier = Modifier.rotate(rotationAngle)
+            )
         }
 
         if (expanded) {
-
             Text(modifier = Modifier.padding(vertical = 12.dp), text = order.shippedTo, style = TextStyle(color = Gray, fontSize = 12.sp))
             HorizontalDivider(Modifier.padding(bottom = 12.dp))
-            Column(modifier = Modifier.padding(bottom = 12.dp)) {
-                order.items.forEach { item -> LineItemCard(item = item, totalPrice = order.totalPrice) }
-
+            Column {
+                order.items.forEach { item -> LineItemCard(item = item) }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(text = "Total")
+                    Text(text = "${order.totalPrice} ${order.currencyCode}")
+                }
             }
-
         }
     }
-
 }
 
 @Composable
-fun LineItemCard(modifier: Modifier = Modifier, item: LineItem, totalPrice: String) {
+fun LineItemCard(modifier: Modifier = Modifier, item: LineItem) {
 
-    Log.d("LineItem", "LineItemCard: ${item.image} -- ${totalPrice}")
+//    Log.d("LineItem", "LineItemCard: ${item.image} -- ${totalPrice}")
 
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-    ) {
-//        NetworkImage(
-//            url = item.image,
-//            modifier = Modifier
-//                .height(100.dp)
-//                .width(100.dp)
-//                .clip(RoundedCornerShape(8.dp))
-//        )
+    val extractedTitle = item.title.split("|")
+    val formattedTitle = extractedTitle[1].trim()
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .height(100.dp)
-                .padding(12.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+    val extractedSpecs = item.specs?.split("/")
+    val size = extractedSpecs?.get(0)?.trim()
+    val color = extractedSpecs?.get(1)?.trim()
+    Column(/*Modifier.padding(bottom = 12.dp)*/) {
+        Row(
+            modifier = modifier
+                .clip(RoundedCornerShape(8.dp)),
+//                .padding(bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = item.title, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-            Text(text = item.specs ?: "", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-            Text(text = item.quantity.toString(), style = TextStyle(color = Gray, fontSize = 12.sp))
-            Text(text = totalPrice)
+            NetworkImage(
+                url = item.image,
+                modifier = Modifier
+                    .height(100.dp)
+                    .width(100.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
 
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp)
+                    .wrapContentHeight(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = formattedTitle, style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+                if (size != null) Text(text = "Size: $size", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+                if (color != null) Text(text = "Color: $color", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+                Text(text = "Qty: ${item.quantity}")
+            }
         }
+        HorizontalDivider(Modifier.padding(vertical = 12.dp))
     }
 
 }
