@@ -8,13 +8,12 @@ import javax.inject.Inject
 class WishlistRepositoryImpl @Inject constructor(
     private val firestoreDataSource: WishlistRemoteDataSource
 ) : WishlistRepository {
-    override suspend fun addToWishlist(productVariantId: String) {
-        firestoreDataSource.addToWishlist(productVariantId)
+    override suspend fun addToWishlist(productVariantId: String): Flow<String> {
+        return firestoreDataSource.addToWishlist(productVariantId)
     }
 
-    override suspend fun deleteFromWishlist(productVariantId: String) {
+    override suspend fun deleteFromWishlist(productVariantId: String) =
         firestoreDataSource.deleteFromWishlist(productVariantId)
-    }
 
     override suspend fun isInWishlist(productVariantId: String): Flow<Boolean> {
         return firestoreDataSource.isInWishlist(productVariantId)

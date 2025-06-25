@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,15 +40,17 @@ class SearchViewModel @Inject constructor(
     private var allProducts = emptyList<Product>()
     private var filteredProducts = emptyList<Product>()
 
-    private var _brands = mutableListOf<String>()
-    var brands: List<String> = _brands
+    //    private var _brands = mutableListOf<String>()
+//    var brands: List<String> = _brands
     var colors = mutableListOf<String>()
+    var categories = mutableListOf<String>()
+    var brands = mutableListOf<String>()
 
     var priceRange = MutableStateFlow(0f..100f)
 
-    init {
-        getBrands()
-    }
+//    init {
+//        getBrands()
+//    }
 
     fun clear() {
         _uiState.tryEmit(SearchUiState.Loading)
@@ -57,7 +58,7 @@ class SearchViewModel @Inject constructor(
         _uiState.tryEmit(SearchUiState.Success(filteredProducts))
     }
 
-    suspend fun deleteProduct(productId: String)  {
+    suspend fun deleteProduct(productId: String) {
         deleteFromWishlist(productId)
     }
 
@@ -73,8 +74,8 @@ class SearchViewModel @Inject constructor(
             val matchesFilters = selectedFilters.all { (key, value) ->
                 when (key) {
                     "Color" -> value.any { v -> product.colors.any { it.equals(v, true) } }
-                    "Category" -> value.any { v -> product.category.equals(v,  true) }
-                    "Brand" -> value.any { v -> product.brand.equals(v,  true) }
+                    "Category" -> value.any { v -> product.category.equals(v, true) }
+                    "Brand" -> value.any { v -> product.brand.equals(v, true) }
                     else -> true
                 }
             }
@@ -107,6 +108,16 @@ class SearchViewModel @Inject constructor(
                 .toSet()
                 .toList().toMutableList()
 
+            categories = allProducts
+                .map { it.category }
+                .distinct()
+                .toMutableList()
+
+            brands = allProducts
+                .map { it.brand }
+                .distinct()
+                .toMutableList()
+
             fetchPriceRange()
             _uiState.emit(SearchUiState.Success(allProducts))
         }
@@ -136,19 +147,17 @@ class SearchViewModel @Inject constructor(
     }
 
     private suspend fun fetchAllProducts() = getProducts()
-        .catch { e -> if (e is SecurityException) _uiState.emit(SearchUiState.Empty)
-        else _uiState.emit(SearchUiState.Error("Unknown error: ${e.message}"))}
+        .catch { e ->
+            if (e is SecurityException) _uiState.emit(SearchUiState.Empty)
+            else _uiState.emit(SearchUiState.Error("Unknown error: ${e.message}"))
+        }
         .first()
 
-    private fun getBrands() = viewModelScope.launch {
-        getBrandsUseCase(50)
-            .mapNotNull { brands -> brands?.mapNotNull { it.name } }
-            .collect { brandNames ->
-                _brands.addAll(brandNames)
-            }
-    }
-
-    fun showNoNetwork() {
-        _uiState.tryEmit(SearchUiState.NoNetwork)
-    }
+//    private fun getBrands() = viewModelScope.launch {
+//        getBrandsUseCase(50)
+//            .mapNotNull { brands -> brands?.mapNotNull { it.name } }
+//            .collect { brandNames ->
+//                _brands.addAll(brandNames)
+//            }
+//    }
 }
