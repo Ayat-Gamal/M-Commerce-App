@@ -6,7 +6,6 @@ import javax.inject.Inject
 class DeleteFromWishlistUseCase @Inject constructor(
     private val repo: WishlistRepository
 ) {
-    suspend operator fun invoke(productVariantId: String) {
+    suspend operator fun invoke(productVariantId: String) =
         repo.deleteFromWishlist(productVariantId)
-    }
 }

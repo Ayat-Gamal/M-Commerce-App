@@ -89,7 +89,10 @@ fun NavSetup(
         composable<AppRoutes.ProductDetailsScreen> {
             showBottomNavbar.value = false
             val productArgs = it.toRoute<AppRoutes.ProductDetailsScreen>()
-            ProductDetailsScreenUI(productId = productArgs.productId, navController = navController)
+            ProductDetailsScreenUI(
+                snackBarHostState,
+                productId = productArgs.productId,
+                navController = navController)
         }
 
         composable<AppRoutes.CategoryScreen> {
@@ -161,7 +164,7 @@ fun NavSetup(
 
         composable<AppRoutes.WishListScreen> {
             showBottomNavbar.value = false
-            WishListScreen(navController)
+            WishListScreen(snackBarHostState, navController)
         }
         composable<AppRoutes.CurrencyScreen> {
             CurrencyScreenUi(navController)
