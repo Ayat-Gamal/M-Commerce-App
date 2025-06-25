@@ -59,7 +59,13 @@ class CartViewModel @Inject constructor(
                 val line = currentState.cart.lines.find { it.lineId == lineId }
                 line?.let {
                     val newQuantity = it.quantity + 1
-                    updateLineQuantity(lineId, newQuantity)
+                    if ( newQuantity <= it.availableQuantity) {
+
+                        updateLineQuantity(lineId, newQuantity)
+                    }
+                    else {
+                        _uiState.value = CartUiState.Error("Maximum quantity reached")
+                    }
                 }
             }
         } catch (e: Exception) {

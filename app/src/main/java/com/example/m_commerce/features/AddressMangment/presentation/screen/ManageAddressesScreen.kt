@@ -1,7 +1,6 @@
 package com.example.m_commerce.features.AddressMangment.presentation.screen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -25,9 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.core.shared.components.CustomDialog
@@ -37,8 +33,6 @@ import com.example.m_commerce.features.AddressMangment.presentation.components.A
 import com.example.m_commerce.features.AddressMangment.presentation.components.AddressCard
 import com.example.m_commerce.features.AddressMangment.presentation.ui_states.DeleteState
 import com.example.m_commerce.features.AddressMangment.presentation.viewmodel.AddressViewModel
-import com.shopify.buy3.Storefront
-import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnrememberedMutableState")
@@ -57,6 +51,7 @@ fun ManageAddressScreenUi(
 
     LaunchedEffect(Unit) {
         viewModel.loadAddresses()
+
     }
 
     LaunchedEffect(deleteState) {
@@ -126,6 +121,7 @@ fun ManageAddressScreenUi(
                     CircularProgressIndicator(
                     )
                 }
+
                 defaultAddress != null -> {
                     defaultAddress?.let { address ->
                         AddressCard(

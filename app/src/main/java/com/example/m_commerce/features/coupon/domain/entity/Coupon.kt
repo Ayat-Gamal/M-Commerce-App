@@ -5,4 +5,5 @@ data class Coupon(
     val code: String,
     val usageCount: Int,
     val status: String,
+    val summary:String
 )

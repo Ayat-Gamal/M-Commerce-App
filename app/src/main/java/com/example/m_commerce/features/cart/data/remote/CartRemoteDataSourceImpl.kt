@@ -45,8 +45,8 @@ class CartRemoteDataSourceImpl @Inject constructor(
                             }
                             node.merchandise { merch ->
                                 merch.onProductVariant { variant ->
-                                    //variant.id()
                                     variant.title()
+                                    variant.quantityAvailable()
                                     variant.price { price ->
                                         price.amount()
                                         price.currencyCode()

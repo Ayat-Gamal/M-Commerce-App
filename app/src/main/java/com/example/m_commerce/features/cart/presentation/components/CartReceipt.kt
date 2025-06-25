@@ -24,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.m_commerce.BuildConfig
 import com.example.m_commerce.config.theme.Background
+import com.example.m_commerce.config.theme.Black
+import com.example.m_commerce.config.theme.OfferColor
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
@@ -49,10 +51,9 @@ fun CartReceipt(
     var promoCode by remember { mutableStateOf("") }
 
     val context = LocalContext.current
+
     var paymentIntentClientSecret by remember { mutableStateOf<String?>(null) }
-
     val publishableKey = BuildConfig.PAYMENT_PUBLISHABLE_KEY
-
     LaunchedEffect(Unit) {
         PaymentConfiguration.init(context, publishableKey)
 
@@ -89,7 +90,8 @@ fun CartReceipt(
                     val receiptItems = listOf(
                         ReceiptItem("Subtotal",  currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem("Tax", currencyViewModel.formatPrice(it.totalTaxAmount ?: "0.00")),
-                        ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" )))
+                        //ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" ))
+                         ReceiptItem("Discount", currencyViewModel.formatPrice(((it.totalAmount.toFloatOrNull() ?: 0f) - (it.subtotalAmount?.toFloatOrNull() ?: 0f)).toString()), isDiscount = true) )
                     receiptItems.forEach { item ->
                         CartReceiptItem(item)
                     }
@@ -141,8 +143,9 @@ fun CartReceiptItem(item: ReceiptItem) {
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = item.title, fontWeight = FontWeight.Bold)
-        Text(text = item.price)
+        Text(text = item.title, fontWeight = FontWeight.Bold , color = if (item.isDiscount)  OfferColor else Teal  )
+        Text(text = item.price , color = if (item.isDiscount)  OfferColor else Black
+        )
     }
 }
 

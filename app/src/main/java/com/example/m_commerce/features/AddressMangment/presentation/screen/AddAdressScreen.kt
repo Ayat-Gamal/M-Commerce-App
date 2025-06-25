@@ -219,9 +219,9 @@ fun AddAddressScreen(
                             zip = zipCode,
                             phone = phone
                         )
-                    }
-                    navController.navigate(AppRoutes.ManageAddressScreen) {
-                        popUpTo(AppRoutes.ManageAddressScreen) { inclusive = true }
+                        navController.navigate(AppRoutes.ManageAddressScreen) {
+                            popUpTo(AppRoutes.ManageAddressScreen) { inclusive = true }
+                        }
                     }
                 }
             )
