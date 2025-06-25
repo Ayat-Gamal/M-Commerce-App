@@ -51,9 +51,14 @@ fun ManageAddressScreenUi(
 
     LaunchedEffect(Unit) {
         viewModel.loadAddresses()
-
     }
+    LaunchedEffect(Unit) {
+        viewModel.loadAddresses()
 
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            viewModel.loadAddresses()
+        }
+    }
     LaunchedEffect(deleteState) {
         when (deleteState) {
             is DeleteState.Success -> {
@@ -102,6 +107,7 @@ fun ManageAddressScreenUi(
                         showDeleteDialog = false
                         viewModel.deleteAddress(address.id)
                         pendingAddress = null
+                        viewModel.loadAddresses()
                     },
                     onDismiss = {
                         showDeleteDialog = false

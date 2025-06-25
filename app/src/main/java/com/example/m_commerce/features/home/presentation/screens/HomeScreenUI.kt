@@ -113,9 +113,9 @@ private fun LoadedData(
         SpecialOffersSection(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp), navigateToSpecialOffers,
-            couponCodes,
-            snackBarHostState
+                .height(200.dp),
+            couponCodes =couponCodes,
+            snackBarHostState = snackBarHostState
         )
 
         CategorySection(
