@@ -15,16 +15,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.core.shared.components.NetworkImage
+import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.categories.domain.entity.Category
 
 @Composable
-fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
+fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Brand) {
     Column(modifier = modifier
         .border(1.dp, color = Black)
         .clickable { onClick() }) {
         NetworkImage(url = category.image, modifier = Modifier.weight(1f))
         Text(
-            category.name,
+            category.name ?: "null",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),

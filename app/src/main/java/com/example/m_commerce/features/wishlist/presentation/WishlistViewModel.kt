@@ -1,11 +1,11 @@
 package com.example.m_commerce.features.wishlist.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.DeleteFromWishlistUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.GetWishlistUseCase
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +27,12 @@ class WishlistViewModel @Inject constructor(
 ) : ViewModel() {
     private var _uiState = MutableStateFlow<WishlistUiState>(WishlistUiState.Loading)
     val uiState = _uiState.asStateFlow()
+
+    init {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            _uiState.tryEmit(WishlistUiState.Guest)
+        } else getProducts()
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getProducts() {

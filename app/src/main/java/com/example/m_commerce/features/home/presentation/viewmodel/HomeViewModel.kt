@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
-import com.example.m_commerce.features.categories.domain.usecases.GetCategoriesUseCase
+import com.example.m_commerce.features.categories.domain.usecases.GetSubCategoriesUseCase
 import com.example.m_commerce.features.coupon.domain.usecases.GetCouponsUseCase
 import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getBrandsUseCase: GetBrandsUseCase,
-    private val getCategoriesUseCase: GetCategoriesUseCase,
+//    private val getSubCategoryUseCase: GetSubCategoriesUseCase,
     private val getCouponsUseCase: GetCouponsUseCase
 ) : ViewModel() {
 
@@ -36,16 +36,13 @@ class HomeViewModel @Inject constructor(
 
            // val couponCodes = coupons.map { it }
 
-            val brands = getBrandsUseCase(7).catch { emit(null) }.firstOrNull()
-            val categories = getCategoriesUseCase(Unit).catch { emit(null) }.firstOrNull()
+            val brands = getBrandsUseCase(50).catch { emit(null) }.firstOrNull()
 
             //TODO: This might be a bad idea
             if (brands.isNullOrEmpty()) {
                 _dataState.value = HomeUiState.Error("No Brands Found")
-            } else if (categories.isNullOrEmpty()) {
-                _dataState.value = HomeUiState.Error("No Categories Found")
             } else {
-                _dataState.value = HomeUiState.Success(brands, categories , coupons)
+                _dataState.value = HomeUiState.Success(brands, coupons)
             }
         } catch (e: Exception) {
             Log.e("Error", e.message.toString())

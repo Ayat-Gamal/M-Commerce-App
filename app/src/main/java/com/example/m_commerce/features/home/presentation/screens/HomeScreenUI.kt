@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.features.brand.domain.entity.Brand
@@ -38,10 +39,11 @@ import com.example.m_commerce.features.search.presentation.SearchScreen
 fun HomeScreenUI(
     modifier: Modifier = Modifier,
     navigateToCategories: () -> Unit,
-    navigateToCategory: (Category) -> Unit,
+    navigateToCategory: (Brand) -> Unit,
     navigateToSpecialOffers: () -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
+    navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -61,8 +63,9 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands, categories , couponCodes) = (state as HomeUiState.Success)
-            if (brands.isNotEmpty() && categories.isNotEmpty()) {
+            val (brands , couponCodes) = (state as HomeUiState.Success)
+            val categories = brands.takeLast(4)
+            if (brands.isNotEmpty()) {
                 LoadedData(
                     scrollState,
                     navigateToSpecialOffers,
@@ -72,14 +75,18 @@ fun HomeScreenUI(
                     navigateToBrand,
                     brands,
                     categories,
-                    couponCodes
+                    couponCodes,
+                    navController
                 )
             } else {
                 FailedScreenCase(msg = "No Data Found")
             }
         }
 
-        HomeUiState.Search -> SearchScreen(query, PaddingValues(), {}) // TODO Edit PaddingValues
+        HomeUiState.Search -> SearchScreen(
+            navController = navController,
+            isWishlist = false
+        )
     }
 
 }
@@ -89,22 +96,23 @@ private fun LoadedData(
     scrollState: ScrollState,
     navigateToSpecialOffers: () -> Unit,
     navigateToCategories: () -> Unit,
-    navigateToCategory: (Category) -> Unit,
+    navigateToCategory: (Brand) -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
-    categories: List<Category>,
-    couponCodes: List<Coupon>
+    categories: List<Brand>,
+    couponCodes: List<Coupon>,
+    navController: NavHostController
 ) {
     Column(
         Modifier
             .verticalScroll(scrollState)
             .wrapContentHeight()
     ) {
-        SearchSection()
+        SearchSection(navController = navController)
 
         SpecialOffersSection(
-           modifier = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp), navigateToSpecialOffers,
             couponCodes

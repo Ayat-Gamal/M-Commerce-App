@@ -24,11 +24,11 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -37,12 +37,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
-import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.profile.domain.entity.ProfileOption
 import com.example.m_commerce.features.profile.presentation.components.profile.ProfileOptionsList
-import com.example.m_commerce.features.profile.presentation.state.ProfileUiState
 import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -53,51 +51,51 @@ fun ProfileScreenUI(
     viewModel: ProfileViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    val uiState = viewModel.profileState.collectAsState().value
+//    val uiState = viewModel.profileState.collectAsState().value
+    ProfileContent(navController)
 
 
-    when (uiState) {
-        is ProfileUiState.Loading -> {
-            Text("Loading...")
-        }
+//    when (uiState) {
+//        is ProfileUiState.Loading -> {
+//            // Show loading spinner
+//            Text("Loading...")
+//        }
+//
+//        is ProfileUiState.Guest -> {
+//            //Text("You're browsing as a guest. Please log in.")
+//        }
+//
+//        is ProfileUiState.NoNetwork -> {
+//            Text("No internet connection. Please try again later.")
+//        }
+//
+//        is ProfileUiState.Error -> {
+//            // Show error message
+//            Text("Error: ${uiState.error}")
+//        }
+//
+//        is ProfileUiState.Success -> {
+//
+//            ProfileContent(
+//                navController, ProfileUiState.Success(
+//                    profileName = "Mohamed",
+//                    profileImageUrl = "https://cdn.example.com/image.jpg"
+//                )
+//            )
+//        }
+//
+//        ProfileUiState.Empty -> {
+//            Text("No data found.")
+//        }
+//    }
 
-        is ProfileUiState.Guest -> {
-            Text("You're browsing as a guest. Please log in.")
-        }
-
-        is ProfileUiState.NoNetwork -> {
-            Text("No internet connection. Please try again later.")
-        }
-
-        is ProfileUiState.Error -> {
-            // Show error message
-            Text("Error: ${uiState.error}")
-        }
-
-        is ProfileUiState.Success -> {
-
-            ProfileContent(navController , ProfileUiState.Success(
-                profileName = "Mohamed",
-                profileImageUrl = "https://i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg"
-            ))
-        }
-
-        ProfileUiState.Empty -> {
-            Text("No data found.")
-        }
-    }
 }
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
-
-val user = FirebaseAuth.getInstance().currentUser
-//var userName =  "Anonymous"
-var userName = user?.displayName ?: "Anonymous"
-var imageUrl = user?.photoUrl ?: " "
-
 @Composable
-fun ProfileContent(navController: NavHostController, profileuistate: ProfileUiState.Success ) {
+fun ProfileContent(navController: NavHostController/*, profileuistate: ProfileUiState.Success*/) {
+
     val options = listOf(
         ProfileOption("Your profile", Icons.Default.Person),
         ProfileOption("Manage Address", Icons.Default.LocationOn),
@@ -129,7 +127,7 @@ fun ProfileContent(navController: NavHostController, profileuistate: ProfileUiSt
                     contentAlignment = Alignment.Center
                 ) {
                     NetworkImage(
-                        url = "https://i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg",
+                        url = (FirebaseAuth.getInstance().currentUser?.photoUrl ?: "https://images-ext-1.discordapp.net/external/7VlXibo_9bX2x9sVjwk_f6vnZxdJveVCOPfiohEzkho/https/i.pinimg.com/736x/17/c0/d1/17c0d1bfcef18ad4a83d5b5b95f328df.jpg?format=webp&width=920&height=920").toString(),
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
@@ -141,8 +139,10 @@ fun ProfileContent(navController: NavHostController, profileuistate: ProfileUiSt
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+
+
                 Text(
-                    "Welcome ${userName} "
+                    "Welcome ${FirebaseAuth.getInstance().currentUser?.displayName ?: "Guest"}"
                 )
             }
 
@@ -161,23 +161,25 @@ fun ProfileContent(navController: NavHostController, profileuistate: ProfileUiSt
                     "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
                 }
             }
-            Text(
-                text = "Logout",
-                color = Color.Red,
-                style = TextStyle(
-                    textDecoration = TextDecoration.Underline,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier
-                    .clickable(onClick = {
-                        FirebaseAuth.getInstance().signOut()
-                        navController.navigate(AppRoutes.LoginScreen) {
-                            popUpTo(AppRoutes.ProfileScreen) { inclusive = true }
-                        }
+            if (FirebaseAuth.getInstance().currentUser != null) {
+                Text(
+                    text = "Logout",
+                    color = Color.Red,
+                    style = TextStyle(
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .clickable(onClick = {
+                            FirebaseAuth.getInstance().signOut()
+                            navController.navigate(AppRoutes.LoginScreen) {
+                                popUpTo(AppRoutes.ProfileScreen) { inclusive = true }
+                            }
 
-                    })
-                    .padding(16.dp)
-            )
+                        })
+                        .padding(16.dp)
+                )
+            }
         }
     }
 }

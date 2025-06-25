@@ -7,10 +7,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,43 +23,44 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.Empty
+import com.example.m_commerce.core.shared.components.GuestMode
 import com.example.m_commerce.core.shared.components.NoNetwork
+import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
-import com.example.m_commerce.features.home.presentation.components.SearchBarWithClear
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.components.ProductsGridView
 import com.example.m_commerce.features.search.presentation.SearchScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun WishListScreen(
     navController: NavHostController,
     viewModel: WishlistViewModel = hiltViewModel()
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.getProducts()
-    }
-
     val query = remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-            ) {
+            if (FirebaseAuth.getInstance().currentUser != null) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
+                    BackButton(navController)
+                    SearchBarWithClear(
+                        onQueryChange = {},
+                        onClear = {},
+                        enabled = false,
+                        placeholder = "Search in wishlist...",
+                        onclick = {
+                            navController.navigate(AppRoutes.SearchScreen(true))
+                        },
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                }
+            } else {
                 BackButton(navController)
-                SearchBarWithClear(
-                    query = query.value,
-                    onQueryChange = {
-                        query.value = it
-                        viewModel.search(it)
-                    },
-                    onClear = {
-                        query.value = ""
-                        viewModel.search("")
-                    }
-                )
             }
         }
     ) { padding ->
@@ -101,15 +103,21 @@ fun WishListScreen(
 
             WishlistUiState.Search -> {
                 Log.d("TAG", "WishListScreen: WishlistUiState.Search")
-                SearchScreen(query, padding, navigateToProductDetails = { productId ->
-                    navController.navigate(AppRoutes.ProductDetailsScreen(productId))
-                }, {product ->
-                    viewModel.deleteProductFromWishlist(product.id)
-                    viewModel.getProducts()
-                })
+                SearchScreen(
+                    navController,
+                    isWishlist = false
+//                    query, padding, navigateToProductDetails = { productId ->
+//                    navController.navigate(AppRoutes.ProductDetailsScreen(productId))
+//                }, { product ->
+//                    viewModel.deleteProductFromWishlist(product.id)
+//                    viewModel.getProducts()
+//                }
+                )
             }
 
-            WishlistUiState.Guest -> {}
+            WishlistUiState.Guest -> {
+                GuestMode(navController, "Wishlist", Icons.Default.FavoriteBorder)
+            }
         }
     }
 //    }

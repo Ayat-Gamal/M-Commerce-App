@@ -8,6 +8,7 @@ import com.example.m_commerce.features.cart.domain.usecases.RemoveProductVariant
 import com.example.m_commerce.features.cart.domain.usecases.UpdateCartUseCase
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.coupon.domain.usecases.ApplyCouponUseCase
+import com.example.m_commerce.features.wishlist.presentation.WishlistUiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,12 @@ class CartViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
+
+    init {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            _uiState.tryEmit(CartUiState.Guest)
+        } else getCartById()
+    }
 
     fun getCartById() = viewModelScope.launch {
 

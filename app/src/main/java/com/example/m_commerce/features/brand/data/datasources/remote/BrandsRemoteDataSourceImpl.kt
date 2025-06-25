@@ -53,6 +53,7 @@ class BrandsRemoteDataSourceImpl @Inject constructor(private val shopifyClient: 
                     product.title()
                         .description()
                         .productType()
+                        .vendor()
                         .variants({ args -> args.first(10) }) { variants ->
                             variants.edges { edges ->
                                 edges.node { node ->
