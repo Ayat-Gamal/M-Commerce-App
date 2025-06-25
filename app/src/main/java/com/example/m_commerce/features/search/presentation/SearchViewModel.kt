@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.search.presentation
 
-import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapMerge
@@ -24,6 +22,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.ceil
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -36,70 +35,79 @@ class SearchViewModel @Inject constructor(
 
     private var _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Loading)
     val uiState = _uiState.asStateFlow()
-    private var products = emptyList<Product>()
+
+    private var allProducts = emptyList<Product>()
     private var filteredProducts = emptyList<Product>()
-    private var isFirst = true
 
     private var _brands = mutableListOf<String>()
     var brands: List<String> = _brands
-
     var colors = mutableListOf<String>()
+
+    var priceRange = MutableStateFlow(0f..100f)
 
     init {
         getBrands()
     }
 
-    fun search(query: String) = viewModelScope.launch {
-        _uiState.emit(SearchUiState.Loading)
-
-        if (isFirst) {
-            isFirst = false
-            return@launch
-        }
-
-        filteredProducts = products
-            .filter {
-                it.title.contains(query, true)
-            }
-
-        _uiState.emit(
-            if (filteredProducts.isNotEmpty()) SearchUiState.Success(filteredProducts)
-            else SearchUiState.Empty
-        )
+    fun clear() {
+        _uiState.tryEmit(SearchUiState.Loading)
+        filteredProducts = allProducts
+        _uiState.tryEmit(SearchUiState.Success(filteredProducts))
     }
 
-    fun filter(selectedFilters: SnapshotStateMap<String, String>) {
-        filteredProducts = products.filter { product ->
-            selectedFilters.all { (key, value) ->
+    fun searchAndFilter(
+        query: String,
+        selectedFilters: SnapshotStateMap<String, List<String>>,
+        range: ClosedFloatingPointRange<Float>
+    ) {
+        _uiState.value = SearchUiState.Loading
+
+        val filtered = allProducts.filter { product ->
+
+            val matchesFilters = selectedFilters.all { (key, value) ->
                 when (key) {
-                    "Color" -> product.colors.contains(value.lowercase())
-                    "Category" -> product.category.equals(value, true)
-                    "Brand" -> product.brand.equals(value, true)
+                    "Color" -> value.any { v -> product.colors.any { it.equals(v, true) } }
+                    "Category" -> value.any { v -> product.category.equals(v,  true) }
+                    "Brand" -> value.any { v -> product.brand.equals(v,  true) }
                     else -> true
                 }
             }
+
+            val matchesQuery = product.title.contains(query, ignoreCase = true)
+            val matchesPrice = product.price.toFloat() in range
+
+            matchesFilters && matchesQuery && matchesPrice
         }
 
-        _uiState.value = if (filteredProducts.isEmpty()) {
+        _uiState.value = if (filtered.isEmpty()) {
             SearchUiState.Empty
         } else {
-            SearchUiState.Success(filteredProducts)
+            SearchUiState.Success(filtered)
         }
     }
 
-    fun getAllProducts(fromWishlist: Boolean = false) {
+
+    fun getAllProducts(isWishlist: Boolean) =
         viewModelScope.launch {
-            products = if (fromWishlist) {
+            _uiState.emit(SearchUiState.Loading)
+            allProducts = if (isWishlist) {
                 getWishlistProducts()
             } else {
                 fetchAllProducts()
             }
-            colors = products
+
+            colors = allProducts
                 .flatMap { it.colors }
                 .toSet()
                 .toList().toMutableList()
-            _uiState.emit(SearchUiState.Success(products))
+
+            fetchPriceRange()
+            _uiState.emit(SearchUiState.Success(allProducts))
         }
+
+    private suspend fun fetchPriceRange() {
+        val max = ceil(allProducts.maxOfOrNull { it.price.toFloat() } ?: 100f)
+        priceRange.emit(0f..max)
     }
 
     private suspend fun getWishlistProducts(): List<Product> {
@@ -125,7 +133,7 @@ class SearchViewModel @Inject constructor(
 
     private fun getBrands() = viewModelScope.launch {
         getBrandsUseCase(50)
-            .mapNotNull { brands -> brands?.mapNotNull { it.name }?.drop(1) }
+            .mapNotNull { brands -> brands?.mapNotNull { it.name } }
             .collect { brandNames ->
                 _brands.addAll(brandNames)
             }

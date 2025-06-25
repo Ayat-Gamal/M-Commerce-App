@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +41,7 @@ fun HomeScreenUI(
     navigateToSpecialOffers: () -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
+    navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -61,7 +61,7 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands, categories , couponCodes) = (state as HomeUiState.Success)
+            val (brands, categories, couponCodes) = (state as HomeUiState.Success)
             if (brands.isNotEmpty() && categories.isNotEmpty()) {
                 LoadedData(
                     scrollState,
@@ -72,14 +72,18 @@ fun HomeScreenUI(
                     navigateToBrand,
                     brands,
                     categories,
-                    couponCodes
+                    couponCodes,
+                    navController
                 )
             } else {
                 FailedScreenCase(msg = "No Data Found")
             }
         }
 
-        HomeUiState.Search -> SearchScreen(query, PaddingValues(), {}) // TODO Edit PaddingValues
+        HomeUiState.Search -> SearchScreen(
+            navController = navController,
+            isWishlist = false
+        )
     }
 
 }
@@ -94,17 +98,18 @@ private fun LoadedData(
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
     categories: List<Category>,
-    couponCodes: List<String>
+    couponCodes: List<String>,
+    navController: NavHostController
 ) {
     Column(
         Modifier
             .verticalScroll(scrollState)
             .wrapContentHeight()
     ) {
-        SearchSection()
+        SearchSection(navController = navController)
 
         SpecialOffersSection(
-           modifier = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp), navigateToSpecialOffers,
             couponCodes
