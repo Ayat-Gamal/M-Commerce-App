@@ -1,9 +1,8 @@
-package com.example.m_commerce.features.categories.data.datasources.remote
+package com.example.m_commerce.features.categories.domain.repository
 
 import com.example.m_commerce.features.categories.data.dto.CategoryDto
 import kotlinx.coroutines.flow.Flow
 
-interface CategoryRemoteDataSource {
+interface SubCategoryRepository {
     fun getCategories(): Flow<List<CategoryDto>>
 }
-
