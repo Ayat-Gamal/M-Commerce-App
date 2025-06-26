@@ -85,6 +85,9 @@ dependencies {
     implementation(libs.androidx.benchmark.common)
     implementation(libs.androidx.material.icons.core.android)
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
     val room_version = "2.6.1"
     val nav_version = "2.8.8"
 
@@ -138,6 +141,8 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.51.1")
     ksp("com.google.dagger:hilt-android-compiler:2.51.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+    testImplementation("com.google.dagger:hilt-android-testing:2.56.2")
+//    kaptTest("com.google.dagger:hilt-android-compiler:2.56.2")
 
     //!Navigation
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
@@ -178,6 +183,7 @@ dependencies {
 // Junit
 //    testImplementation(junit:junit:4.13.2)
     testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
 // AndroidX
 //    testImplementation("androidx.test:core:1.6.1")

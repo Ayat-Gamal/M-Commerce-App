@@ -40,17 +40,11 @@ class SearchViewModel @Inject constructor(
     private var allProducts = emptyList<Product>()
     private var filteredProducts = emptyList<Product>()
 
-    //    private var _brands = mutableListOf<String>()
-//    var brands: List<String> = _brands
     var colors = mutableListOf<String>()
     var categories = mutableListOf<String>()
     var brands = mutableListOf<String>()
 
     var priceRange = MutableStateFlow(0f..100f)
-
-//    init {
-//        getBrands()
-//    }
 
     fun clear() {
         _uiState.tryEmit(SearchUiState.Loading)
@@ -152,12 +146,4 @@ class SearchViewModel @Inject constructor(
             else _uiState.emit(SearchUiState.Error("Unknown error: ${e.message}"))
         }
         .first()
-
-//    private fun getBrands() = viewModelScope.launch {
-//        getBrandsUseCase(50)
-//            .mapNotNull { brands -> brands?.mapNotNull { it.name } }
-//            .collect { brandNames ->
-//                _brands.addAll(brandNames)
-//            }
-//    }
 }
