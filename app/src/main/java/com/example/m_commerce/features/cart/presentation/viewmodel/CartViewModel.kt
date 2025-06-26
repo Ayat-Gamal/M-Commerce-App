@@ -4,14 +4,15 @@ import ProductVariant
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.cart.domain.usecases.GetCartByIdUseCase
 import com.example.m_commerce.features.cart.domain.usecases.RemoveProductVariantUseCase
 import com.example.m_commerce.features.cart.domain.usecases.UpdateCartUseCase
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.coupon.domain.usecases.ApplyCouponUseCase
-import com.example.m_commerce.features.orders.data.model.variables.LineItem
-import com.example.m_commerce.features.wishlist.presentation.WishlistUiState
+import com.example.m_commerce.features.product.presentation.ProductUiState
+import com.example.m_commerce.features.product.presentation.SnackBarMessage
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,19 +29,24 @@ class CartViewModel @Inject constructor(
     private val updateCartUseCase: UpdateCartUseCase,
     private val removeProductVariantUseCase: RemoveProductVariantUseCase,
     private val applyCouponUseCase: ApplyCouponUseCase,
+    private val networkManager: NetworkManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private val _snackBarFlow = MutableSharedFlow<UiEvent>()
+    private val _snackBarFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val snackBarFlow = _snackBarFlow.asSharedFlow()
 
 
     init {
-        if (FirebaseAuth.getInstance().currentUser == null) {
-            _uiState.tryEmit(CartUiState.Guest)
-        } else getCartById()
+        if (!networkManager.isNetworkAvailable()) {
+            _uiState.tryEmit(CartUiState.NoNetwork)
+        } else {
+            if (FirebaseAuth.getInstance().currentUser == null) {
+                _uiState.tryEmit(CartUiState.Guest)
+            } else getCartById()
+        }
     }
 
     fun getCartById() = viewModelScope.launch {
@@ -70,21 +76,19 @@ class CartViewModel @Inject constructor(
     }
 
     fun increaseQuantity(lineId: String) = viewModelScope.launch {
+        if (!isConnected()) return@launch
         try {
             val currentState = _uiState.value
             if (currentState is CartUiState.Success) {
                 val line = currentState.cart.lines.find { it.lineId == lineId }
                 line?.let {
                     val newQuantity = it.quantity + 1
-                    if ( newQuantity <= it.availableQuantity) {
-
+                    if (newQuantity <= it.availableQuantity) {
                         updateLineQuantity(lineId, newQuantity)
-                    }
-                    else {
-                            viewModelScope.launch {
-                                _snackBarFlow.emit(UiEvent.ShowSnackbar("Maximum quantity reached"))
-                            }
-
+                    } else {
+                        viewModelScope.launch {
+                            _snackBarFlow.emit(UiEvent.ShowSnackbar("Maximum quantity reached"))
+                        }
                     }
                 }
             }
@@ -95,6 +99,7 @@ class CartViewModel @Inject constructor(
     }
 
     fun decreaseQuantity(lineId: String) = viewModelScope.launch {
+        if (!isConnected()) return@launch
         try {
             val currentState = _uiState.value
             if (currentState is CartUiState.Success) {
@@ -124,7 +129,9 @@ class CartViewModel @Inject constructor(
             _uiState.value = CartUiState.Error(e.message ?: "Remove failed")
         }
     }
+
     fun clearCart(items: List<ProductVariant>) = viewModelScope.launch {
+        if (!isConnected()) return@launch
         try {
             for (item in items) {
                 val success = removeProductVariantUseCase(item.lineId).first()
@@ -139,8 +146,8 @@ class CartViewModel @Inject constructor(
         }
     }
 
-
     fun applyCoupon(couponCode: String) = viewModelScope.launch {
+        if (!isConnected()) return@launch
         try {
             applyCouponUseCase(couponCode).collect { success ->
                 if (success) {
@@ -171,6 +178,11 @@ class CartViewModel @Inject constructor(
         }
     }
 
-
+     fun isConnected(): Boolean {
+        return if (!networkManager.isNetworkAvailable()) {
+            _snackBarFlow.tryEmit(UiEvent.ShowSnackbar("No internet connection"))
+            false
+        } else true
+    }
 }
 

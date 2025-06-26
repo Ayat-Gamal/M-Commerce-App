@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.features.brand.domain.entity.Brand
@@ -44,6 +45,7 @@ fun HomeScreenUI(
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState,
+
 ) {
 
     val scrollState = rememberScrollState()
@@ -84,8 +86,11 @@ fun HomeScreenUI(
 
         HomeUiState.Search -> SearchScreen(
             navController = navController,
+            snackBarHostState,
             isWishlist = false
         )
+
+        HomeUiState.NoNetwork -> NoNetwork()
     }
 
 }

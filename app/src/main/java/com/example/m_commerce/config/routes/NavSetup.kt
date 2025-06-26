@@ -185,7 +185,7 @@ fun NavSetup(
             showBottomNavbar.value = false
             val args = it.toRoute<AppRoutes.SearchScreen>()
 
-            SearchScreen(navController, isWishlist = args.isWishlist)
+            SearchScreen(navController, snackBarHostState,isWishlist = args.isWishlist)
         }
 
     }

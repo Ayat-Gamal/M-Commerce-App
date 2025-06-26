@@ -6,6 +6,7 @@ import com.example.m_commerce.features.categories.domain.entity.Category
 
 sealed class BrandsUiState {
     object Loading : BrandsUiState()
+    object NoNetwork : BrandsUiState()
     data class Success(val brands: List<Brand>) : BrandsUiState()
     data class Error(val message: String) : BrandsUiState()
 }

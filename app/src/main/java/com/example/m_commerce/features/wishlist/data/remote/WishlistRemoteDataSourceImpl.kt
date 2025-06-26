@@ -5,6 +5,7 @@ package com.example.m_commerce.features.wishlist.data.remote
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -29,22 +30,19 @@ class WishlistRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun deleteFromWishlist(productVariantId: String) = flow {
-        try {
-            if (uid == null) {
-                emit("User not logged in.")
-                return@flow
-            }
-
-            db.collection("users")
-                .document(uid)
-                .update("wishlist", FieldValue.arrayRemove(productVariantId))
-                .await()
-
-            emit("Product removed from wishlist successfully.")
-        } catch (e: Exception) {
-            emit("Failed to remove product from wishlist: ${e.message}")
+        if (uid == null) {
+            emit("User not logged in.")
+            return@flow
         }
-    }
+
+        db.collection("users")
+            .document(uid)
+            .update("wishlist", FieldValue.arrayRemove(productVariantId))
+            .await()
+
+        emit("Product removed from wishlist successfully.")
+
+    }.catch { emit("Failed to remove product from wishlist: ${it.message}") }
 
     override suspend fun isInWishlist(productVariantId: String) = flow {
         var isIn = false

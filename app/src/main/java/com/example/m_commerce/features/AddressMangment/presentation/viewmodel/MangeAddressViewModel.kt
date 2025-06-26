@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.usecases.DeleteAddressUseCase
@@ -13,6 +14,8 @@ import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaul
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SaveAddressUseCase
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SetDefaultAddressUseCase
 import com.example.m_commerce.features.AddressMangment.presentation.ui_states.DeleteState
+import com.example.m_commerce.features.product.presentation.ProductUiState
+import com.example.m_commerce.features.product.presentation.SnackBarMessage
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -25,10 +28,9 @@ class AddressViewModel @Inject constructor(
     private val getDefaultAddressUseCase: GetDefaultAddressUseCase,
     private val setDefaultAddressUseCase: SetDefaultAddressUseCase,
     private val deleteAddressUseCase: DeleteAddressUseCase,
-    private val firebaseAuth: FirebaseAuth
-) : ViewModel() {
-
-
+    private val firebaseAuth: FirebaseAuth,
+    private val networkManager: NetworkManager,
+    ) : ViewModel() {
 
     private val _addresses = mutableStateOf<List<Address>>(emptyList())
     val addresses: State<List<Address>> = _addresses
@@ -89,6 +91,7 @@ class AddressViewModel @Inject constructor(
                             _saveSuccess.value = true
                             loadAddresses()
                         }
+
                         is Response.Error -> {
                             _errorMessage.value = response.message
                             _isLoading.value = false
@@ -116,6 +119,7 @@ class AddressViewModel @Inject constructor(
                         _isLoading.value = false
                         getDefaultAddress()
                     }
+
                     is Response.Error -> {
                         _errorMessage.value = response.message
                         _isLoading.value = false
@@ -124,7 +128,8 @@ class AddressViewModel @Inject constructor(
             }
         }
     }
-     fun getDefaultAddress() = viewModelScope.launch {
+
+    fun getDefaultAddress() = viewModelScope.launch {
         getDefaultAddressUseCase().collect { response ->
             Log.i("TAG", "getDefaultAddress ${response}: ")
             when (response) {
@@ -174,6 +179,11 @@ class AddressViewModel @Inject constructor(
     }
 
     fun loadAddresses() {
+        if (!networkManager.isNetworkAvailable()) {
+            _addresses.value = emptyList()
+            return
+        }
+
         viewModelScope.launch {
             _isLoading.value = true
             getAddressesUseCase().collect { response ->
@@ -181,9 +191,8 @@ class AddressViewModel @Inject constructor(
                     is Response.Success -> {
 //                        Log.i("TAG", "loadAddresses: here ${response} ")
                         _isLoading.value = true
-                        getDefaultAddressUseCase().collect(){
-                                response ->
-                            when(response){
+                        getDefaultAddressUseCase().collect() { response ->
+                            when (response) {
                                 is Response.Success -> _defaultAddress.value = response.data
                                 is Response.Error -> _errorMessage.value = response.message
                                 Response.Loading -> _isLoading.value = true
@@ -191,8 +200,10 @@ class AddressViewModel @Inject constructor(
                         }
                         _addresses.value = response.data
                     }
+
                     is Response.Error -> _deleteState.value =
                         DeleteState.Error(response.message ?: "Failed to load addresses")
+
                     Response.Loading -> _isLoading.value = true
                 }
                 _isLoading.value = false
@@ -210,5 +221,7 @@ class AddressViewModel @Inject constructor(
         _errorMessage.value = null
         _saveSuccess.value = false
     }
+
+    fun isConnected() = networkManager.isNetworkAvailable()
 }
 

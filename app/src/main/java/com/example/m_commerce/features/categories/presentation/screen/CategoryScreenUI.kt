@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
@@ -41,6 +42,8 @@ fun CategoryScreenUI(modifier: Modifier = Modifier, viewModel: BrandsViewModel =
             val categories = (state as BrandsUiState.Success).brands.takeLast(4)
             LoadedCase(modifier, categories, navigateToCategory)
         }
+
+        BrandsUiState.NoNetwork -> NoNetwork()
     }
 
 }
