@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.product.presentation
 
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.domain.usecases.AddProductVariantToCart
 import com.example.m_commerce.features.product.domain.usecases.AddToWishlistUseCase
@@ -37,6 +38,7 @@ class ProductViewModelTest {
     private val deleteFromWishlist = mockk<DeleteFromWishlistUseCase>(relaxed = true)
     private val checkIfInWishlist = mockk<CheckIfInWishlistUseCase>(relaxed = true)
     private val addToCart = mockk<AddProductVariantToCart>(relaxed = true)
+    private val networkManager = mockk<NetworkManager>(relaxed = true)
 
     private lateinit var viewModel: ProductViewModel
 
@@ -50,7 +52,8 @@ class ProductViewModelTest {
             addToWishlist = addToWishlist,
             deleteFromWishlist = deleteFromWishlist,
             checkIfInWishlist = checkIfInWishlist,
-            addProductVariantToCart = addToCart
+            addProductVariantToCart = addToCart,
+            networkManager = networkManager
         )
     }
 
@@ -68,6 +71,7 @@ class ProductViewModelTest {
             every { id } returns "p1"
         }
 
+        every { networkManager.isNetworkAvailable() } returns true
         coEvery { getProductById("p1") } returns flowOf(product)
         coEvery { checkIfInWishlist("p1") } returns flowOf(true)
 
@@ -83,6 +87,7 @@ class ProductViewModelTest {
     fun `getProductById emits Error state on exception`() = runTest {
 
         // given
+        every { networkManager.isNetworkAvailable() } returns true
         coEvery { getProductById("123") } returns flow { throw Exception("Network error") }
 
         // when
