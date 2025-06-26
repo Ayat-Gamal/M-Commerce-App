@@ -32,16 +32,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.utils.extentions.formatDate
 import com.example.m_commerce.features.orders.data.model.variables.LineItem
 import com.example.m_commerce.features.orders.domain.entity.OrderHistory
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 
 @Composable
-fun OrderTrackingCard(modifier: Modifier = Modifier, order: OrderHistory) {
+fun OrderTrackingCard(modifier: Modifier = Modifier, order: OrderHistory ,currencyViewModel: CurrencyViewModel = hiltViewModel()) {
 
     var expanded by remember { mutableStateOf(false) }
     val rotationAngle by animateFloatAsState(
@@ -81,7 +83,7 @@ fun OrderTrackingCard(modifier: Modifier = Modifier, order: OrderHistory) {
                 order.items.forEach { item -> LineItemCard(item = item) }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = "Total")
-                    Text(text = "${order.totalPrice} ${order.currencyCode}")
+                    Text(text = currencyViewModel.formatPrice(order.totalPrice))
                 }
             }
         }

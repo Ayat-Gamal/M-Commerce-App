@@ -6,6 +6,7 @@ import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaultAddressUseCase
 import com.example.m_commerce.features.orders.data.PaymentMethod
 import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.example.m_commerce.features.orders.domain.entity.CreatedOrder
 import com.example.m_commerce.features.orders.domain.entity.OrderHistory
 import com.example.m_commerce.features.orders.domain.usecases.CompleteOrderUseCase
 import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
@@ -90,72 +91,62 @@ class OrderViewModelTest {
 
 
 
-//
-//    @Test
-//    fun `createOrderAndSendEmail emits Success when address is valid and payment is CreditCard`() = runTest {
-//        val address = Address(
-//            address1 = "123 St",
-//            address2 = "Apt 4",
-//            city = "Cairo",
-//            country = "Egypt",
-//            firstName = "Ahmed",
-//            lastName = "Saad",
-//            phone = "123456",
-//            zip = "11111"
-//        )
-//
-//        val lineItems = listOf(
-//            LineItem(variantId = "variant-1", quantity = 2)
-//        )
-//
-//        val draftOrder = mockk<Order> {
-//            every { id } returns "gid://shopify/Order/123456"
-//        }
-//
-//        coEvery { getDefaultAddressUseCase() } returns flowOf(Response.Success(address))
-//        coEvery { createOrderUseCase(any()) } returns flowOf(draftOrder)
-//
-//        viewModel.createOrderAndSendEmail(lineItems, PaymentMethod.CreditCard)
-//        advanceUntilIdle()
-//
-//        assertEquals(OrderUiState.Success(draftOrder), viewModel.state.value)
-//    }
-//
-//    @Test
-//    fun `createOrderAndSendEmail calls completeOrder if payment method is Cash`() = runTest {
-//        val address = Address(
-//            address1 = "123 St",
-//            address2 = "Apt 4",
-//            city = "Cairo",
-//            country = "Egypt",
-//            firstName = "Ahmed",
-//            lastName = "Saad",
-//            phone = "123456",
-//            zip = "11111"
-//        )
-//
-//        val order = mockk<Order> {
-//            every { id } returns "gid://shopify/Order/999999"
-//        }
-//
-//        coEvery { getDefaultAddressUseCase() } returns flowOf(Response.Success(address))
-//        coEvery { createOrderUseCase(any()) } returns flowOf(order)
-//        coEvery { completeOrderUseCase(any()) } returns flowOf(order)
-//
-//        viewModel.createOrderAndSendEmail(listOf(), PaymentMethod.CashOnDelivery)
-//        advanceUntilIdle()
-//
-//        // Optional: assert the state is still Success, or just ensure no crash
-//        assert(viewModel.state.value !is OrderUiState.Error)
-//    }
-//
-//    @Test
-//    fun `completeOrder emits Error on failure`() = runTest {
-//        coEvery { completeOrderUseCase(any()) } throws RuntimeException("Server down")
-//
-//        viewModel.completeOrder("gid://shopify/Order/123456")
-//        advanceUntilIdle()
-//
-//        assert(viewModel.state.value is OrderUiState.Error)
-//    }
+
+    @Test
+    fun `createOrderAndSendEmail emits Success when payment method is CreditCard`() = runTest {
+        val address = Address(
+            id = "1",
+            firstName = "Youssif",
+            lastName = "Nasser",
+            address1 = "54 Main St",
+            city = "Cairo",
+            zip = "12345",
+            country = "Egypt"
+        )
+
+        val items = listOf(
+            LineItem(variantId = "v1", title = "Shoe", quantity = 2)
+        )
+
+        val createdOrder = mockk<CreatedOrder>(relaxed = true) {
+            every { id } returns "gid://shopify/Order/12345"
+        }
+
+        coEvery { getDefaultAddressUseCase() } returns flowOf(Response.Success(address))
+        coEvery { createOrderUseCase(any()) } returns flowOf(createdOrder)
+
+        viewModel.createOrderAndSendEmail(items, PaymentMethod.CreditCard)
+        advanceUntilIdle()
+
+        assert(viewModel.state.value is OrderUiState.Success)
+        assertEquals(OrderUiState.Success(createdOrder), viewModel.state.value)
+    }
+
+    @Test
+    fun `createOrderAndSendEmail calls completeOrder on CashOnDelivery`() = runTest {
+        val address = Address(
+            id = "1",
+            firstName = "Youssif",
+            lastName = "Nasser",
+            address1 = "54 Main St",
+            city = "Cairo",
+            zip = "12345",
+            country = "Egypt"
+        )
+
+        val items = listOf(LineItem("v1", "Shoe", 1))
+        val createdOrder = mockk<CreatedOrder> {
+            every { id } returns "gid://shopify/Order/67890"
+        }
+
+        coEvery { getDefaultAddressUseCase() } returns flowOf(Response.Success(address))
+        coEvery { createOrderUseCase(any()) } returns flowOf(createdOrder)
+        coEvery { completeOrderUseCase(any()) } returns flowOf(mockk())
+
+        viewModel.createOrderAndSendEmail(items, PaymentMethod.CashOnDelivery)
+        advanceUntilIdle()
+
+        assert(viewModel.state.value !is OrderUiState.Error)
+    }
+
 }

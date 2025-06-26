@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 fun WishListScreen(
     snackBarHostState: SnackbarHostState,
     navController: NavHostController,
-    viewModel: WishlistViewModel = hiltViewModel()
+    viewModel: WishlistViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
