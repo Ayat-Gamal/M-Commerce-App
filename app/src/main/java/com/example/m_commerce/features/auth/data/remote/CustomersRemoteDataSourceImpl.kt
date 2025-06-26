@@ -24,7 +24,7 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
         val mutation = Storefront.mutation { mutationQuery ->
             mutationQuery.customerCreate(input) { customerCreate ->
                 customerCreate.customer { customer ->
-                    customer.email().displayName().id()
+                    customer.email().displayName().id().firstName()
                 }.customerUserErrors { it.message() }
             }
         }
@@ -32,6 +32,10 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
             when (result) {
                 is GraphCallResult.Success -> {
                     result.response.data?.customerCreate?.customer
+                    Log.i(
+                        "TAG",
+                        "createCustomer: name in shopify: ${result.response.data?.customerCreate?.customer?.firstName}"
+                    )
                 }
 
                 is GraphCallResult.Failure -> {

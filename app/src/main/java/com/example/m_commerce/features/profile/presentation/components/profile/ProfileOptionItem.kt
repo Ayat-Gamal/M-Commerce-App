@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Teal
@@ -32,16 +34,17 @@ fun ProfileOptionItem(option: ProfileOption, onClick: () -> Unit = {}) {
             option.icon,
             contentDescription = option.title,
             modifier = Modifier.size(24.dp),
-            tint = Teal
+            tint = if (option.icon == Icons.AutoMirrored.Filled.Logout) Color.Red else Teal
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             option.title,
             modifier = Modifier.weight(1f),
             fontSize = 16.sp,
+            color = if (option.icon == Icons.AutoMirrored.Filled.Logout) Color.Red else Color.Unspecified
         )
         Icon(
-            Icons.Default.KeyboardArrowRight,
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "Go",
             modifier = Modifier.size(width = 24.dp, height = 24.dp), tint = Teal
         )

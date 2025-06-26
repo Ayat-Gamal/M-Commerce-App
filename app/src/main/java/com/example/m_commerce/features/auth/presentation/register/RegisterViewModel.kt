@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.auth.presentation.register
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.auth.domain.usecases.CreateCartUseCase
@@ -14,16 +15,13 @@ import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
 import com.example.m_commerce.features.auth.domain.validation.ValidationResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -81,21 +79,21 @@ class RegisterViewModel @Inject constructor(
 
     private fun setupUser(email: String, password: String, name: String, user: FirebaseUser) =
         viewModelScope.launch {
+            Log.i("TAG", "setupUser: called")
             sendEmailVerification(user)
-            val token = createCustomerToken(email, password, name).first()
-            val cartId = createCart(token).first()
-            storeTokenAndCartId(token, cartId, user.uid)
-            updateDisplayName(name, user)
+            Log.i("TAG", "setupUser: sendEmailVerification done")
+            createCustomerToken(email, password, name).collect { token ->
+                Log.i("TAG", "token: $token")
+                createCart(token).collect { cartId ->
+                    Log.i("TAG", "cartId: $cartId")
+                    storeTokenAndCartId(token, cartId, user.uid)
+                    Log.i("TAG", "token and cart it stored")
+                    Log.i("TAG", "setupUser: token: $token, cart id: $cartId, email: ${user.email}")
+                }
+                FirebaseAuth.getInstance().signOut()
+            }
         }
 
-    private suspend fun updateDisplayName(name: String, user: FirebaseUser) {
-        val profileUpdates = UserProfileChangeRequest.Builder()
-            .setDisplayName(name)
-            .build()
-
-        user.updateProfile(profileUpdates).await()
-        FirebaseAuth.getInstance().signOut()
-    }
 
     private suspend fun sendEmailVerification(user: FirebaseUser?) {
         user?.let {

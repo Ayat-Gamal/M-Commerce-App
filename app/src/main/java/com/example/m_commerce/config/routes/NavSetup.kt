@@ -148,6 +148,7 @@ fun NavSetup(
 
 
         composable<AppRoutes.LoginScreen> {
+            showBottomNavbar.value = false
             LoginScreen(snackBarHostState = snackBarHostState) {
                 navController.navigate(it)
             }
