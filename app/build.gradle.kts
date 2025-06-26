@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.androidx.benchmark.common)
     implementation(libs.androidx.material.icons.core.android)
+    testImplementation(libs.junit.jupiter)
     val room_version = "2.6.1"
     val nav_version = "2.8.8"
 
