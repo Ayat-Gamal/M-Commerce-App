@@ -70,6 +70,7 @@ import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
 import com.example.m_commerce.features.product.presentation.components.VariantHeaderText
 import com.example.m_commerce.features.product.presentation.components.VariantValueText
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -80,7 +81,8 @@ fun ProductDetailsScreenUI(
     snackBarHostState: SnackbarHostState,
     productId: String,
     navController: NavHostController,
-    viewModel: ProductViewModel = hiltViewModel()
+    viewModel: ProductViewModel = hiltViewModel(),
+    currencyViewModel: CurrencyViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
     var isFavorite by remember { mutableStateOf(false) }
@@ -358,8 +360,7 @@ fun ProductDetailsScreenUI(
                         ) {
                             Text("Total Price", color = Color.Gray)
                             Spacer(Modifier.height(4.dp))
-                            Text(
-                                "${product.currencyCode} ${product.price}",
+                            Text(currencyViewModel.formatPrice(product.price),
                                 color = Color.DarkGray,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 24.sp
