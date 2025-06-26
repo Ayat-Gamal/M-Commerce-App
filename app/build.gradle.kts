@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.androidx.benchmark.common)
     implementation(libs.androidx.material.icons.core.android)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
     val room_version = "2.6.1"
     val nav_version = "2.8.8"
 
@@ -95,7 +97,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -171,22 +172,38 @@ dependencies {
     implementation("com.google.maps.android:maps-compose-utils:6.5.2")
     implementation("com.google.maps.android:maps-compose-widgets:6.5.2")
 
-    // Hamcrest
-    testImplementation("org.hamcrest:hamcrest:3.0")
+//    // Hamcrest
+//    testImplementation("org.hamcrest:hamcrest:3.0")
+//
+//// Junit
+////    testImplementation(junit:junit:4.13.2)
+//    testImplementation("org.robolectric:robolectric:4.11.1")
+//    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+//// AndroidX
+////    testImplementation("androidx.test:core:1.6.1")
+////    testImplementation("androidx.test:core-ktx:1.6.1")
+////    testImplementation("androidx.test.ext:junit:1.2.1")
+////    testImplementation("androidx.test.ext:junit-ktx:1.2.1")
+//
+//// mock
+//    testImplementation("io.mockk:mockk-android:1.13.7")
+//    testImplementation("io.mockk:mockk-agent:1.13.7")
 
-// Junit
-//    testImplementation(junit:junit:4.13.2)
-    testImplementation("org.robolectric:robolectric:4.11.1")
-
-// AndroidX
-//    testImplementation("androidx.test:core:1.6.1")
-//    testImplementation("androidx.test:core-ktx:1.6.1")
-//    testImplementation("androidx.test.ext:junit:1.2.1")
-//    testImplementation("androidx.test.ext:junit-ktx:1.2.1")
-
-// mock
-    testImplementation("io.mockk:mockk-android:1.13.7")
-    testImplementation("io.mockk:mockk-agent:1.13.7")
+    //*Unit
+    //!Mockk
+    testImplementation("io.mockk:mockk-android:1.13.17")
+    testImplementation("io.mockk:mockk-agent:1.13.17")
+    testImplementation(libs.junit)
+    //!Hamcrest
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.hamcrest:hamcrest-library:2.2")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    //!Robolectric
+    testImplementation("androidx.test.ext:junit-ktx:1.1.3")
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("org.robolectric:robolectric:4.11")
+    //!Rule
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
 }
 
 //apollo {
