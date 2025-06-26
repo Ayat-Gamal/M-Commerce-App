@@ -26,8 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.features.product.domain.entities.Product
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 
 @Composable
@@ -36,6 +38,7 @@ fun ProductCard(
     onClick: () -> Unit,
     deleteFromWishList: (() -> Unit)? = null,
     product: Product,/*ProductCardModel*/
+    currencyViewModel: CurrencyViewModel = hiltViewModel()
 ) {
 
     val formattedPrice = String.format("%.2f", product.price.toDouble())
@@ -74,8 +77,7 @@ fun ProductCard(
 
         Column(modifier = Modifier.padding(bottom = 8.dp)) {
             Row(verticalAlignment = Alignment.Top) {
-                Text("EGP")
-                Text(intPrice, style = TextStyle(fontSize = 24.sp))
+                Text(currencyViewModel.formatPrice(intPrice), style = TextStyle(fontSize = 24.sp))
                 Text(decPrice)
             }
             Text(

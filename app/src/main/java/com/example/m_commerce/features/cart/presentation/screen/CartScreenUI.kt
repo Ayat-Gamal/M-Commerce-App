@@ -1,3 +1,6 @@
+
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +34,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
@@ -45,12 +47,11 @@ import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
-import com.example.m_commerce.features.orders.data.model.variables.LineItem
-import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.stripe.android.paymentsheet.PaymentSheet
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartScreenUI(
     paddingValues: PaddingValues,
@@ -79,7 +80,8 @@ fun CartScreenUI(
     Scaffold(
         modifier = modifier.background(Teal),
         topBar = {
-            DefaultTopBar(title = "Cart", navController = null, titleCentered = true)
+            DefaultTopBar(title = "Cart", navController = null, titleCentered = true ,modifier = Modifier.background(
+                Background))
         },
         bottomBar = {
             if (uiState is CartUiState.Success) {
