@@ -39,7 +39,7 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (result.successful) {
-                _uiState.value = AuthState.Loading
+                _uiState.emit(AuthState.Loading)
                 loginUser(email, password)
                     .catch { e ->
                         when (e) {

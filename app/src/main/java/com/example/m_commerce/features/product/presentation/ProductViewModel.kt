@@ -96,9 +96,11 @@ class ProductViewModel @Inject constructor(
 
     fun addToCart(productVariantId: String) = viewModelScope.launch {
         addProductVariantToCart(productVariantId)
-            .catch { Log.d("TAG", "ProductViewModel / catch: ${it::class.simpleName}") }
+            .catch { _message.emit(SnackBarMessage("Failed: ${it.message}"))}
             .collect {
-                Log.d("TAG", "ProductViewModel / collect / isAdded: $it")
+                if (it) {
+                    _message.emit(SnackBarMessage("Added to cart successfully"))
+                }
             }
     }
 }

@@ -45,7 +45,7 @@ class WishlistViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getProducts() {
         viewModelScope.launch {
-            getWishlist()
+            getWishlist() // p1, p2
                 .flatMapConcat { ids ->
                     if (ids.isEmpty()) {
                         flowOf(emptyList())
@@ -67,16 +67,16 @@ class WishlistViewModel @Inject constructor(
         }
     }
 
-    fun search(query: String) {
-        viewModelScope.launch {
-            if (query.isNotEmpty())
-                _uiState.emit(WishlistUiState.Search)
-            else {
-                _uiState.emit(WishlistUiState.Loading)
-                getProducts()
-            }
-        }
-    }
+//    fun search(query: String) {
+//        viewModelScope.launch {
+//            if (query.isNotEmpty())
+//                _uiState.emit(WishlistUiState.Search)
+//            else {
+//                _uiState.emit(WishlistUiState.Loading)
+//                getProducts()
+//            }
+//        }
+//    }
 
     fun deleteProductFromWishlist(productVariantId: String) = viewModelScope.launch {
         deleteFromWishlist(productVariantId)
