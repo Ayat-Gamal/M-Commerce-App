@@ -1,3 +1,4 @@
+//import jdk.internal.agent.resources.agent
 import java.util.Properties
 
 plugins {
@@ -169,6 +170,23 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:6.5.2")
     implementation("com.google.maps.android:maps-compose-utils:6.5.2")
     implementation("com.google.maps.android:maps-compose-widgets:6.5.2")
+
+    // Hamcrest
+    testImplementation("org.hamcrest:hamcrest:3.0")
+
+// Junit
+//    testImplementation(junit:junit:4.13.2)
+    testImplementation("org.robolectric:robolectric:4.11.1")
+
+// AndroidX
+//    testImplementation("androidx.test:core:1.6.1")
+//    testImplementation("androidx.test:core-ktx:1.6.1")
+//    testImplementation("androidx.test.ext:junit:1.2.1")
+//    testImplementation("androidx.test.ext:junit-ktx:1.2.1")
+
+// mock
+    testImplementation("io.mockk:mockk-android:1.13.7")
+    testImplementation("io.mockk:mockk-agent:1.13.7")
 }
 
 //apollo {
