@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaultAddressUseCase
@@ -21,6 +22,7 @@ import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
 import com.example.m_commerce.features.orders.domain.usecases.GetOrdersUseCase
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderHistoryUiState
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
+import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +37,9 @@ class OrderViewModel @Inject constructor(
     private val createOrderUseCase: CreateOrderUseCase,
     private val completeOrderUseCase: CompleteOrderUseCase,
     private val getDefaultAddressUseCase: GetDefaultAddressUseCase,
-    private val getOrdersUseCase: GetOrdersUseCase
-) : ViewModel() {
+    private val getOrdersUseCase: GetOrdersUseCase,
+    private val networkManager: NetworkManager,
+    ) : ViewModel() {
 
     private val _state = MutableStateFlow<OrderUiState>(OrderUiState.Idle)
     val state: StateFlow<OrderUiState> = _state
@@ -48,8 +51,13 @@ class OrderViewModel @Inject constructor(
 
     fun loadOrders() =
         viewModelScope.launch {
-            Log.d("OrderHistory", "ViewModel loading orders")
 
+            if (!networkManager.isNetworkAvailable()) {
+                _ordersState.emit(OrderHistoryUiState.NoNetwork)
+                return@launch
+            }
+
+            Log.d("OrderHistory", "ViewModel loading orders")
 
             getOrdersUseCase()
                 .catch { e -> _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error") }
@@ -57,7 +65,6 @@ class OrderViewModel @Inject constructor(
                     Log.i("OrderHistory", "loadOrders: ${_ordersState.value}")
                     _ordersState.value = result
                 }
-
         }
 
 //    fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {

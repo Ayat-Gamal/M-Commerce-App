@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.AddressMangment.presentation.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
@@ -49,24 +54,31 @@ fun ManageAddressScreenUi(
     val isLoading by viewModel.isLoading
     val deleteState by viewModel.deleteState
 
-    LaunchedEffect(Unit) {
-        viewModel.loadAddresses()
-    }
-    LaunchedEffect(Unit) {
-        viewModel.loadAddresses()
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            viewModel.loadAddresses()
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _ , event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadAddresses()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
+
     LaunchedEffect(deleteState) {
         when (deleteState) {
             is DeleteState.Success -> {
                 viewModel.resetDeleteState()
             }
+
             is DeleteState.Error -> {
                 viewModel.resetDeleteState()
             }
+
             else -> {}
         }
     }
@@ -142,9 +154,10 @@ fun ManageAddressScreenUi(
                         )
                     }
                 }
+
                 else -> {
                     Text(
-                        text = "No default address set",
+                        text = if (viewModel.isConnected()) "No default address set" else "No internet connection",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -157,12 +170,14 @@ fun ManageAddressScreenUi(
                     CircularProgressIndicator(
                     )
                 }
-                addresses.isEmpty() -> {
+
+                addresses.isEmpty() -> { // TODO
                     Text(
-                        text = "No addresses saved",
+                        text = if (viewModel.isConnected()) "No addresses saved" else "No internet connection",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
+
                 else -> {
                     LazyColumn(
                         modifier = Modifier.weight(1f)
@@ -188,7 +203,8 @@ fun ManageAddressScreenUi(
             }
 
             AddNewAddressButton(
-                onClick = { navController.navigate(AppRoutes.MapScreen) },)
+                onClick = { navController.navigate(AppRoutes.MapScreen) },
+            )
         }
     }
 }

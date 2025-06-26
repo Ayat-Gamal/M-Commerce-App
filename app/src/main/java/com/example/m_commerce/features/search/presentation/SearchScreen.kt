@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.search.presentation
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -41,6 +40,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,7 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,27 +71,43 @@ import com.example.m_commerce.core.shared.components.Failed
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
-import com.example.m_commerce.core.utils.NetworkUtils
 import com.example.m_commerce.features.product.presentation.components.ProductCard
 import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
     navController: NavHostController,
+    snackBarHostState: SnackbarHostState,
     isWishlist: Boolean,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.getAllProducts(isWishlist)
+
+        viewModel.message.collect { event ->
+            scope.launch {
+                snackBarHostState.currentSnackbarData?.dismiss()
+
+                val result = snackBarHostState.showSnackbar(
+                    message = event.message,
+                    actionLabel = event.actionLabel,
+                    duration = SnackbarDuration.Short
+                )
+
+                if (result == SnackbarResult.ActionPerformed) {
+                    event.onAction?.invoke()
+                }
+            }
+        }
     }
 
     var expandedFilter by remember { mutableStateOf<String?>(null) }
     val selectedFilters = remember { mutableStateMapOf<String, List<String>>() }
     var selectedRange by remember { mutableStateOf(0f..300f) }
-    val scope = rememberCoroutineScope()
     val showFilterDropDownMenu = expandedFilter != null
 
     var query by remember { mutableStateOf("") }
@@ -204,15 +221,12 @@ fun SearchScreen(
                             deleteFromWishList =
                             if (isWishlist) {
                                 {
-                                    scope.launch {
-                                        viewModel.deleteProduct(data[it].id)
-                                        viewModel.getAllProducts(true)
-                                        viewModel.searchAndFilter(
-                                            query,
-                                            selectedFilters,
-                                            selectedRange
-                                        )
-                                    }
+                                    viewModel.deleteProduct(
+                                        data[it],
+                                        query,
+                                        selectedFilters,
+                                        selectedRange
+                                    )
                                 }
                             } else null,
                         )
@@ -284,7 +298,7 @@ fun LabelRangeSlider(
 
             )
         Text(
-            "\$${priceRange.start.toInt()} - \$${priceRange.endInclusive.toInt()}",
+            "EGP ${priceRange.start.toInt()} - EGP ${priceRange.endInclusive.toInt()}",
             fontSize = 18.sp,
             color = Color.Gray
         )
@@ -318,13 +332,13 @@ fun LabelRangeSlider(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "\$${range.value.start.toInt()}",
+            text = "EGP ${range.value.start.toInt()}",
             fontSize = 16.sp,
             color = Color.Gray
         )
 
         Text(
-            text = "\$${range.value.endInclusive.toInt()}",
+            text = "EGP ${range.value.endInclusive.toInt()}",
             fontSize = 16.sp,
             color = Color.Gray
         )

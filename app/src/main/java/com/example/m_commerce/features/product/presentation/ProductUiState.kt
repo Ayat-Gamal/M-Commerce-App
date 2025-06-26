@@ -5,6 +5,7 @@ import com.example.m_commerce.features.product.domain.entities.Product
 sealed class ProductUiState {
 
     data object Loading : ProductUiState()
+    data object NoNetwork : ProductUiState()
 
     data class Success(
         val product: Product,

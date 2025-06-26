@@ -48,7 +48,6 @@ import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartReceipt(
     paddingValues: PaddingValues,
@@ -137,6 +136,8 @@ fun CartReceipt(
             var state by remember { mutableStateOf(false) }
 
             CheckoutBottomSheet(showSheet = showSheet) { paymentMethod ->
+
+                if (!cartViewModel.isConnected()) return@CheckoutBottomSheet
 
                 if (paymentMethod == PaymentMethod.CreditCard) {
                     state = true

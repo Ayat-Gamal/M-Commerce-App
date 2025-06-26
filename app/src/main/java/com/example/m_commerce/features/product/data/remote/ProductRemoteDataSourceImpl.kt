@@ -99,7 +99,6 @@ class ProductRemoteDataSourceImpl @Inject constructor(
                 when (result) {
                     is GraphCallResult.Success -> {
                         if (result.response.hasErrors) {
-                            Log.i("TAG", "addProductVariantToCart: Success / result.response.hasErrors")
                             cont.resumeWithException(Exception(result.response.errors.joinToString { it.message() }))
                         } else {
                             Log.i("TAG", "addProductVariantToCart: Success")
@@ -108,14 +107,12 @@ class ProductRemoteDataSourceImpl @Inject constructor(
                     }
 
                     is GraphCallResult.Failure -> {
-                        Log.i("TAG", "addProductVariantToCart: GraphCallResult.Failure")
                         cont.resumeWithException(result.error)
                     }
                 }
             }
 
         }
-        Log.i("TAG", "addProductVariantToCart: isAdded: $isAdded")
         emit(isAdded)
     }
 }
