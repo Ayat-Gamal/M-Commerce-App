@@ -61,7 +61,8 @@ fun SpecialOfferCard(
         "https://i.pinimg.com/736x/68/83/df/6883dfb9c2db84767bbf0a4c224ce3d0.jpg",
         "https://i.pinimg.com/736x/d6/ef/49/d6ef490d4caccc2d0bd3904991be4fa6.jpg",
         "https://i.pinimg.com/736x/48/d8/db/48d8db9ce3074525c652fe725813e6ed.jpg"
-    ,"https://i.pinimg.com/736x/c5/16/93/c51693e58bac33aaadec080b262831a0.jpg"
+    ,"https://i.pinimg.com/736x/c5/16/93/c51693e58bac33aaadec080b262831a0.jpg",
+        "https://i.pinimg.com/736x/c5/03/bc/c503bcf57dfb96e418e96527bb961bd1.jpg"
     )
 
     LaunchedEffect(Unit) {
