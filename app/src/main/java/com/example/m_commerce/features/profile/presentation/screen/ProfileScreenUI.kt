@@ -1,6 +1,6 @@
 package com.example.m_commerce.features.profile.presentation.screen
 
-import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,12 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,7 +32,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
@@ -41,17 +39,15 @@ import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.profile.domain.entity.ProfileOption
 import com.example.m_commerce.features.profile.presentation.components.profile.ProfileOptionsList
-import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
 fun ProfileScreenUI(
     navController: NavHostController,
-    viewModel: ProfileViewModel = viewModel(),
-    modifier: Modifier = Modifier
 ) {
     val user = FirebaseAuth.getInstance().currentUser
+    Log.i("TAG", "ProfileScreenUI: name: ${user?.displayName ?: "name is null"}")
     val options: List<ProfileOption> = if (user != null) {
         listOf(
             ProfileOption("Manage Address", Icons.Default.LocationOn),
@@ -59,6 +55,7 @@ fun ProfileScreenUI(
             ProfileOption("My Wishlist", Icons.Default.Favorite),
             ProfileOption("Currency", Icons.Default.CurrencyExchange),
             ProfileOption("Help Center", Icons.Default.LocationOn),
+            ProfileOption("Logout", Icons.AutoMirrored.Filled.Logout),
         )
     } else {
         listOf(
@@ -71,8 +68,8 @@ fun ProfileScreenUI(
 
     Scaffold(
         topBar = {
-        DefaultTopBar(title = "Profile ", navController = null)
-    }) { padding ->
+            DefaultTopBar(title = "Profile ", navController = null)
+        }) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -117,26 +114,13 @@ fun ProfileScreenUI(
                     "Currency" -> navController.navigate(AppRoutes.CurrencyScreen)
                     "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
                     "Login" -> navController.navigate(AppRoutes.LoginScreen)
+                    "Logout" -> {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(AppRoutes.LoginScreen) {
+                            popUpTo(AppRoutes.ProfileScreen) { inclusive = true }
+                        }
+                    }
                 }
-            }
-            if (FirebaseAuth.getInstance().currentUser != null) {
-                Text(
-                    text = "Logout",
-                    color = Color.Red,
-                    style = TextStyle(
-                        textDecoration = TextDecoration.Underline,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier
-                        .clickable(onClick = {
-                            FirebaseAuth.getInstance().signOut()
-                            navController.navigate(AppRoutes.LoginScreen) {
-                                popUpTo(AppRoutes.ProfileScreen) { inclusive = true }
-                            }
-
-                        })
-                        .padding(16.dp)
-                )
             }
         }
     }

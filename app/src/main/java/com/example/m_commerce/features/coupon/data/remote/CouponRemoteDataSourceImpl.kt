@@ -42,7 +42,6 @@ class CouponRemoteDataSourceImpl @Inject constructor(
 
                 val codes = codesResponse.body()?.discountCodes ?: continue
                 val summary = buildSummary(rule)
-                Log.i("TAG", "getCoupons: ${summary}")
                 allCoupons.addAll(
                     codes.map {
                         Coupon(
