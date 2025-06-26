@@ -1,6 +1,3 @@
-
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +39,7 @@ import com.example.m_commerce.config.theme.dividerGray
 import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.GuestMode
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.UiEvent
@@ -50,8 +49,8 @@ import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.stripe.android.paymentsheet.PaymentSheet
+import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartScreenUI(
     paddingValues: PaddingValues,
@@ -64,6 +63,7 @@ fun CartScreenUI(
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         cartViewModel.snackBarFlow.collect { event ->
@@ -80,8 +80,14 @@ fun CartScreenUI(
     Scaffold(
         modifier = modifier.background(Teal),
         topBar = {
-            DefaultTopBar(title = "Cart", navController = null, titleCentered = true ,modifier = Modifier.background(
-                Background))
+            DefaultTopBar(
+                title = "Cart",
+                navController = null,
+                titleCentered = true,
+                modifier = Modifier.background(
+                    Background
+                )
+            )
         },
         bottomBar = {
             if (uiState is CartUiState.Success) {
@@ -97,7 +103,7 @@ fun CartScreenUI(
             }
         },
         snackbarHost = {
-            SnackbarHost(snackBarHostState )
+            SnackbarHost(snackBarHostState)
         }
 
     ) { padding ->
@@ -135,13 +141,7 @@ fun CartScreenUI(
                     GuestMode(navController, "Cart", Icons.Default.ShoppingCart)
                 }
 
-                is CartUiState.NoNetwork -> {
-                    Text(
-                        text = "No internet connection",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(24.dp)
-                    )
-                }
+                is CartUiState.NoNetwork -> NoNetwork()
 
                 is CartUiState.Error -> {
                     Text(
@@ -157,7 +157,6 @@ fun CartScreenUI(
         }
     }
 }
-
 
 
 @Composable

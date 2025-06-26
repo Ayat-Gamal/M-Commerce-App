@@ -26,6 +26,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.jupiter.api.Assertions
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WishlistViewModelTest {
@@ -47,7 +48,7 @@ class WishlistViewModelTest {
         every { FirebaseAuth.getInstance().currentUser } returns mockk(relaxed = true)
 
         viewModel =
-            WishlistViewModel(getWishlist, getProductById, deleteFromWishlist, addToWishlist)
+            WishlistViewModel(getWishlist, getProductById, deleteFromWishlist, addToWishlist, mockk(relaxed = true))
     }
 
     @After
@@ -77,7 +78,7 @@ class WishlistViewModelTest {
 
         // When
         viewModel =
-            WishlistViewModel(getWishlist, getProductById, deleteFromWishlist, addToWishlist)
+            WishlistViewModel(getWishlist, getProductById, deleteFromWishlist, addToWishlist, mockk(relaxed = true))
 
         // Then
         assertThat(viewModel.uiState.value, `is`(WishlistUiState.Guest))

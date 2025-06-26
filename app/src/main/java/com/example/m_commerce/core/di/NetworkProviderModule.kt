@@ -2,6 +2,7 @@ package com.example.m_commerce.core.di
 
 import android.content.Context
 import com.example.m_commerce.BuildConfig
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.orders.data.remote.ShopifyAdminApiService
 import com.shopify.buy3.GraphClient
 import dagger.Module
@@ -38,4 +39,7 @@ object NetworkProviderModule {
 
     @Provides
     fun provideShopifyApiService(retrofit: Retrofit): ShopifyAdminApiService = retrofit.create(ShopifyAdminApiService::class.java)
+
+    @Provides
+    fun provideNetworkManager(@ApplicationContext context: Context) = NetworkManager(context)
 }

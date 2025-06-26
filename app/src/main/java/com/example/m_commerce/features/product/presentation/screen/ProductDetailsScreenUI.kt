@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.product.presentation.screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -65,6 +66,7 @@ import com.example.m_commerce.config.theme.DarkestGray
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.Failed
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
@@ -187,8 +189,9 @@ fun ProductDetailsScreenUI(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-
-//                                        if (isClicked) return@clickable
+                                            if (!viewModel.isConnected()) {
+                                                return@clickable
+                                            }
 
                                             if (isFavorite) {
                                                 viewModel.deleteProductFromWishlist(product.id)
@@ -197,7 +200,6 @@ fun ProductDetailsScreenUI(
                                             }
 
                                             isFavorite = !isFavorite
-//                                        isClicked = true
                                         },
                                     tint = if (isFavorite) Color.Red else LocalContentColor.current
                                 )
@@ -400,6 +402,8 @@ fun ProductDetailsScreenUI(
                     CircularProgressIndicator()
                 }
             }
+
+            ProductUiState.NoNetwork -> NoNetwork()
         }
     }
 

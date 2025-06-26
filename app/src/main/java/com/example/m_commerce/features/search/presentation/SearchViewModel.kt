@@ -3,16 +3,20 @@ package com.example.m_commerce.features.search.presentation
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.product.domain.entities.Product
+import com.example.m_commerce.features.product.domain.usecases.AddToWishlistUseCase
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
+import com.example.m_commerce.features.product.presentation.SnackBarMessage
 import com.example.m_commerce.features.search.domain.usecases.GetProductsUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.DeleteFromWishlistUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.GetWishlistUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -29,13 +33,17 @@ import kotlin.math.ceil
 class SearchViewModel @Inject constructor(
     private val getWishlist: GetWishlistUseCase,
     private val getProductById: GetProductByIdUseCase,
-    private val getBrandsUseCase: GetBrandsUseCase,
     private val getProducts: GetProductsUseCase,
+    private val networkManager: NetworkManager,
+    private val addToWishlist: AddToWishlistUseCase,
     private val deleteFromWishlist: DeleteFromWishlistUseCase,
 ) : ViewModel() {
 
     private var _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Loading)
     val uiState = _uiState.asStateFlow()
+
+    private var _message = MutableSharedFlow<SnackBarMessage>()
+    val message = _message.asSharedFlow()
 
     private var allProducts = emptyList<Product>()
     private var filteredProducts = emptyList<Product>()
@@ -52,8 +60,42 @@ class SearchViewModel @Inject constructor(
         _uiState.tryEmit(SearchUiState.Success(filteredProducts))
     }
 
-    suspend fun deleteProduct(productId: String) {
-        deleteFromWishlist(productId)
+    fun deleteProduct(
+        product: Product,
+        query: String,
+        selectedFilters: SnapshotStateMap<String, List<String>>,
+        range: ClosedFloatingPointRange<Float>
+    ) = viewModelScope.launch {
+        if (!networkManager.isNetworkAvailable()) {
+            _message.emit(SnackBarMessage("No internet connection"))
+            return@launch
+        }
+
+        _uiState.emit(SearchUiState.Loading)
+        deleteFromWishlist(product.id)
+            .catch { _message.emit(SnackBarMessage("Failed to remove product from wishlist: ${it.message}")) }
+            .collect {
+                _message.emit(SnackBarMessage(
+                    message = it,
+                    actionLabel = "Undo",
+                    onAction = {
+                        viewModelScope.launch {
+                            addToWishlist(product.id)
+                                .catch { e ->
+                                    _message.emit(SnackBarMessage("Failed to add product to wishlist: ${e.message}"))
+                                }
+                                .collect {
+                                    _uiState.emit(SearchUiState.Loading)
+                                    allProducts = allProducts + product
+                                    searchAndFilter(query, selectedFilters, range)
+                                }
+                        }
+                    }
+                ))
+
+                allProducts = allProducts.filter { newProduct -> newProduct.id != product.id }
+                searchAndFilter(query, selectedFilters, range)
+            }
     }
 
     fun searchAndFilter(
@@ -63,7 +105,7 @@ class SearchViewModel @Inject constructor(
     ) {
         _uiState.value = SearchUiState.Loading
 
-        val filtered = allProducts.filter { product ->
+        filteredProducts = allProducts.filter { product ->
 
             val matchesFilters = selectedFilters.all { (key, value) ->
                 when (key) {
@@ -80,16 +122,18 @@ class SearchViewModel @Inject constructor(
             matchesFilters && matchesQuery && matchesPrice
         }
 
-        _uiState.value = if (filtered.isEmpty()) {
+        _uiState.value = if (filteredProducts.isEmpty()) {
             SearchUiState.Empty
         } else {
-            SearchUiState.Success(filtered)
+            SearchUiState.Success(filteredProducts)
         }
     }
 
 
     fun getAllProducts(isWishlist: Boolean) =
         viewModelScope.launch {
+            if (!isConnected()) return@launch
+
             _uiState.emit(SearchUiState.Loading)
             allProducts = if (isWishlist) {
                 getWishlistProducts()
@@ -122,6 +166,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private suspend fun getWishlistProducts(): List<Product> {
+
         return getWishlist() // List<String>
             .flatMapConcat { ids ->
                 if (ids.isEmpty()) {
@@ -146,4 +191,11 @@ class SearchViewModel @Inject constructor(
             else _uiState.emit(SearchUiState.Error("Unknown error: ${e.message}"))
         }
         .first()
+
+    private fun isConnected(): Boolean {
+        if (!networkManager.isNetworkAvailable()) {
+            _uiState.tryEmit(SearchUiState.NoNetwork)
+            return false
+        } else return true
+    }
 }

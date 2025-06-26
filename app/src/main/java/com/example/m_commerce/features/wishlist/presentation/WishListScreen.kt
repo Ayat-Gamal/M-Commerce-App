@@ -124,6 +124,7 @@ fun WishListScreen(
                 Log.d("TAG", "WishListScreen: WishlistUiState.Search")
                 SearchScreen(
                     navController,
+                    snackBarHostState,
                     isWishlist = false
                 )
             }
@@ -149,7 +150,6 @@ fun LoadData(
         products = data,
         deleteFromWishList = {
             viewModel.deleteProductFromWishlist(it.id)
-            viewModel.getProducts()
         }) { product ->
         navController.navigate(AppRoutes.ProductDetailsScreen(product.id))
     }

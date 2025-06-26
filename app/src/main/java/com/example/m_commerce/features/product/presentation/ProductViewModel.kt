@@ -1,8 +1,8 @@
 package com.example.m_commerce.features.product.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.product.domain.usecases.AddProductVariantToCart
 import com.example.m_commerce.features.product.domain.usecases.AddToWishlistUseCase
 import com.example.m_commerce.features.product.domain.usecases.CheckIfInWishlistUseCase
@@ -26,17 +26,23 @@ class ProductViewModel @Inject constructor(
     private val addToWishlist: AddToWishlistUseCase,
     private val deleteFromWishlist: DeleteFromWishlistUseCase,
     private val checkIfInWishlist: CheckIfInWishlistUseCase,
-    private val addProductVariantToCart: AddProductVariantToCart
+    private val addProductVariantToCart: AddProductVariantToCart,
+    private val networkManager: NetworkManager,
 ) : ViewModel() {
 
     private var _uiState = MutableStateFlow<ProductUiState>(ProductUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    private var _message = MutableSharedFlow<SnackBarMessage>()
+    private var _message = MutableSharedFlow<SnackBarMessage>(replay = 0, extraBufferCapacity = 1)
     val message = _message.asSharedFlow()
 
     fun getProductById(productId: String) {
+
         viewModelScope.launch {
+            if (!networkManager.isNetworkAvailable()) {
+                _uiState.emit(ProductUiState.NoNetwork)
+                return@launch
+            }
             fetchProductById(productId)
                 .catch {
                     _uiState.emit(
@@ -95,12 +101,20 @@ class ProductViewModel @Inject constructor(
     }
 
     fun addToCart(productVariantId: String) = viewModelScope.launch {
+        if (!isConnected()) return@launch
         addProductVariantToCart(productVariantId)
-            .catch { _message.emit(SnackBarMessage("Failed: ${it.message}"))}
+            .catch { _message.emit(SnackBarMessage("Failed: ${it.message}")) }
             .collect {
                 if (it) {
                     _message.emit(SnackBarMessage("Added to cart successfully"))
                 }
             }
+    }
+
+    fun isConnected(): Boolean {
+        return if (!networkManager.isNetworkAvailable()) {
+            _message.tryEmit(SnackBarMessage("No internet connection"))
+            false
+        } else true
     }
 }

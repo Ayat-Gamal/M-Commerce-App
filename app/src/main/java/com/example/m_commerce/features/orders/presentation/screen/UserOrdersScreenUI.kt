@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
@@ -25,7 +26,6 @@ import com.example.m_commerce.features.orders.presentation.components.OrderTrack
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderHistoryUiState
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 
-@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UserOrdersScreenUI(modifier: Modifier = Modifier, navController: NavHostController, viewModel: OrderViewModel = hiltViewModel()) {
@@ -54,6 +54,8 @@ fun UserOrdersScreenUI(modifier: Modifier = Modifier, navController: NavHostCont
             Log.d("OrderHistory", "UserOrdersScreenUI: ${orders}")
             LoadedData(navController = navController, orders = orders)
         }
+
+        OrderHistoryUiState.NoNetwork -> NoNetwork()
     }
 
 }
