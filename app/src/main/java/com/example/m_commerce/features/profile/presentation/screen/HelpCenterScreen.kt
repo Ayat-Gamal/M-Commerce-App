@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Facebook
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -29,48 +28,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
+import com.example.m_commerce.R
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.features.profile.domain.entity.Person
 
-data class Person(
-    val name: String,
-    val title: String,
-    val imageUrl: String,
-    val githubUrl: String,
-    val linkedinUrl: String,
-    val facebookUrl: String
-)
 
-val people = listOf(
+val teamMembers = listOf(
 
     Person(
         name = "Mohamed Tag El-Deen Ahmed",
         title = "Mobile Software Engineer",
         imageUrl = "https://lh3.googleusercontent.com/a/ACg8ocI6yXCBJnS3J-O78civXQxaWTXVnc0zW4ti1iBBmQTjVGrMHRS3=s360-c-no",
         githubUrl = "",
-        linkedinUrl = "",
+        linkedinUrl = "https://www.linkedin.com/in/mohamed-tag-eldeen",
         facebookUrl = ""
     ),
     Person(
         name = "Youssif Nasser Mostafa ",
         title = "Mobile Software Engineer",
         imageUrl = "https://avatars.githubusercontent.com/u/72336910?v=4",
-        githubUrl = "",
-        linkedinUrl = "",
+        githubUrl = "https://github.com/JoeTP",
+        linkedinUrl = "https://www.linkedin.com/in/youssif-nasser/",
         facebookUrl = ""
     ),
     Person(
         name = "Ahmed Mohamed Saad ",
         title = "Mobile Software Engineer",
         imageUrl = "https://avatars.githubusercontent.com/u/193324840?v=4",
-        githubUrl = "",
-        linkedinUrl = "",
+        githubUrl = "https://github.com/ahmedsaad207",
+        linkedinUrl = "https://www.linkedin.com/in/dev-ahmed-saad/",
+        facebookUrl = ""
+    ),
+    Person(
+        name = "Ayat Gamal Mustafa",
+        title = "Mobile Software Engineer",
+        imageUrl = "https://avatars.githubusercontent.com/u/90482904?v=4",
+        githubUrl = "https://github.com/ahmedsaad207",
+        linkedinUrl = "https://www.linkedin.com/in/ayat-gamal-700946229/",
         facebookUrl = ""
     )
 )
@@ -93,7 +95,7 @@ fun HelpCenterScreenUiLayout(navController: NavHostController) {
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                items(people) { person ->
+                items(teamMembers) { person ->
                     PersonCard(person)
                 }
             }
@@ -134,10 +136,10 @@ fun PersonCard(person: Person) {
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { launchUrl(person.githubUrl) }) {
-                        Icon(imageVector = Icons.Default.Link, contentDescription = "GitHub")
+                        Icon(painter = painterResource(id = R.drawable.gihub), contentDescription = "GitHub")
                     }
                     IconButton(onClick = { launchUrl(person.linkedinUrl) }) {
-                        Icon(imageVector = Icons.Default.Link, contentDescription = "LinkedIn")
+                        Icon(painter = painterResource(id = R.drawable.linkedin), contentDescription = "LinkedIn")
                     }
                     IconButton(onClick = { launchUrl(person.facebookUrl) }) {
                         Icon(imageVector = Icons.Default.Facebook, contentDescription = "Facebook")

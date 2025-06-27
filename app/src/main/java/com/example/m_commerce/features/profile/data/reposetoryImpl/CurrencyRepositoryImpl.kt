@@ -17,7 +17,7 @@ class CurrencyRepositoryImpl(
     private val remote: CurrencyApiService
 ) : CurrencyRepository {
     companion object {
-        private const val ACCESS_KEY = "9ccf6b9df6c0632bbed34104"
+        private const val ACCESS_KEY = "6f1d4d1faad5aa7789eaedcb"
     }
 
     private val _exchangeRateFlow = MutableStateFlow(local.getExchangeRate())

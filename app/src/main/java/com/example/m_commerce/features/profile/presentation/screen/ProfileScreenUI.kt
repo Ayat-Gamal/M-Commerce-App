@@ -3,7 +3,6 @@ package com.example.m_commerce.features.profile.presentation.screen
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,11 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
@@ -46,8 +40,9 @@ import com.google.firebase.auth.FirebaseAuth
 fun ProfileScreenUI(
     navController: NavHostController,
 ) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
+    Log.i("TAG", "CartScreenUI: uid: $uid")
     val user = FirebaseAuth.getInstance().currentUser
-    Log.i("TAG", "ProfileScreenUI: name: ${user?.displayName ?: "name is null"}")
     val options: List<ProfileOption> = if (user != null) {
         listOf(
             ProfileOption("Manage Address", Icons.Default.LocationOn),
