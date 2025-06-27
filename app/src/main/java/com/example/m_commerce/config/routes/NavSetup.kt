@@ -25,6 +25,7 @@ import com.example.m_commerce.features.brand.presentation.screen.BrandsScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryDetailsScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
+import com.example.m_commerce.features.onboarding.presentation.screen.OnboardingScreenUI
 import com.example.m_commerce.features.orders.presentation.screen.CheckoutScreenUI
 import com.example.m_commerce.features.orders.presentation.screen.UserOrdersScreenUI
 import com.example.m_commerce.features.payment.presentation.screen.CreditCardDetailsUiLayout
@@ -50,7 +51,8 @@ fun NavSetup(
 
 ) {
     val user = FirebaseAuth.getInstance().currentUser
-    val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
+//    val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
+    val startingScreen = AppRoutes.Onboarding
 
 
     NavHost(
@@ -58,6 +60,13 @@ fun NavSetup(
         startDestination = startingScreen,
         modifier = modifier.padding(0.dp)
     ) {
+
+        composable<AppRoutes.Onboarding> {
+            showBottomNavbar.value = false
+            OnboardingScreenUI{
+                navController.navigateAndClear(AppRoutes.LoginScreen)
+            }
+        }
 
         composable<AppRoutes.HomeScreen> {
             showBottomNavbar.value = true
@@ -95,7 +104,8 @@ fun NavSetup(
             ProductDetailsScreenUI(
                 snackBarHostState,
                 productId = productArgs.productId,
-                navController = navController)
+                navController = navController
+            )
         }
 
         composable<AppRoutes.CategoryScreen> {
@@ -185,7 +195,7 @@ fun NavSetup(
             showBottomNavbar.value = false
             val args = it.toRoute<AppRoutes.SearchScreen>()
 
-            SearchScreen(navController, snackBarHostState,isWishlist = args.isWishlist)
+            SearchScreen(navController, snackBarHostState, isWishlist = args.isWishlist)
         }
 
     }
