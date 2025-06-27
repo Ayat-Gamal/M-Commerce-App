@@ -1,5 +1,7 @@
 package com.example.m_commerce.features.AddressMangment.presentation.viewmodel
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
+import com.example.m_commerce.features.AddressMangment.domain.entity.DeleteResponse
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.usecases.DeleteAddressUseCase
 import com.example.m_commerce.features.AddressMangment.domain.usecases.GetAddressesUseCase
@@ -8,6 +10,7 @@ import com.example.m_commerce.features.AddressMangment.domain.usecases.SaveAddre
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SetDefaultAddressUseCase
 import com.example.m_commerce.features.AddressMangment.presentation.ui_states.DeleteState
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -34,7 +37,7 @@ class AddressViewModelTest {
     private val getDefaultAddressUseCase = mockk<GetDefaultAddressUseCase>(relaxed = true)
     private val setDefaultAddressUseCase = mockk<SetDefaultAddressUseCase>(relaxed = true)
     private val deleteAddressUseCase = mockk<DeleteAddressUseCase>(relaxed = true)
-
+    private val networkManager = mockk<NetworkManager>(relaxed = true)
     private val firebaseAuth = mockk<FirebaseAuth>(relaxed = true)
 
     private lateinit var viewModel: AddressViewModel
@@ -45,10 +48,11 @@ class AddressViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
 
-        val mockUser = mockk<com.google.firebase.auth.FirebaseUser>()
+        val mockUser = mockk<FirebaseUser>()
         every { firebaseAuth.currentUser } returns mockUser
         every { mockUser.uid } returns "user123"
         every { mockUser.displayName } returns "John"
+
 
         viewModel = AddressViewModel(
             saveAddressUseCase,
@@ -56,7 +60,8 @@ class AddressViewModelTest {
             getDefaultAddressUseCase,
             setDefaultAddressUseCase,
             deleteAddressUseCase,
-            firebaseAuth
+            firebaseAuth,
+            networkManager
         )
     }
 
@@ -82,8 +87,7 @@ class AddressViewModelTest {
     @Test
     fun `deleteAddress updates state on success`() = runTest {
         val addressId = "address123"
-        val response = com.example.m_commerce.features.AddressMangment.domain.entity.
-        DeleteResponse( addressId)
+        val response = DeleteResponse( addressId)
         coEvery { deleteAddressUseCase(addressId) } returns flowOf(Response.Success(response))
         coEvery { getAddressesUseCase() } returns flowOf(Response.Success(emptyList()))
         coEvery { getDefaultAddressUseCase() } returns flowOf(Response.Success(Address("1", "Mohamed", "Taj", "Alex", "Home", "Alex", "2050", "Egypt", "0123456789")))

@@ -32,13 +32,11 @@ class CurrencyViewModel @Inject constructor(
         private set
 
     var defaultCurrencyCode by mutableStateOf<String?>(null)
-        private set
 
     val exchangeRate = getExchangeRateUseCase.exchangeRateFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     var exchangeRateState by mutableStateOf<Float?>(null)
-        private set
 
     init {
         loadInitialCurrencyData()
@@ -109,7 +107,7 @@ class CurrencyViewModel @Inject constructor(
         return if (rate != null) {
             val value = originalPrice?.toFloatOrNull() ?: 0f
             val converted = value * rate
-            "%.2f %s".format(converted, currency)
+            "%s %.2f".format( currency , converted)
         } else {
             "Loading..."
         }
