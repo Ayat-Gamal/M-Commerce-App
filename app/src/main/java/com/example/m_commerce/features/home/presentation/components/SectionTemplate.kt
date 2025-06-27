@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun SectionTemplate(title: String, seeAllOnClick: (() -> Unit)?, content: @Composable () -> Unit) {
+fun SectionTemplate(title: String, seeAllOnClick: (() -> Unit)?, titleSpace: Int = 12, content: @Composable () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(Modifier.height(12.dp))
         Row(
@@ -35,7 +35,7 @@ fun SectionTemplate(title: String, seeAllOnClick: (() -> Unit)?, content: @Compo
                 ), modifier = Modifier.clickable(onClick = seeAllOnClick)
             )
         }
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(titleSpace.dp))
         content()
     }
 }

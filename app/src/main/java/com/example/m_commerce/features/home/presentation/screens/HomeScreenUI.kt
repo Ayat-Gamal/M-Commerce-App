@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +16,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +25,7 @@ import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.features.brand.domain.entity.Brand
+import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.coupon.domain.entity.Coupon
 import com.example.m_commerce.features.home.presentation.components.SearchSection
 import com.example.m_commerce.features.home.presentation.components.brand.BrandsSection
@@ -41,20 +41,19 @@ import com.google.firebase.auth.FirebaseAuth
 fun HomeScreenUI(
     modifier: Modifier = Modifier,
     navigateToCategories: () -> Unit,
-    navigateToCategory: (Brand) -> Unit,
+    navigateToCategory: (Category) -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel(),
     snackBarHostState: SnackbarHostState,
 
-) {
+    ) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
-    Log.i("TAG", "HomeScreenUI: uid: $uid")
+    Log.i("HomeScreenUI", "HomeScreenUI: uid: $uid")
 
     val scrollState = rememberScrollState()
     val activity = LocalActivity.current
-    var query = remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.getHomeData()
@@ -68,7 +67,7 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands, couponCodes) = (state as HomeUiState.Success)
+            val (brands, subCategories, couponCodes) = (state as HomeUiState.Success)
             val categories = brands.takeLast(4)
             if (brands.isNotEmpty()) {
                 LoadedData(
@@ -78,7 +77,7 @@ fun HomeScreenUI(
                     navigateToBrands,
                     navigateToBrand,
                     brands,
-                    categories,
+                    subCategories,
                     couponCodes,
                     navController,
                     snackBarHostState
@@ -103,11 +102,11 @@ fun HomeScreenUI(
 private fun LoadedData(
     scrollState: ScrollState,
     navigateToCategories: () -> Unit,
-    navigateToCategory: (Brand) -> Unit,
+    navigateToCategory: (Category) -> Unit,
     navigateToBrands: () -> Unit,
     navigateToBrand: (Brand) -> Unit,
     brands: List<Brand>,
-    categories: List<Brand>,
+    categories: List<Category>,
     couponCodes: List<Coupon>,
     navController: NavHostController,
     snackBarHostState: SnackbarHostState
@@ -123,14 +122,15 @@ private fun LoadedData(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp),
-            couponCodes =couponCodes,
+            couponCodes = couponCodes,
             snackBarHostState = snackBarHostState
         )
 
         CategorySection(
-            Modifier
-                .fillMaxWidth()
-                .height(120.dp), categories, navigateToCategories, navigateToCategory
+            Modifier.fillMaxWidth(),
+            categories,
+            navigateToCategories,
+            navigateToCategory
         )
 
         BrandsSection(Modifier.fillMaxWidth(), brands, navigateToBrands, navigateToBrand)

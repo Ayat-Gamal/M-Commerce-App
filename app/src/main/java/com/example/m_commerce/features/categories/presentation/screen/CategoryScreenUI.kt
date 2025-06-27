@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,7 +23,7 @@ import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewMo
 import com.example.m_commerce.features.categories.presentation.components.CategoryCard
 
 @Composable
-fun CategoryScreenUI(modifier: Modifier = Modifier, viewModel: BrandsViewModel = hiltViewModel(), navigateToCategory: (Brand) -> Unit, ) {
+fun CategoryScreenUI(modifier: Modifier = Modifier, viewModel: BrandsViewModel = hiltViewModel(), navigateToCategory: (Brand) -> Unit) {
 
     val state by viewModel.brandsState.collectAsStateWithLifecycle()
 
