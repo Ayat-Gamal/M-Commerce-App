@@ -53,7 +53,7 @@ class ProductViewModelTest {
             deleteFromWishlist = deleteFromWishlist,
             checkIfInWishlist = checkIfInWishlist,
             addProductVariantToCart = addToCart,
-            networkManager
+            networkManager = networkManager
         )
     }
 
@@ -71,6 +71,7 @@ class ProductViewModelTest {
             every { id } returns "p1"
         }
 
+        every { networkManager.isNetworkAvailable() } returns true
         coEvery { getProductById("p1") } returns flowOf(product)
         coEvery { checkIfInWishlist("p1") } returns flowOf(true)
 
@@ -86,6 +87,7 @@ class ProductViewModelTest {
     fun `getProductById emits Error state on exception`() = runTest {
 
         // given
+        every { networkManager.isNetworkAvailable() } returns true
         coEvery { getProductById("123") } returns flow { throw Exception("Network error") }
 
         // when
