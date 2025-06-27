@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.m_commerce.features.brand.presentation.components.BrandCard
 import com.example.m_commerce.features.brand.domain.entity.Brand
+import com.example.m_commerce.features.brand.presentation.components.BrandCard
 import com.example.m_commerce.features.home.presentation.components.SectionTemplate
 
 @Composable
@@ -31,14 +31,14 @@ fun BrandsSection(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     brandRow.forEach { brand ->
                         BrandCard(
                             brand = brand,
                             modifier = Modifier.weight(1f),
-                            onClick = {navigateToBrand(brand)}
+                            onClick = { navigateToBrand(brand) }
                         )
                     }
 
@@ -46,7 +46,7 @@ fun BrandsSection(
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(18.dp))
             }
         }
     }

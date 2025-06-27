@@ -21,17 +21,14 @@ import androidx.compose.ui.unit.sp
 import com.example.m_commerce.R
 import com.example.m_commerce.core.shared.components.SvgImage
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetter
+import com.example.m_commerce.core.utils.extentions.categoryIconsMapping
 import com.example.m_commerce.features.categories.domain.entity.Category
 
 @Composable
 fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
 
 
-    val nameToIcon = mapOf<String?, Int>(
-        "T-shirt" to R.raw.shirt,
-        "SHOES" to R.raw.shoe,
-        "ACCESSORIES" to R.raw.cap,
-    )
+
 
 
     Row(
@@ -42,7 +39,7 @@ fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, categor
             .padding(8.dp)
     ) {
 
-        SvgImage(resId = nameToIcon[category.name] ?: R.raw.other_category)
+        SvgImage(resId = categoryIconsMapping[category.name] ?: R.raw.other_category)
 
         Spacer(modifier = Modifier.width(8.dp))
         Text(

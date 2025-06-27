@@ -33,7 +33,7 @@ fun BrandsDetailsScreenUI(
 ) {
     val state by viewModel.brandsState.collectAsStateWithLifecycle()
 
-    LaunchedEffect (Unit){
+    LaunchedEffect(Unit) {
         viewModel.getBrandsData()
     }
 
@@ -58,9 +58,9 @@ private fun LoadedData(modifier: Modifier = Modifier, brands: List<Brand>, navCo
         LazyVerticalGrid(
             modifier = Modifier.padding(padding),
             columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
             items(brands.size) { index ->
                 BrandCard(brand = brands[index]) {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
@@ -23,7 +24,6 @@ import com.example.m_commerce.features.brand.presentation.ui_state.BrandsUiState
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
 import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.categories.presentation.components.CategoryCard
-import com.example.m_commerce.features.categories.presentation.components.SubCategoryCard
 
 @Composable
 fun CategoryScreenUI(
@@ -75,24 +75,23 @@ private fun LoadedCase(
         DefaultTopBar(title = "Categories", navController = null)
 
     }) { padding ->
-        LazyVerticalGrid(
+        LazyColumn (
             modifier = Modifier.padding(padding),
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(horizontal = 12.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+
         ) {
             items(categories.size) { index ->
                 CategoryCard(
                     category = categories[index],
-                    modifier = Modifier.height(200.dp),
+                    modifier = Modifier.height(160.dp),
                     onClick = { navigateToCategory(categories[index]) })
             }
             if (subCategories != null) {
                 items(subCategories.size) { index ->
-                    SubCategoryCard(
+                    CategoryCard(
                         category = subCategories[index],
-                        modifier = Modifier.height(200.dp),
+                        modifier = Modifier.height(160.dp),
                         onClick = { navigateToSubCategory(subCategories[index]) })
                 }
             }

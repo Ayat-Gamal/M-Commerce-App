@@ -135,7 +135,7 @@ private fun LoadedData(
 
         BrandsSection(Modifier.fillMaxWidth(), brands, navigateToBrands, navigateToBrand)
 
-        Spacer(Modifier.height(112.dp))
+        Spacer(Modifier.height(80.dp))
     }
 }
 
