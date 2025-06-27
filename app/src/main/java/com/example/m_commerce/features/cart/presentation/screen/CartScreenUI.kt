@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +49,7 @@ import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.stripe.android.paymentsheet.PaymentSheet
 import kotlinx.coroutines.launch
 
@@ -61,6 +63,9 @@ fun CartScreenUI(
     orderViewModel: OrderViewModel = hiltViewModel(),
     paymentSheet: PaymentSheet
 ) {
+
+    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
+    Log.i("TAG", "CartScreenUI: uid: $uid")
     val uiState by cartViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()

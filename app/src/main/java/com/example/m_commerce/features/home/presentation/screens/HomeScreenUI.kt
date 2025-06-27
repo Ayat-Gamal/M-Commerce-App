@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.home.presentation.screens
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
@@ -33,6 +34,7 @@ import com.example.m_commerce.features.home.presentation.components.specialoffer
 import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
 import com.example.m_commerce.features.home.presentation.viewmodel.HomeViewModel
 import com.example.m_commerce.features.search.presentation.SearchScreen
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
@@ -47,6 +49,8 @@ fun HomeScreenUI(
     snackBarHostState: SnackbarHostState,
 
 ) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
+    Log.i("TAG", "HomeScreenUI: uid: $uid")
 
     val scrollState = rememberScrollState()
     val activity = LocalActivity.current
