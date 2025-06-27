@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.R
 import com.example.m_commerce.core.shared.components.SvgImage
-import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetter
+import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.core.utils.extentions.categoryIconsMapping
 import com.example.m_commerce.features.categories.domain.entity.Category
 
@@ -43,7 +43,7 @@ fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, categor
 
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            category.name.capitalizeFirstLetter() ?: "NULL BRAND",
+            category.name.capitalizeFirstLetters() ?: "NULL BRAND",
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             modifier = Modifier

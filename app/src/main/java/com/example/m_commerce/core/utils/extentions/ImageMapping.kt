@@ -27,7 +27,7 @@ val brandImagesMapping = mapOf<String?, Int>(
     "PALLADUIM" to R.drawable.palladium,
     "PUMA" to R.drawable.puma,
     "SUPRA" to R.drawable.supra,
-    "TIMPERLAND" to R.drawable.timperland,
+    "TIMBERLAND" to R.drawable.timperland,
     "DR MARTENS" to R.drawable.dr_martens,
     "HERSCHEL" to R.drawable.herchel,
     "FLEX FIT" to R.drawable.flex_fit

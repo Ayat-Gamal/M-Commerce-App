@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.m_commerce.R
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.White
-import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetter
+import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.core.utils.extentions.categoryImagesMapping
 import com.example.m_commerce.features.categories.domain.entity.DisplayableCategory
 
@@ -52,7 +52,7 @@ fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: D
                 .background(Black.copy(alpha = 0.3f), shape = RoundedCornerShape(24.dp))
         )
         if (category.name != "SALE" && mapping[category.name] != null) Text(
-            category.name?.capitalizeFirstLetter() ?: "null",
+            category.name?.capitalizeFirstLetters() ?: "null",
             modifier = Modifier
                 .drawBehind {
                     drawLine(

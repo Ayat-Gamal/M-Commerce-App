@@ -26,7 +26,7 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.utils.extentions.brandImagesMapping
-import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetter
+import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.core.utils.extentions.categoryImagesMapping
 import com.example.m_commerce.features.brand.domain.entity.Brand
 
@@ -74,7 +74,7 @@ fun BrandCard(
                     .background(Teal)
                     .padding(vertical = 8.dp, horizontal = 12.dp)
                     .fillMaxWidth(),
-                text = it.capitalizeFirstLetter(),
+                text = it.capitalizeFirstLetters(),
                 style = TextStyle(fontSize = 18.sp, textAlign = TextAlign.Center, color = White),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
