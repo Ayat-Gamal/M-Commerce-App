@@ -34,3 +34,20 @@ fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: B
 
     }
 }
+
+@Composable
+fun SubCategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
+    Column(modifier = modifier
+        .border(1.dp, color = Black)
+        .clickable { onClick() }) {
+        NetworkImage(url = category.image, modifier = Modifier.weight(1f))
+        Text(
+            category.name ?: "null",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            style = TextStyle(fontSize = 16.sp, textAlign = TextAlign.Center), overflow = TextOverflow.Ellipsis, maxLines = 1,
+        )
+
+    }
+}

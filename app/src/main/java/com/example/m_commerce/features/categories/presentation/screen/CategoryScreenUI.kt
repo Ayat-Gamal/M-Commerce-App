@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,13 +21,23 @@ import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenC
 import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.brand.presentation.ui_state.BrandsUiState
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
+import com.example.m_commerce.features.categories.domain.entity.Category
 import com.example.m_commerce.features.categories.presentation.components.CategoryCard
+import com.example.m_commerce.features.categories.presentation.components.SubCategoryCard
 
 @Composable
-fun CategoryScreenUI(modifier: Modifier = Modifier, viewModel: BrandsViewModel = hiltViewModel(), navigateToCategory: (Brand) -> Unit) {
+fun CategoryScreenUI(
+    modifier: Modifier = Modifier,
+    viewModel: BrandsViewModel = hiltViewModel(),
+    navigateToCategory: (Brand) -> Unit,
+    navigateToSubCategory: (Category) -> Unit
+) {
 
     val state by viewModel.brandsState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.getCategoriesData()
+    }
 
     when (state) {
         is BrandsUiState.Loading -> {
@@ -39,7 +50,9 @@ fun CategoryScreenUI(modifier: Modifier = Modifier, viewModel: BrandsViewModel =
 
         is BrandsUiState.Success -> {
             val categories = (state as BrandsUiState.Success).brands.takeLast(4)
-            LoadedCase(modifier, categories, navigateToCategory)
+            val subCategories = (state as BrandsUiState.Success).categories
+            val pair = Pair(categories, subCategories)
+            LoadedCase(modifier, pair, navigateToCategory, navigateToSubCategory)
         }
 
         BrandsUiState.NoNetwork -> NoNetwork()
@@ -50,9 +63,14 @@ fun CategoryScreenUI(modifier: Modifier = Modifier, viewModel: BrandsViewModel =
 @Composable
 private fun LoadedCase(
     modifier: Modifier,
-    categories: List<Brand>,
+    pairData: Pair<List<Brand>, List<Category>?>,
     navigateToCategory: (Brand) -> Unit,
+    navigateToSubCategory: (Category) -> Unit
 ) {
+
+    val categories = pairData.first
+    val subCategories = pairData.second
+
     Scaffold(modifier = modifier, topBar = {
         DefaultTopBar(title = "Categories", navController = null)
 
@@ -69,6 +87,14 @@ private fun LoadedCase(
                     category = categories[index],
                     modifier = Modifier.height(200.dp),
                     onClick = { navigateToCategory(categories[index]) })
+            }
+            if (subCategories != null) {
+                items(subCategories.size) { index ->
+                    SubCategoryCard(
+                        category = subCategories[index],
+                        modifier = Modifier.height(200.dp),
+                        onClick = { navigateToSubCategory(subCategories[index]) })
+                }
             }
         }
 
