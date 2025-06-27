@@ -103,7 +103,8 @@ fun CartScreenUI(
                     currencyViewModel = currencyViewModel,
                     paymentSheet = paymentSheet,
                     cart = cart,
-                    orderViewModel = orderViewModel
+                    orderViewModel = orderViewModel,
+                    snackBarHostState = snackBarHostState
                 )
             }
         },

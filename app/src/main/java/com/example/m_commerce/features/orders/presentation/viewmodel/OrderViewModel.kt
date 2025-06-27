@@ -60,7 +60,8 @@ class OrderViewModel @Inject constructor(
             Log.d("OrderHistory", "ViewModel loading orders")
 
             getOrdersUseCase()
-                .catch { e -> _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error") }
+                .catch { e -> _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error")
+                    Log.e("OrderHistory", "loadOrders: ",e )}
                 .collect { result ->
                     Log.i("OrderHistory", "loadOrders: ${_ordersState.value}")
                     _ordersState.value = result
