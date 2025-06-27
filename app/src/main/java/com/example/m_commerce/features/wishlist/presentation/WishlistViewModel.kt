@@ -2,6 +2,7 @@ package com.example.m_commerce.features.wishlist.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.product.domain.usecases.AddToWishlistUseCase
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
 import com.example.m_commerce.features.product.presentation.SnackBarMessage
@@ -29,6 +30,7 @@ class WishlistViewModel @Inject constructor(
     private val getProductById: GetProductByIdUseCase,
     private val deleteFromWishlist: DeleteFromWishlistUseCase,
     private val addToWishlist: AddToWishlistUseCase,
+    private val networkManager: NetworkManager,
 ) : ViewModel() {
     private var _uiState = MutableStateFlow<WishlistUiState>(WishlistUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -37,9 +39,13 @@ class WishlistViewModel @Inject constructor(
     val message = _message.asSharedFlow()
 
     init {
-        if (FirebaseAuth.getInstance().currentUser == null) {
-            _uiState.tryEmit(WishlistUiState.Guest)
-        } else getProducts()
+        if (!networkManager.isNetworkAvailable()) {
+            _uiState.tryEmit(WishlistUiState.NoNetwork)
+        } else {
+            if (FirebaseAuth.getInstance().currentUser == null) {
+                _uiState.tryEmit(WishlistUiState.Guest)
+            } else getProducts()
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -67,18 +73,11 @@ class WishlistViewModel @Inject constructor(
         }
     }
 
-//    fun search(query: String) {
-//        viewModelScope.launch {
-//            if (query.isNotEmpty())
-//                _uiState.emit(WishlistUiState.Search)
-//            else {
-//                _uiState.emit(WishlistUiState.Loading)
-//                getProducts()
-//            }
-//        }
-//    }
-
     fun deleteProductFromWishlist(productVariantId: String) = viewModelScope.launch {
+        if (!networkManager.isNetworkAvailable()) {
+            _message.emit(SnackBarMessage("No internet connection"))
+            return@launch
+        }
         deleteFromWishlist(productVariantId)
             .catch { _message.emit(SnackBarMessage("Failed to remove product from wishlist: ${it.message}")) }
             .collect {
@@ -96,5 +95,6 @@ class WishlistViewModel @Inject constructor(
                     }
                 ))
             }
+        getProducts()
     }
 }

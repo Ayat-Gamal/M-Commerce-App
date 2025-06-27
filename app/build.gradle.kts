@@ -76,128 +76,112 @@ android {
     }
 }
 
-
-
 dependencies {
-    implementation(libs.volley)
-    implementation(libs.androidx.foundation.android)
-    implementation(libs.play.services.location)
-    implementation(libs.androidx.benchmark.common)
-    implementation(libs.androidx.material.icons.core.android)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.jupiter)
-    val room_version = "2.6.1"
-    val nav_version = "2.8.8"
-
+    // Core & Foundation
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.foundation.android)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.play.services.location)
+
+// Compose & UI
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+    implementation("androidx.compose.foundation:foundation:1.8.2")
+
+// Debug Tools
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+// Android Test
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("com.stripe:stripe-android:21.18.0")
 
-
-    //!Database
-    //*Room
+// Room (Database)
+    val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
 
-    //?==================================================
-
-    //!Network
-    //*Apollo
-//    implementation("com.apollographql.apollo:apollo-runtime:4.3.0")
-    //*Retrofit
+// Retrofit (Network)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    //*Shopify
+
+// Shopify SDK
     implementation("com.shopify.mobilebuysdk:buy3:2025.4.0")
 
-    //?==================================================
+// Stripe SDK
+    implementation("com.stripe:stripe-android:21.18.0")
 
-    //!UI
-    //*Coil
+// Coil (Image Loading)
     implementation("io.coil-kt.coil3:coil-compose:3.0.4")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
     implementation("io.coil-kt.coil3:coil-svg:3.0.4")
 
-    //?==================================================
-
-    //!Dependency Injection
-    //*hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
-    testImplementation("com.google.dagger:hilt-android-testing:2.56.2")
-//    kaptTest("com.google.dagger:hilt-android-compiler:2.56.2")
-
-    //!Navigation
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.navigation:navigation-compose:$nav_version")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-
-    // firebase services
+// Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
 
-    // extended icons
-    implementation("androidx.compose.material:material-icons-extended:1.6.1")
-
-    // view model
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-
-    // Material3 Pager
-    implementation("androidx.compose.foundation:foundation:1.8.2")
-
-    // flowlayout
-//    implementation(
-//        "com.google.accompanist:accompanist-flowlayout:0.32.0"
-//    )
-
-    // Lottie
+// Lottie Animations
     implementation("com.airbnb.android:lottie-compose:6.6.4")
 
-    // Google Maps
+// Google Maps Compose
     implementation("com.google.maps.android:maps-compose:6.5.2")
     implementation("com.google.maps.android:maps-compose-utils:6.5.2")
     implementation("com.google.maps.android:maps-compose-widgets:6.5.2")
 
-    // Hamcrest
-    testImplementation("org.hamcrest:hamcrest:3.0")
+// Navigation
+    val nav_version = "2.8.8"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-// Junit
-//    testImplementation(junit:junit:4.13.2)
+// Lifecycle & ViewModel
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+// Hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
+    testImplementation("com.google.dagger:hilt-android-testing:2.56.2")
+
+// Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+
+// Volley
+    implementation(libs.volley)
+
+// Benchmarking
+    implementation(libs.androidx.benchmark.common)
+
+// Material Icons
+    implementation(libs.androidx.material.icons.core.android)
+
+// JUnit + Coroutine Test
+    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+// Robolectric
     testImplementation("org.robolectric:robolectric:4.11.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
 
-// AndroidX
-//    testImplementation("androidx.test:core:1.6.1")
-//    testImplementation("androidx.test:core-ktx:1.6.1")
-//    testImplementation("androidx.test.ext:junit:1.2.1")
-//    testImplementation("androidx.test.ext:junit-ktx:1.2.1")
+// AndroidX Test
+    testImplementation("androidx.test.ext:junit-ktx:1.1.3")
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
 
-// mock
-    testImplementation("io.mockk:mockk-android:1.13.7")
-    testImplementation("io.mockk:mockk-agent:1.13.7")
+// Mockk
+    testImplementation("io.mockk:mockk-android:1.13.17")
+    testImplementation("io.mockk:mockk-agent:1.13.17")
+
+// Hamcrest
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.hamcrest:hamcrest-library:2.2")
+
+
 }
-
-//apollo {
-//    service("service") {
-//        packageName.set("com.example.m_commerce")
-//    }
-//}

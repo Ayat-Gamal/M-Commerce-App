@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.domain.entity.Response
 import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaultAddressUseCase
@@ -21,6 +22,7 @@ import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
 import com.example.m_commerce.features.orders.domain.usecases.GetOrdersUseCase
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderHistoryUiState
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
+import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,8 +37,9 @@ class OrderViewModel @Inject constructor(
     private val createOrderUseCase: CreateOrderUseCase,
     private val completeOrderUseCase: CompleteOrderUseCase,
     private val getDefaultAddressUseCase: GetDefaultAddressUseCase,
-    private val getOrdersUseCase: GetOrdersUseCase
-) : ViewModel() {
+    private val getOrdersUseCase: GetOrdersUseCase,
+    private val networkManager: NetworkManager,
+    ) : ViewModel() {
 
     private val _state = MutableStateFlow<OrderUiState>(OrderUiState.Idle)
     val state: StateFlow<OrderUiState> = _state
@@ -48,99 +51,23 @@ class OrderViewModel @Inject constructor(
 
     fun loadOrders() =
         viewModelScope.launch {
+
+            if (!networkManager.isNetworkAvailable()) {
+                _ordersState.emit(OrderHistoryUiState.NoNetwork)
+                return@launch
+            }
+
             Log.d("OrderHistory", "ViewModel loading orders")
 
-
             getOrdersUseCase()
-                .catch { e -> _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error") }
+                .catch { e -> _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error")
+                    Log.e("OrderHistory", "loadOrders: ",e )}
                 .collect { result ->
                     Log.i("OrderHistory", "loadOrders: ${_ordersState.value}")
                     _ordersState.value = result
                 }
-
         }
 
-//    fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {
-//        viewModelScope.launch {
-//            _state.value = OrderUiState.Loading
-//
-//            try {
-//                val user = FirebaseAuth.getInstance().currentUser
-//                val addressResponse = getDefaultAddressUseCase().first()
-//
-//                val defaultAddress = when (addressResponse) {
-//                    is Response.Success -> {
-//                        Log.i("Order", "address SUCCESS: ${addressResponse.data}")
-//                        addressResponse.data
-//                    }
-//
-//                    is Response.Error -> {
-//                        _state.value = OrderUiState.Error(addressResponse.message)
-//                        Log.i("Order", "Test 1: ${addressResponse.message}")
-//                        return@launch
-//                    }
-//
-//                    is Response.Loading -> Address(
-//                        address1 = "asdsdasdasd",
-//                        address2 = "wqweqwe",
-//                        city = "ssss",
-//                        country = "cairo",
-//                        firstName = "joooo",
-//                        lastName = "",
-//                        phone = "222222",
-//                        zip = "123"
-//                    )
-//
-//                }
-//
-//                Log.i("Order", "address: ${defaultAddress}")
-//                if (defaultAddress == null) {
-//                    _state.value = OrderUiState.Error("No default address found")
-//                    Log.i("Order", "No default address found")
-//                    //return@launch
-//                }
-//
-//                val shippingAddress = ShippingAddress(
-//                    address1 = defaultAddress.address1,
-//                    city = defaultAddress.city ?: "cairo",
-//                    country = defaultAddress.country ?: "",
-//                    firstName = defaultAddress.firstName, // user??.displayName ?: "Guest"
-//                    lastName = "",
-//                    zip = defaultAddress.zip ?: ""
-//                )
-//                Log.i("Order", "address: ${shippingAddress}")
-//
-//                val request = GraphQLRequest(
-//                    query = createDraftOrderQuery,
-//                    variables = DraftOrderCreateVariables(
-//                        email = "youssifn.mostafa@gmail.com" /*?: user?.email*/,
-//                        shippingAddress = shippingAddress,
-//                        lineItems = items,
-//                        note = ""
-//                    )
-//                )
-//
-//                createOrderUseCase(request)
-//                    .catch { e -> _state.value = OrderUiState.Error(e.message ?: "Order creation failed")
-//
-//                        Log.e("Order", "Order Error:", e)
-//                    }
-//                    .collect { order ->
-//                        Log.d("Order", "Order created: ${order.id}")
-//
-//                        if (paymentMethod == PaymentMethod.CreditCard) {
-//                            _state.value = OrderUiState.Success(order)
-//                        } else {
-//                            completeOrder(order.id)
-//                        }
-//                    }
-//
-//            } catch (e: Exception) {
-//                Log.e("Order", "Order creation failed", e)
-//                _state.value = OrderUiState.Error(e.message ?: "Failed to create order")
-//            }
-//        }
-//    }
 
     fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {
         viewModelScope.launch {

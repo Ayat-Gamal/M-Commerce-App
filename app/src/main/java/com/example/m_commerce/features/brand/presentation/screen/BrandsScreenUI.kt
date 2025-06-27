@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
+import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
@@ -21,6 +22,7 @@ import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.brand.presentation.components.BrandCard
 import com.example.m_commerce.features.brand.presentation.ui_state.BrandsUiState
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
+import com.example.m_commerce.features.product.presentation.ProductUiState
 
 
 @Composable
@@ -37,6 +39,8 @@ fun BrandsScreenUI(
         is BrandsUiState.Success -> LoadedData(
             brands = (state as BrandsUiState.Success).brands.drop(1), navController = navController,
         )
+
+        BrandsUiState.NoNetwork -> NoNetwork()
     }
 }
 

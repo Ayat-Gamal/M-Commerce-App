@@ -1,12 +1,14 @@
 package com.example.m_commerce.config.routes
 
-import com.example.m_commerce.features.product.domain.entities.Product
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class AppRoutes {
     @Serializable
     object HomeScreen : AppRoutes()
+
+    @Serializable
+    object Onboarding : AppRoutes()
 
     @Serializable
     object CategoryScreen : AppRoutes()
@@ -49,7 +51,7 @@ sealed class AppRoutes {
     object ManageAddressScreen : AppRoutes()
 
     @Serializable
-    data class AddAddressScreen(val lat:Double, val lng:Double) : AppRoutes()
+    data class AddAddressScreen(val lat: Double, val lng: Double) : AppRoutes()
 
     @Serializable
     object WishListScreen : AppRoutes()
