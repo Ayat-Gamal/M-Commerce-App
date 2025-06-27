@@ -76,6 +76,8 @@ android {
     }
 }
 
+
+
 dependencies {
     // Core & Foundation
     implementation(libs.androidx.core.ktx)
@@ -91,6 +93,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended:1.6.1")
     implementation("androidx.compose.foundation:foundation:1.8.2")
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
     testImplementation(libs.junit.jupiter)
 
 // Debug Tools

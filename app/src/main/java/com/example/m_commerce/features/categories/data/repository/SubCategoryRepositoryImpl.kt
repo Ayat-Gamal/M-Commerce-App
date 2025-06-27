@@ -6,7 +6,7 @@ import com.example.m_commerce.features.categories.data.dto.CategoryDto
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SubSubCategoryRepositoryImpl @Inject constructor(private val remoteSource: SubCategoryRemoteDataSource) : SubCategoryRepository {
+class SubCategoryRepositoryImpl @Inject constructor(private val remoteSource: SubCategoryRemoteDataSource) : SubCategoryRepository {
     override fun getCategories(): Flow<List<CategoryDto>> {
         return remoteSource.getCategories()
     }

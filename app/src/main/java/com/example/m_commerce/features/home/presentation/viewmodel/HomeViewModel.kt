@@ -56,17 +56,4 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun search(query: String) {
-        viewModelScope.launch {
-            if (query.isNotEmpty())
-                _dataState.emit(HomeUiState.Search)
-            else {
-                _dataState.emit(HomeUiState.Loading)
-                getHomeData()
-            }
-        }
-    }
-
-
-
 }

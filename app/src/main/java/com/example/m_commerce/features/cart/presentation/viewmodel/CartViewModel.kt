@@ -11,8 +11,6 @@ import com.example.m_commerce.features.cart.domain.usecases.UpdateCartUseCase
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.coupon.domain.usecases.ApplyCouponUseCase
-import com.example.m_commerce.features.product.presentation.ProductUiState
-import com.example.m_commerce.features.product.presentation.SnackBarMessage
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -67,6 +65,7 @@ class CartViewModel @Inject constructor(
                 }
             }
         } catch (e: Exception) {
+            Log.i("TAG", "yes getCartById: ")
             _uiState.value = when {
                 e.message?.contains("guest") == true -> CartUiState.Guest
                 e.message?.contains("network", ignoreCase = true) == true -> CartUiState.NoNetwork

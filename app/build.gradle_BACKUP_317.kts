@@ -91,7 +91,17 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended:1.6.1")
     implementation("androidx.compose.foundation:foundation:1.8.2")
+<<<<<<< HEAD
     testImplementation(libs.junit.jupiter)
+||||||| 8a3f813
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
+=======
+>>>>>>> 7b2ea3422397b46c01e1ad9758ce4df7f11fd43d
 
 // Debug Tools
     debugImplementation(libs.androidx.ui.tooling)
