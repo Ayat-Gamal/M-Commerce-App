@@ -76,7 +76,6 @@ android {
     }
 }
 
-
 dependencies {
     // Core & Foundation
     implementation(libs.androidx.core.ktx)

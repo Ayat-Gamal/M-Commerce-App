@@ -2,6 +2,7 @@
 
 package com.example.m_commerce.features.wishlist.data.remote
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,8 +15,10 @@ class WishlistRemoteDataSourceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : WishlistRemoteDataSource {
 
-    private val uid = FirebaseAuth.getInstance().currentUser?.uid
+
     override suspend fun addToWishlist(productVariantId: String) = flow {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        Log.i("TAG", "addToWishlist: $uid")
         try {
             uid?.let {
                 db.collection("users")
@@ -30,6 +33,7 @@ class WishlistRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun deleteFromWishlist(productVariantId: String) = flow {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
         if (uid == null) {
             emit("User not logged in.")
             return@flow
@@ -45,6 +49,7 @@ class WishlistRemoteDataSourceImpl @Inject constructor(
     }.catch { emit("Failed to remove product from wishlist: ${it.message}") }
 
     override suspend fun isInWishlist(productVariantId: String) = flow {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
         var isIn = false
         uid?.let {
             val snapshot = db.collection("users")
@@ -59,6 +64,7 @@ class WishlistRemoteDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getWishlist() = flow {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
         var data = emptyList<String>()
         uid?.let {
             val snapshot = db.collection("users")
