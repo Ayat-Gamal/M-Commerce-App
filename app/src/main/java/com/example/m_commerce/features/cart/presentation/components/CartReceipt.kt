@@ -172,7 +172,7 @@ fun CartReceipt(
                     end = 16.dp,
                     bottom = paddingValues.calculateBottomPadding(),
                     top = 16.dp
-                ),
+                ).fillMaxWidth(),
                 isLoading = state,
                 text = "Checkout",
                 backgroundColor = Teal,

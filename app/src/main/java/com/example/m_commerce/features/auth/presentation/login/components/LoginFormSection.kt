@@ -48,6 +48,7 @@ fun LoginFormSection(
     Spacer(Modifier.height(24.dp))
 
     CustomButton(
+        modifier = Modifier.fillMaxWidth(),
         text = "Sign In",
         backgroundColor = Teal,
         textColor = White,

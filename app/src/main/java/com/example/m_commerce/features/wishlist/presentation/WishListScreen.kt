@@ -161,7 +161,7 @@ fun WishListScreen(
 }
 
 @Composable
-fun LoadData(
+private fun LoadData(
     data: List<Product>,
     navController: NavHostController,
     viewModel: WishlistViewModel = hiltViewModel()
