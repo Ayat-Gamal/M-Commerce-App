@@ -7,7 +7,7 @@ import javax.inject.Inject
 class AddProductVariantToCart @Inject constructor(
     private val repo: ProductRepository
 ) {
-    operator fun invoke(productVariantId: String): Flow<Boolean> {
-        return repo.addProductVariantToCart(productVariantId)
+    operator fun invoke(productVariantId: String, quantity: Int): Flow<Boolean> {
+        return repo.addProductVariantToCart(productVariantId, quantity)
     }
 }

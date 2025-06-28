@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository {
     fun getProductById(productId: String): Flow<Product>
-    fun addProductVariantToCart(productVariantId: String): Flow<Boolean>
+    fun addProductVariantToCart(productVariantId: String, quantity: Int): Flow<Boolean>
 }

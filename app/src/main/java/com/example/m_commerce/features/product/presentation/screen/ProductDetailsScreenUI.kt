@@ -44,6 +44,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -126,6 +127,7 @@ fun ProductDetailsScreenUI(
     val scrollState = rememberScrollState()
     var selectedSize by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf("") }
+    var quantity = remember { mutableStateOf(1) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val user = FirebaseAuth.getInstance().currentUser
 
@@ -162,6 +164,12 @@ fun ProductDetailsScreenUI(
             }
         }
     }
+    LaunchedEffect(Unit) {
+        viewModel.cartOperationResult.collect {
+            isLoading.value = false
+        }
+    }
+
 
     Scaffold(
         topBar = {
@@ -179,6 +187,14 @@ fun ProductDetailsScreenUI(
             if (uiState is ProductUiState.Success) {
                 val product = (uiState as ProductUiState.Success).product
                 BottomBar(product.price, isLoading.value) {
+
+                    if (!product.availableForSale) {
+                        scope.launch {
+                            snackBarHostState.showSnackbar("Product is out of stock")
+                        }
+                        return@BottomBar
+                    }
+
                     if (user != null) {
                         isLoading.value = true
                         val variantId = viewModel.findSelectedVariantId(
@@ -186,7 +202,7 @@ fun ProductDetailsScreenUI(
                             selectedSize,
                             selectedColor
                         )
-                        variantId?.let { viewModel.addToCart(it) }
+                        variantId?.let { viewModel.addToCart(it, quantity.value) }
                     } else {
                         scope.launch {
                             snackBarHostState.showSnackbar("Please sign in to add items to your cart")
@@ -215,6 +231,7 @@ fun ProductDetailsScreenUI(
                     selectedSize = selectedSize,
                     onSizeSelected = { selectedSize = it },
                     selectedColor = selectedColor,
+                    quantity = quantity,
                     onColorSelected = { selectedColor = it }
                 )
             }
@@ -271,9 +288,9 @@ fun LoadData(
     selectedSize: String,
     onSizeSelected: (String) -> Unit,
     selectedColor: String,
+    quantity: MutableState<Int>,
     onColorSelected: (String) -> Unit
 ) {
-    var quantity by remember { mutableStateOf(1) }
 
     Column(
         modifier = Modifier
@@ -330,8 +347,15 @@ fun LoadData(
 
                 // Quantity Box
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    QuantitySelector(quantity) { quantity = it }
-                    Text("In stock", fontSize = 14.sp, color = Color.DarkGray)
+                    QuantitySelector(quantity.value) { quantity.value = it }
+                    Text(
+                        if (product.availableForSale) "In stock" else "Out of Stock",
+                        fontSize = 14.sp,
+                        color = if (product.availableForSale) Color(0xFF4CAF50) else Color(
+                            0xFFF44336
+                        ),
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 

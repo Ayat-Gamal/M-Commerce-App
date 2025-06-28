@@ -8,7 +8,8 @@ fun Storefront.Product.toDomain(): Product {
     val price = firstVariant?.price?.amount.toString()
     //val priceAmount = price?.amount ?: "0.00"
     //val currencyCode = price?.currencyCode?.name ?: "EGP"
-    val images: List<String> = images.edges.mapNotNull { it.node.url }
+    val images: List<String> = images?.edges.orEmpty()
+        .mapNotNull { it.node?.url }
 
     val variantList = variants.edges
         .map { it.node }
@@ -37,7 +38,8 @@ fun Storefront.Product.toDomain(): Product {
         sizes = sizes,
         colors = colors,
         variants = variantList,
-        brand = vendor
+        brand = vendor,
+        availableForSale = availableForSale ?: false
     )
 }
 

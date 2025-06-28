@@ -78,7 +78,8 @@ fun ProductCard(
     ) {
         Box(modifier = Modifier.background(color = Color.Transparent), contentAlignment = Alignment.TopEnd) {
             NetworkImage(
-                url = product.images[0], modifier = Modifier
+                url = if (product.images.isNotEmpty()) product.images[0] else "",
+                modifier = Modifier
                     .height(200.dp)
                     .clip(shape = shape)
             )

@@ -13,7 +13,7 @@ class ProductRepositoryImpl @Inject constructor(
         return remoteDataSource.getProductById(productId)
     }
 
-    override fun addProductVariantToCart(productVariantId: String): Flow<Boolean> {
-        return remoteDataSource.addProductVariantToCart(productVariantId)
+    override fun addProductVariantToCart(productVariantId: String, quantity: Int): Flow<Boolean> {
+        return remoteDataSource.addProductVariantToCart(productVariantId, quantity)
     }
 }

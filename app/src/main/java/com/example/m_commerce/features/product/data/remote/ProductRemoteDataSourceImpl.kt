@@ -9,6 +9,7 @@ import com.shopify.buy3.GraphClient
 import com.shopify.buy3.Storefront
 import com.shopify.buy3.Storefront.CartLineInput
 import com.shopify.graphql.support.ID
+import com.shopify.graphql.support.Input
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
@@ -32,6 +33,7 @@ class ProductRemoteDataSourceImpl @Inject constructor(
                         .description()
                         .productType()
                         .vendor()
+                        .availableForSale()
                         .variants({ args -> args.first(10) }) { variants ->
                             variants.edges { edges ->
                                 edges.node { node ->
@@ -68,7 +70,7 @@ class ProductRemoteDataSourceImpl @Inject constructor(
         emit(product)
     }
 
-    override fun addProductVariantToCart(productVariantId: String) = flow {
+    override fun addProductVariantToCart(productVariantId: String, quantity: Int) = flow {
         val user = FirebaseAuth.getInstance().currentUser
         if (user == null) {
             emit(false)
@@ -89,7 +91,7 @@ class ProductRemoteDataSourceImpl @Inject constructor(
             val mutation = Storefront.mutation { mutationBuilder ->
                 mutationBuilder.cartLinesAdd(
                     cartId,
-                    listOf(CartLineInput(merchandiseId))
+                    listOf(CartLineInput(merchandiseId).setQuantityInput(Input.value(quantity)))
                 ) { cartLinesAdd ->
                     cartLinesAdd.cart {}
                 }

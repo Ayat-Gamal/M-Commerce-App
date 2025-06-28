@@ -12,6 +12,7 @@ import com.shopify.buy3.Storefront
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -32,6 +33,9 @@ class ProductViewModel @Inject constructor(
 
     private var _uiState = MutableStateFlow<ProductUiState>(ProductUiState.Loading)
     val uiState = _uiState.asStateFlow()
+
+    private val _cartOperationResult = MutableSharedFlow<Boolean>()
+    val cartOperationResult: SharedFlow<Boolean> = _cartOperationResult
 
     private var _message = MutableSharedFlow<SnackBarMessage>(replay = 0, extraBufferCapacity = 1)
     val message = _message.asSharedFlow()
@@ -100,14 +104,21 @@ class ProductViewModel @Inject constructor(
             }
     }
 
-    fun addToCart(productVariantId: String) = viewModelScope.launch {
-        if (!isConnected()) return@launch
-        addProductVariantToCart(productVariantId)
-            .catch { _message.emit(SnackBarMessage("Failed: ${it.message}")) }
+    fun addToCart(productVariantId: String, quantity: Int) = viewModelScope.launch {
+        if (!isConnected()) {
+            _cartOperationResult.emit(false)
+            return@launch
+        }
+        addProductVariantToCart(productVariantId, quantity)
+            .catch {
+                _message.emit(SnackBarMessage("Failed: ${it.message}"))
+                _cartOperationResult.emit(false)
+            }
             .collect {
                 if (it) {
                     _message.emit(SnackBarMessage("Added to cart successfully"))
                 }
+                _cartOperationResult.emit(it)
             }
     }
 

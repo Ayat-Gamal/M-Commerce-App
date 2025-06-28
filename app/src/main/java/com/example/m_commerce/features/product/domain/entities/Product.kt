@@ -13,5 +13,6 @@ data class Product(
     val colors: List<String>,
     val sizes: List<String>,
     var variants: List<Storefront.ProductVariant>,
-    var brand: String
+    var brand: String,
+    var availableForSale: Boolean
 )

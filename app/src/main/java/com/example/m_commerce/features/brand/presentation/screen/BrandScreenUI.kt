@@ -70,20 +70,20 @@ private fun LoadedData(padding: PaddingValues, navController: NavHostController,
 val img = "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg"
 
 
-val products: List<Product> = listOf(
-    Product(
-        "1",
-        "Product 1",
-        "Dummy description",
-        listOf(img),
-        "10.00",
-        "Dummy Category",
-        "USD",
-        listOf("Red", "Blue"),
-        listOf("S", "M", "L"),
-        emptyList(),
-        ""
-    )
-)
+//val products: List<Product> = listOf(
+//    Product(
+//        "1",
+//        "Product 1",
+//        "Dummy description",
+//        listOf(img),
+//        "10.00",
+//        "Dummy Category",
+//        "USD",
+//        listOf("Red", "Blue"),
+//        listOf("S", "M", "L"),
+//        emptyList(),
+//        ""
+//    )
+//)
 
 
