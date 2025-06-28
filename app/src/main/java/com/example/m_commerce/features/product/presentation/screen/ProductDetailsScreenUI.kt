@@ -38,6 +38,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -116,7 +117,6 @@ fun BottomBar(price: String, isLoading: Boolean, onAddToCart: () -> Unit) {
 
 @Composable
 fun ProductDetailsScreenUI(
-    snackBarHostState: SnackbarHostState,
     productId: String,
     navController: NavHostController,
     viewModel: ProductViewModel = hiltViewModel(),
@@ -126,9 +126,10 @@ fun ProductDetailsScreenUI(
     var isFavorite by remember { mutableStateOf(false) }
     val isLoading = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+    val snackBarHostState = remember { SnackbarHostState() }
     var selectedSize by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf("") }
-    var quantity = remember { mutableStateOf(1) }
+    val quantity = remember { mutableStateOf(1) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val user = FirebaseAuth.getInstance().currentUser
 
@@ -144,8 +145,6 @@ fun ProductDetailsScreenUI(
             isFavorite = (uiState as ProductUiState.Success).isFavorite
         }
     }
-
-
     LaunchedEffect(Unit) {
         viewModel.getProductById(productId)
         viewModel.message.collect { event ->
@@ -170,7 +169,6 @@ fun ProductDetailsScreenUI(
             isLoading.value = false
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -211,6 +209,9 @@ fun ProductDetailsScreenUI(
                     }
                 }
             }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState)
         }
     ) { paddingValues ->
         when (uiState) {

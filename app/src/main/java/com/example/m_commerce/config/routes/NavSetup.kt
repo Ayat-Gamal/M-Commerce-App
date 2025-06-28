@@ -101,7 +101,6 @@ fun NavSetup(
             showBottomNavbar.value = false
             val productArgs = it.toRoute<AppRoutes.ProductDetailsScreen>()
             ProductDetailsScreenUI(
-                snackBarHostState,
                 productId = productArgs.productId,
                 navController = navController
             )
