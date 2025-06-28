@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -228,37 +229,44 @@ fun QuantitySelector(quantity: Int, onQuantityChange: (Int) -> Unit) {
         Modifier
             .padding(4.dp)
             .background(
-                Color.LightGray.copy(0.3f),
+                Color.LightGray.copy(0.2f),
                 RoundedCornerShape(25.dp)
-            ),
+            )
+            .width(120.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = { onQuantityChange(quantity + 1) }) {
-            Icon(
-                Icons.Filled.Add,
-                contentDescription = "Increase",
-                Modifier
-                    .size(35.dp)
-                    .clip(CircleShape)
-                    .background(White)
-                    .padding(8.dp),
-                tint = Color.DarkGray
-            )
-        }
-        Text(quantity.toString(), fontSize = 16.sp, color = Color.Black)
-        IconButton(onClick = { if (quantity > 1) onQuantityChange(quantity - 1) }) {
-            Icon(
-                Icons.Filled.Remove,
-                contentDescription = "Decrease",
-                Modifier
-                    .size(35.dp)
-                    .clip(CircleShape)
-                    .background(White)
-                    .padding(8.dp),
-                tint = Color.DarkGray
-            )
-        }
+        Icon(
+            Icons.Filled.Remove,
+            contentDescription = "Decrease",
+            Modifier
+                .padding(8.dp)
+                .background(White, shape = CircleShape)
+                .clip(CircleShape)
+                .clickable { if (quantity > 1) onQuantityChange(quantity - 1) }
+                .padding(4.dp)
+//                    .size(35.dp)
+            ,
+            tint = Color.DarkGray
+        )
+
+        Text(textAlign =  TextAlign.Center, text = quantity.toString(), fontSize = 16.sp, color = Color.Black)
+
+        Icon(
+            Icons.Filled.Add,
+            contentDescription = "Decrease",
+            Modifier
+                .padding(8.dp)
+                .background(White, shape = CircleShape)
+                .clip(CircleShape)
+                .clickable {
+                    onQuantityChange(quantity + 1)
+                }
+                .padding(4.dp)
+            ,
+            tint = Color.DarkGray
+        )
+
     }
 }
 

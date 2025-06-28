@@ -3,6 +3,7 @@ package com.example.m_commerce.features.cart.presentation.components
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,8 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
+import com.example.m_commerce.core.shared.components.DashedDivider
+import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.core.utils.containsPositiveNumber
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
 import com.example.m_commerce.features.cart.domain.entity.Cart
@@ -86,19 +89,44 @@ fun CartReceipt(
     }
 
     LaunchedEffect(orderState.value) {
+        Log.d(
+            "OrderItem",
+            "CartReceipt: Entered Launch Effect ${orderState.value}"
+        )
         when (val state = orderState.value) {
             is OrderUiState.Error -> {
                 scope.launch {
                     Log.d("Order", "Error: ${state.message}")
                     snackBarHostState.showSnackbar("Error: ${state.message}")
                 }
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Error State ${orderState.value}"
+                )
             }
 
             is OrderUiState.Success -> {
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Success State ${orderState.value}"
+                )
                 cartViewModel.clearCart(cart.lines)
+
             }
 
-            else -> Unit
+            OrderUiState.Idle -> {
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Idle"
+                )
+
+            }
+            OrderUiState.Loading -> {
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Loading"
+                )
+            }
         }
     }
 
@@ -152,7 +180,7 @@ fun CartReceipt(
                         CartReceiptItem(item)
                     }
 
-                    Divider(Modifier.padding(vertical = 8.dp, horizontal = 8.dp))
+                    DashedDivider(Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
 
                     CartReceiptItem(
                         ReceiptItem(
@@ -208,12 +236,14 @@ fun CartReceipt(
             }
 
             CustomButton(
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = paddingValues.calculateBottomPadding(),
-                    top = 16.dp
-                ).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = paddingValues.calculateBottomPadding(),
+                        top = 16.dp
+                    )
+                    .fillMaxWidth(),
                 isLoading = state,
                 text = "Checkout",
                 backgroundColor = Teal,

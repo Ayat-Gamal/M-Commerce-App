@@ -134,15 +134,14 @@ class OrderViewModel @Inject constructor(
                     when (paymentMethod) {
                         PaymentMethod.CreditCard -> {
                             //sendOrderConfirmationEmail(order.id)
-                            _state.value = OrderUiState.Success(order)
                         }
 
                         else -> {
                             Log.i("Order", "createOrderAndSendEmail: ${order.id}")
-//                            completeOrder("gid://shopify/Order/6259465453817")
                             completeOrder(order.id)
                         }
                     }
+                            _state.value = OrderUiState.Success(order)
                 }
             } catch (e: Exception) {
                 Log.e("Order", "Order creation failed", e)

@@ -51,7 +51,7 @@ fun NavSetup(
 ) {
     val user = FirebaseAuth.getInstance().currentUser
     val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
-//    val startingScreen = AppRoutes.CartScreen
+//    val startingScreen = AppRoutes.ProductDetailsScreen
 
 
     NavHost(
