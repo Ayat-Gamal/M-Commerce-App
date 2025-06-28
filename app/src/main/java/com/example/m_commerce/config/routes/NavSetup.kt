@@ -39,7 +39,6 @@ import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.stripe.android.paymentsheet.PaymentSheet
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavSetup(
     navController: NavHostController,
