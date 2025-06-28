@@ -8,7 +8,6 @@ import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUse
 import com.example.m_commerce.features.product.presentation.SnackBarMessage
 import com.example.m_commerce.features.wishlist.domain.usecases.DeleteFromWishlistUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.GetWishlistUseCase
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,11 +40,7 @@ class WishlistViewModel @Inject constructor(
     init {
         if (!networkManager.isNetworkAvailable()) {
             _uiState.tryEmit(WishlistUiState.NoNetwork)
-        } else {
-            if (FirebaseAuth.getInstance().currentUser == null) {
-                _uiState.tryEmit(WishlistUiState.Guest)
-            } else getProducts()
-        }
+        } else getProducts()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

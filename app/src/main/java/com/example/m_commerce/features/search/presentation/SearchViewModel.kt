@@ -52,7 +52,7 @@ class SearchViewModel @Inject constructor(
     var categories = mutableListOf<String>()
     var brands = mutableListOf<String>()
 
-    var priceRange = MutableStateFlow(0f..100f)
+    var priceRange = MutableStateFlow(0f..300f)
 
     fun clear() {
         _uiState.tryEmit(SearchUiState.Loading)

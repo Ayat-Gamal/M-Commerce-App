@@ -7,8 +7,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,6 +41,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.RangeSliderState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SnackbarDuration
@@ -56,7 +60,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -84,7 +90,17 @@ fun SearchScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val range by viewModel.priceRange.collectAsStateWithLifecycle()
+
     val scope = rememberCoroutineScope()
+    var expandedFilter by remember { mutableStateOf<String?>(null) }
+    val selectedFilters = remember { mutableStateMapOf<String, List<String>>() }
+    var selectedRange by remember { mutableStateOf(0f..300f) }
+    var rangeValue by remember { mutableStateOf(0f..300f) }
+    var initialized by remember { mutableStateOf(false) }
+    val showFilterDropDownMenu = expandedFilter != null
+
+    var query by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.getAllProducts(isWishlist)
@@ -106,12 +122,13 @@ fun SearchScreen(
         }
     }
 
-    var expandedFilter by remember { mutableStateOf<String?>(null) }
-    val selectedFilters = remember { mutableStateMapOf<String, List<String>>() }
-    var selectedRange by remember { mutableStateOf(0f..300f) }
-    val showFilterDropDownMenu = expandedFilter != null
-
-    var query by remember { mutableStateOf("") }
+    LaunchedEffect(range) {
+        if (!initialized && range.endInclusive != 300f) {
+            selectedRange = range
+            rangeValue = range
+            initialized = true
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -132,7 +149,7 @@ fun SearchScreen(
                         viewModel.clear()
                     },
                     enabled = true,
-                    placeholder = "Search in wishlist...",
+                    placeholder = "Search...",
                     modifier = Modifier.padding(end = 16.dp)
                 )
             }
@@ -153,7 +170,7 @@ fun SearchScreen(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Column {
                     if (uiState is SearchUiState.Success || uiState is SearchUiState.Empty) {
-                        LabelRangeSlider(selectedRange) {
+                        LabelRangeSlider(selectedRange, rangeValue) {
                             selectedRange = it
                             viewModel.searchAndFilter(query, selectedFilters, it)
                         }
@@ -284,18 +301,19 @@ fun CustomDivider() {
 @Composable
 fun LabelRangeSlider(
     priceRange: ClosedFloatingPointRange<Float>,
-    viewModel: SearchViewModel = hiltViewModel(),
+    rangeValue: ClosedFloatingPointRange<Float>,
     currencyViewModel: CurrencyViewModel = hiltViewModel(),
-            onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
+    onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
 ) {
-    val range = viewModel.priceRange.collectAsStateWithLifecycle()
+//    val range = viewModel.priceRange.collectAsStateWithLifecycle()
 
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            "Price Range: ",
+            "Price: ",
             style = MaterialTheme.typography.titleLarge,
 
             )
@@ -309,23 +327,30 @@ fun LabelRangeSlider(
 
     // slider
     RangeSlider(
+        modifier = Modifier.height(20.dp),
         value = priceRange,
         onValueChange = {
             onValueChange(it)
         },
-        valueRange = range.value,
+        valueRange = rangeValue,
         colors = SliderDefaults.colors(
-            thumbColor = Teal,
-            activeTrackColor = Teal,
-            inactiveTrackColor = Color.Gray,
+            thumbColor = Color.Transparent,
+            activeTrackColor = Color.Transparent,
+            inactiveTrackColor = Color.Transparent,
             activeTickColor = Color.Transparent,
             inactiveTickColor = Color.Transparent
         ),
-        startThumb = { ThumbRectangularShape() },
-        endThumb = { ThumbRectangularShape() },
-        steps = (range.value.endInclusive / 10 - 1).toInt()
+        track = {
+            CustomTrack(it)
+        },
+        startThumb = {
+            HollowThumb()
+        },
+        endThumb = { HollowThumb() },
+        steps = (rangeValue.endInclusive / 10 - 1).toInt()
     )
 
+    Spacer(Modifier.height(8.dp))
     // labels
     Row(
         modifier = Modifier
@@ -334,13 +359,13 @@ fun LabelRangeSlider(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text =  currencyViewModel.formatPrice(range.value.start.toString()),
+            text =  currencyViewModel.formatPrice(priceRange.start.toString()),
             fontSize = 16.sp,
             color = Color.Gray
         )
 
         Text(
-            text = currencyViewModel.formatPrice(range.value.endInclusive.toString()),
+            text = currencyViewModel.formatPrice(priceRange.endInclusive.toString()),
             fontSize = 16.sp,
             color = Color.Gray
         )
@@ -348,6 +373,60 @@ fun LabelRangeSlider(
 }
 
 @Composable
+fun HollowThumb(
+    color: Color = Teal,
+    diameter: Dp = 20.dp,
+    stroke: Dp = 3.dp
+) {
+    Box(
+        modifier = Modifier
+            .size(diameter)
+            .border(width = stroke, color = color, shape = CircleShape)
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomTrack(
+    state: RangeSliderState,
+    trackHeight: Dp = 2.dp,
+    activeColor: Color = Teal,
+    inactiveColor: Color = Color.LightGray
+) {
+    val density = LocalDensity.current
+    val startFraction = (state.activeRangeStart - state.valueRange.start) / (state.valueRange.endInclusive - state.valueRange.start)
+    val endFraction = (state.activeRangeEnd - state.valueRange.start) / (state.valueRange.endInclusive - state.valueRange.start)
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp), // enough space for thumbs
+        contentAlignment = Alignment.CenterStart
+    ) {
+        val widthPx = with(density) { maxWidth.toPx() }
+
+        // Background track (inactive)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(trackHeight)
+                .background(inactiveColor, CircleShape)
+        )
+
+        // Foreground track (active range)
+        Box(
+            modifier = Modifier
+                .offset(x = with(density) { (widthPx * startFraction).toDp() })
+                .width(with(density) { ((endFraction - startFraction) * widthPx).toDp() })
+                .height(trackHeight)
+                .background(activeColor, CircleShape)
+        )
+    }
+}
+
+
+/*@Composable
 fun ThumbRectangularShape() {
     Box(
         modifier = Modifier
@@ -357,7 +436,7 @@ fun ThumbRectangularShape() {
                 shape = RoundedCornerShape(2.dp)
             )
     )
-}
+}*/
 
 @Composable
 fun FilterBar(

@@ -8,7 +8,6 @@ import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
 import com.example.m_commerce.features.categories.domain.usecases.GetSubCategoriesUseCase
 import com.example.m_commerce.features.coupon.domain.usecases.GetCouponsUseCase
 import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
-import com.example.m_commerce.features.product.presentation.ProductUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +23,7 @@ class HomeViewModel @Inject constructor(
     private val getCouponsUseCase: GetCouponsUseCase,
     private val getSubCategoriesUseCase: GetSubCategoriesUseCase,
     private val networkManager: NetworkManager,
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _dataState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
     val dataState: StateFlow<HomeUiState> = _dataState.asStateFlow()
@@ -49,7 +48,7 @@ class HomeViewModel @Inject constructor(
                 _dataState.value = HomeUiState.Error("No Brands Found")
             } else if (categories.isNullOrEmpty()) {
                 _dataState.value = HomeUiState.Error("No Categories Found")
-            } else{
+            } else {
                 _dataState.value = HomeUiState.Success(brands, categories, coupons)
             }
         } catch (e: Exception) {

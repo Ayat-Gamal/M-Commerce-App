@@ -3,12 +3,8 @@ package com.example.m_commerce.features.wishlist.presentation
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -22,7 +18,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -32,15 +27,11 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.Empty
-import com.example.m_commerce.core.shared.components.GuestMode
 import com.example.m_commerce.core.shared.components.NoNetwork
-import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.core.shared.components.SvgButton
-import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.components.ProductsGridView
-import com.example.m_commerce.features.search.presentation.SearchScreen
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -132,24 +123,8 @@ fun WishListScreen(
                 Log.d("TAG", "WishlistUiState.NoNetwork")
                 NoNetwork()
             }
-
-            WishlistUiState.Search -> {
-                Log.d("TAG", "WishListScreen: WishlistUiState.Search")
-                SearchScreen(
-                    navController,
-                    snackBarHostState,
-                    isWishlist = false
-                )
-            }
-
-            WishlistUiState.Guest -> {
-                GuestMode(navController, "Wishlist", Icons.Default.FavoriteBorder)
-            }
         }
     }
-//    }
-
-
 }
 
 @Composable

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +32,6 @@ import com.example.m_commerce.features.home.presentation.components.category.Cat
 import com.example.m_commerce.features.home.presentation.components.specialoffer.SpecialOffersSection
 import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
 import com.example.m_commerce.features.home.presentation.viewmodel.HomeViewModel
-import com.example.m_commerce.features.search.presentation.SearchScreen
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -86,13 +84,6 @@ fun HomeScreenUI(
                 FailedScreenCase(msg = "No Data Found")
             }
         }
-
-        HomeUiState.Search -> SearchScreen(
-            navController = navController,
-            snackBarHostState,
-            isWishlist = false
-        )
-
         HomeUiState.NoNetwork -> NoNetwork()
     }
 
