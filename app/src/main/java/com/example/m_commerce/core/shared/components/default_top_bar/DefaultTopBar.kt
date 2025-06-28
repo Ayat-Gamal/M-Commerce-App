@@ -1,6 +1,7 @@
 package com.example.m_commerce.core.shared.components.default_top_bar
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -21,7 +22,8 @@ fun DefaultTopBar(
     modifier: Modifier = Modifier,
     title: String,
     navController: NavHostController?,
-    titleCentered: Boolean = false
+    titleCentered: Boolean = false,
+    actions: @Composable() (RowScope.() -> Unit) = {},
 ) {
     TopAppBar(
         modifier = modifier,
@@ -33,6 +35,7 @@ fun DefaultTopBar(
                 Text(title, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Black)
             }
         },
+        actions = actions,
         navigationIcon = {
             if (navController != null) BackButton(navController)
         },
