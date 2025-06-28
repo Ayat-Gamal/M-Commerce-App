@@ -24,17 +24,19 @@ import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.SvgButton
 import com.example.m_commerce.core.shared.components.SvgImage
+import com.example.m_commerce.features.product.presentation.screen.capitalizeEachWord
 
 
 @Composable
 fun SearchSection(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    userName: String
 ) {
 
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Column {
-            Text("Hi, User", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("Hi, ${userName.capitalizeEachWord()}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             Text("Let's go shopping", fontSize = 12.sp, fontStyle = FontStyle.Italic)
         }
         SvgButton(R.raw.search) {

@@ -5,10 +5,6 @@ import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
 import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
 import com.example.m_commerce.features.auth.domain.validation.ValidationResult
 import com.example.m_commerce.features.auth.presentation.register.AuthState
-import com.google.firebase.FirebaseNetworkException
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -16,7 +12,6 @@ import io.mockk.coVerifySequence
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.mockk.verifySequence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -141,7 +136,7 @@ class LoginViewModelTest {
         advanceUntilIdle()
         job.cancel()
 
-       // then
+        // then
         assertThat(emittedStates.size >= 2, `is`(true))
         assertThat(emittedStates[0], `is`(AuthState.Idle))
         assertThat(emittedStates[1] is AuthState.Success, `is`(true))

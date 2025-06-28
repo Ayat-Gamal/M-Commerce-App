@@ -13,4 +13,5 @@ interface AddressDataSource {
     suspend fun setDefaultAddress(addressId: String): Flow<Response<Unit>>
     suspend fun getDefaultAddress(): Flow<Response<Address>>
     suspend fun deleteAddress(addressId: String): Flow<Response<DeleteResponse>>
+    fun getCustomerName(): Flow<String>
 }

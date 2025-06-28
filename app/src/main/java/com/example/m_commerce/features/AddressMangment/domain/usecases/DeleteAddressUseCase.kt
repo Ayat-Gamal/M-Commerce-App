@@ -10,7 +10,7 @@ import javax.inject.Inject
 class DeleteAddressUseCase @Inject constructor(
     private val repository: AddressRepository
 ) {
-    operator suspend fun invoke(addressId: String): Flow<Response<DeleteResponse>> {
+    suspend operator fun invoke(addressId: String): Flow<Response<DeleteResponse>> {
         return repository.deleteAddress(addressId)
             .catch { e ->
                 emit(Response.Error(e.message ?: "UseCase deletion error"))

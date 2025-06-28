@@ -65,7 +65,7 @@ fun HomeScreenUI(
         is HomeUiState.Loading -> LoadingScreenCase()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
-            val (brands, subCategories, couponCodes) = (state as HomeUiState.Success)
+            val (brands, subCategories, couponCodes, userName) = (state as HomeUiState.Success)
             val categories = brands.takeLast(4)
             if (brands.isNotEmpty()) {
                 LoadedData(
@@ -78,7 +78,8 @@ fun HomeScreenUI(
                     subCategories,
                     couponCodes,
                     navController,
-                    snackBarHostState
+                    snackBarHostState,
+                    userName
                 )
             } else {
                 FailedScreenCase(msg = "No Data Found")
@@ -100,14 +101,15 @@ private fun LoadedData(
     categories: List<Category>,
     couponCodes: List<Coupon>,
     navController: NavHostController,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    userName: String
 ) {
     Column(
         Modifier
             .verticalScroll(scrollState)
             .wrapContentHeight()
     ) {
-        SearchSection(navController = navController)
+        SearchSection(navController = navController, userName = userName)
 
         SpecialOffersSection(
             modifier = Modifier

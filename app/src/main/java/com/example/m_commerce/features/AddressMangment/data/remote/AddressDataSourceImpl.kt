@@ -15,8 +15,12 @@ import com.shopify.graphql.support.ID
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class AddressDataSourceImpl @Inject constructor(
     private val graphClient: GraphClient,
@@ -28,7 +32,8 @@ class AddressDataSourceImpl @Inject constructor(
         try {
             trySend(Response.Loading)
 
-            val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
+            val userId =
+                auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
             val userDocument = firestore.collection("users").document(userId).get().await()
             val customerToken = userDocument.getString("shopifyToken")
                 ?: throw IllegalStateException("Shopify token not found")
@@ -77,7 +82,9 @@ class AddressDataSourceImpl @Inject constructor(
                         if (errors.isEmpty()) {
                             trySend(Response.Success(Unit))
                         } else {
-                            trySend(Response.Error(errors.joinToString { it.message ?: "Unknown error" }))
+                            trySend(Response.Error(errors.joinToString {
+                                it.message ?: "Unknown error"
+                            }))
                         }
                     }
 
@@ -101,7 +108,8 @@ class AddressDataSourceImpl @Inject constructor(
         try {
             val userId = auth.currentUser?.uid ?: throw Exception("User not authenticated")
             val userDoc = firestore.collection("users").document(userId).get().await()
-            val customerToken = userDoc.getString("shopifyToken") ?: throw Exception("Shopify token not found")
+            val customerToken =
+                userDoc.getString("shopifyToken") ?: throw Exception("Shopify token not found")
 
             val query = Storefront.query { root ->
                 root.customer(customerToken) { customer ->
@@ -127,7 +135,8 @@ class AddressDataSourceImpl @Inject constructor(
                 when (result) {
                     is GraphCallResult.Success -> {
                         val addresses =
-                            result.response.data?.customer?.addresses?.edges?.mapNotNull { it.node }?.map { it.toAddress() } ?: emptyList()
+                            result.response.data?.customer?.addresses?.edges?.mapNotNull { it.node }
+                                ?.map { it.toAddress() } ?: emptyList()
                         trySend(Response.Success(addresses))
                     }
 
@@ -185,7 +194,7 @@ class AddressDataSourceImpl @Inject constructor(
                         if (errors.isNullOrEmpty()) {
                             trySend(Response.Success(Unit))
                         } else {
-                            Log.i("TAG", "setDefaultAddress:  ${errors }  ${errors.joinToString()}" )
+                            Log.i("TAG", "setDefaultAddress:  ${errors}  ${errors.joinToString()}")
                             val errorMsg = errors.joinToString { it.message ?: "Unknown error" }
                             trySend(Response.Error("Failed to set default address: $errorMsg"))
                         }
@@ -256,69 +265,104 @@ class AddressDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteAddress(addressId: String): Flow<Response<DeleteResponse>> = callbackFlow {
-        trySend(Response.Loading)
+    override suspend fun deleteAddress(addressId: String): Flow<Response<DeleteResponse>> =
+        callbackFlow {
+            trySend(Response.Loading)
 
-        try {
-            val userId = auth.currentUser?.uid ?: throw Exception("User not authenticated")
-            val userDoc = firestore.collection("users").document(userId).get().await()
-            val customerToken = userDoc.getString("shopifyToken")
-                ?: throw Exception("Shopify token not found")
+            try {
+                val userId = auth.currentUser?.uid ?: throw Exception("User not authenticated")
+                val userDoc = firestore.collection("users").document(userId).get().await()
+                val customerToken = userDoc.getString("shopifyToken")
+                    ?: throw Exception("Shopify token not found")
 
-            val mutation = Storefront.mutation { root ->
-                root.customerAddressDelete(
-                    ID(addressId),
-                    customerToken,
-                    { payload ->
-                        payload.deletedCustomerAddressId()
-                        payload.customerUserErrors { errors ->
-                            errors.field()
-                            errors.message()
+                val mutation = Storefront.mutation { root ->
+                    root.customerAddressDelete(
+                        ID(addressId),
+                        customerToken,
+                        { payload ->
+                            payload.deletedCustomerAddressId()
+                            payload.customerUserErrors { errors ->
+                                errors.field()
+                                errors.message()
+                            }
+                            payload.userErrors { errors ->
+                                errors.field()
+                                errors.message()
+                            }
                         }
-                        payload.userErrors { errors ->
-                            errors.field()
-                            errors.message()
+                    )
+                }
+
+                graphClient.mutateGraph(mutation).enqueue { result ->
+                    when (result) {
+                        is GraphCallResult.Success -> {
+                            val payload = result.response.data?.customerAddressDelete
+                            val response = DeleteResponse(
+                                deletedAddressId = payload?.deletedCustomerAddressId?.toString(),
+                                customerUserErrors = payload?.customerUserErrors?.map {
+                                    DeleteResponse.Error(it.field?.toList(), it.message)
+                                } ?: emptyList(),
+                                userErrors = payload?.userErrors?.map {
+                                    DeleteResponse.Error(it.field?.toList(), it.message)
+                                } ?: emptyList()
+                            )
+                            trySend(Response.Success(response))
+                        }
+
+                        is GraphCallResult.Failure -> {
+                            trySend(
+                                Response.Error(
+                                    "Failed to delete address: ${result.error.message}"
+                                )
+                            )
                         }
                     }
-                )
-            }
+                    close()
+                }
 
-            graphClient.mutateGraph(mutation).enqueue { result ->
+                awaitClose { /* Handle cancellation */ }
+            } catch (e: Exception) {
+                trySend(
+                    Response.Error(
+                        "Delete failed: ${e.message ?: "Unknown error"}"
+                    )
+                )
+                close()
+            }
+        }
+
+    override fun getCustomerName(): Flow<String> = flow {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+            ?: throw Exception("User not authenticated")
+
+        val userDoc = Firebase.firestore.collection("users").document(userId).get().await()
+        val customerToken = userDoc.getString("shopifyToken")
+            ?: throw Exception("Shopify token not found")
+
+        val query = Storefront.query { root ->
+            root.customer(customerToken) { customer ->
+                customer.firstName()
+            }
+        }
+
+        val customerName = suspendCancellableCoroutine { cont ->
+            graphClient.queryGraph(query).enqueue { result ->
                 when (result) {
                     is GraphCallResult.Success -> {
-                        val payload = result.response.data?.customerAddressDelete
-                        val response = DeleteResponse(
-                            deletedAddressId = payload?.deletedCustomerAddressId?.toString(),
-                            customerUserErrors = payload?.customerUserErrors?.map {
-                                DeleteResponse.Error(it.field?.toList(), it.message)
-                            } ?: emptyList(),
-                            userErrors = payload?.userErrors?.map {
-                                DeleteResponse.Error(it.field?.toList(), it.message)
-                            } ?: emptyList()
-                        )
-                        trySend(Response.Success(response))
+                        val name = result.response.data?.customer?.firstName ?: "Anonymous"
+                        cont.resume(name)
                     }
 
                     is GraphCallResult.Failure -> {
-                        trySend(
-                            Response.Error(
-                                "Failed to delete address: ${result.error.message}"
-                            )
+                        cont.resumeWithException(
+                            result.error.cause ?: Exception("Unknown GraphQL error")
                         )
                     }
                 }
-                close()
             }
-
-            awaitClose { /* Handle cancellation */ }
-        } catch (e: Exception) {
-            trySend(
-                Response.Error(
-                    "Delete failed: ${e.message ?: "Unknown error"}"
-                )
-            )
-            close()
         }
+
+        emit(customerName)
     }
 
     private fun Storefront.MailingAddress.toAddress(): Address {

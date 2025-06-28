@@ -7,15 +7,12 @@ import com.example.m_commerce.features.product.domain.usecases.AddToWishlistUseC
 import com.example.m_commerce.features.product.domain.usecases.CheckIfInWishlistUseCase
 import com.example.m_commerce.features.product.domain.usecases.GetProductByIdUseCase
 import com.example.m_commerce.features.wishlist.domain.usecases.DeleteFromWishlistUseCase
-import com.shopify.buy3.Storefront
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -47,6 +44,8 @@ class ProductViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+
+        coEvery { networkManager.isNetworkAvailable() } returns true
         viewModel = ProductViewModel(
             fetchProductById = getProductById,
             addToWishlist = addToWishlist,
@@ -104,9 +103,11 @@ class ProductViewModelTest {
         // given
         val messages = mutableListOf<SnackBarMessage>()
         coEvery { addToWishlist("p1") } returns flowOf("Added")
-        val job = launch { viewModel.message.collect {
-            messages.add(it)
-        } }
+        val job = launch {
+            viewModel.message.collect {
+                messages.add(it)
+            }
+        }
 
         // when
         viewModel.addProductToWishlist("p1")
@@ -147,7 +148,7 @@ class ProductViewModelTest {
     fun `addToCart emits SnackBarMessage`() = runTest {
 
         // given
-        coEvery { addToCart("p1") } returns flowOf(true)
+        coEvery { addToCart("p1", 1) } returns flowOf(true)
 
         val messages = mutableListOf<SnackBarMessage>()
         val job = launch {
@@ -157,7 +158,7 @@ class ProductViewModelTest {
         }
 
         // when
-        viewModel.addToCart("p1")
+        viewModel.addToCart("p1", 1)
         advanceUntilIdle()
         job.cancel()
 

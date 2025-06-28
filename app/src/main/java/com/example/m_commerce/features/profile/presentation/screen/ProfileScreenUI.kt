@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.profile.presentation.screen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -12,38 +11,44 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.CurrencyExchange
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.features.product.presentation.screen.capitalizeEachWord
 import com.example.m_commerce.features.profile.domain.entity.ProfileOption
 import com.example.m_commerce.features.profile.presentation.components.profile.ProfileOptionsList
+import com.example.m_commerce.features.profile.presentation.viewmodel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
 fun ProfileScreenUI(
     navController: NavHostController,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
-    Log.i("TAG", "CartScreenUI: uid: $uid")
+    val name by viewModel.userNameState.collectAsStateWithLifecycle()
     val user = FirebaseAuth.getInstance().currentUser
+
+    LaunchedEffect(Unit) {
+        if (user != null) {
+            viewModel.loadName()
+        }
+    }
     val options: List<ProfileOption> = if (user != null) {
         listOf(
             ProfileOption("Manage Address", R.raw.address),
@@ -95,7 +100,7 @@ fun ProfileScreenUI(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    (user?.displayName ?: "Guest")
+                    (if (user != null)name.capitalizeEachWord()  else "Guest")
                 )
             }
 

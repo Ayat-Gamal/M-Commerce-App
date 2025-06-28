@@ -64,7 +64,7 @@ class BrandsRepositoryImplTest {
             Product(
                 id = "123", title = "Shoe", description = "desc", images = listOf(),
                 price = "999", category = "Footwear", currencyCode = "EGP",
-                colors = listOf(), sizes = listOf(), variants = listOf(), brand = "Nike"
+                colors = listOf(), sizes = listOf(), variants = listOf(), brand = "Nike", availableForSale = true
             )
         )
 

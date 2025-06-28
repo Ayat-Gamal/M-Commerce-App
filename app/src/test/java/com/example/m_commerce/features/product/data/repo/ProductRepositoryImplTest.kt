@@ -55,7 +55,8 @@ class ProductRepositoryImplTest {
             brand = "Nike",
             variants = emptyList(),
             currencyCode = "",
-            sizes = emptyList()
+            sizes = emptyList(),
+            availableForSale = true
         )
         coEvery { remoteDataSource.getProductById(productId) } returns flowOf(expectedProduct)
 
@@ -70,10 +71,10 @@ class ProductRepositoryImplTest {
     fun `addProductVariantToCart returns true when remote succeeds`() = runTest {
         // Given
         val productVariantId = "gid://shopify/ProductVariant/456"
-        coEvery { remoteDataSource.addProductVariantToCart(productVariantId) } returns flowOf(true)
+        coEvery { remoteDataSource.addProductVariantToCart(productVariantId,1) } returns flowOf(true)
 
         // When
-        val result = repository.addProductVariantToCart(productVariantId).first()
+        val result = repository.addProductVariantToCart(productVariantId,1).first()
 
         // Then
         assertTrue(result)
@@ -83,10 +84,10 @@ class ProductRepositoryImplTest {
     fun `addProductVariantToCart returns false when remote fails`() = runTest {
         // Given
         val productVariantId = "gid://shopify/ProductVariant/456"
-        coEvery { remoteDataSource.addProductVariantToCart(productVariantId) } returns flowOf(false)
+        coEvery { remoteDataSource.addProductVariantToCart(productVariantId, 1) } returns flowOf(false)
 
         // When
-        val result = repository.addProductVariantToCart(productVariantId).first()
+        val result = repository.addProductVariantToCart(productVariantId, 1).first()
 
         // Then
         assertFalse(result)

@@ -35,4 +35,8 @@ class AddressRepositoryImpl @Inject constructor(
                 emit(Response.Error(e.message ?: "Repository deletion error"))
             }
     }
+
+    override fun getCustomerName(): Flow<String> {
+        return remote.getCustomerName()
+    }
 }
