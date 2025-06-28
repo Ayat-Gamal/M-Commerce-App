@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,16 +23,19 @@ import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.brand.presentation.components.BrandCard
 import com.example.m_commerce.features.brand.presentation.ui_state.BrandsUiState
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
-import com.example.m_commerce.features.product.presentation.ProductUiState
 
 
 @Composable
-fun BrandsScreenUI(
+fun BrandsDetailsScreenUI(
     modifier: Modifier = Modifier,
     viewModel: BrandsViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
     val state by viewModel.brandsState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getBrandsData()
+    }
 
     when (state) {
         is BrandsUiState.Loading -> LoadingScreenCase()
@@ -54,9 +58,9 @@ private fun LoadedData(modifier: Modifier = Modifier, brands: List<Brand>, navCo
         LazyVerticalGrid(
             modifier = Modifier.padding(padding),
             columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(16.dp)
         ) {
             items(brands.size) { index ->
                 BrandCard(brand = brands[index]) {

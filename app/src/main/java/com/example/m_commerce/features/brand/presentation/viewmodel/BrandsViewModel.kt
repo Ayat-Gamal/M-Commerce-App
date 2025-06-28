@@ -7,6 +7,7 @@ import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.brand.domain.usecases.GetBrandsUseCase
 import com.example.m_commerce.features.brand.domain.usecases.GetProductsByBrandUseCase
 import com.example.m_commerce.features.brand.presentation.ui_state.BrandsUiState
+import com.example.m_commerce.features.categories.domain.usecases.GetSubCategoriesUseCase
 import com.example.m_commerce.features.product.presentation.ui_state.ProductsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class BrandsViewModel @Inject constructor(
     private val getBrandsUseCase: GetBrandsUseCase,
     private val getProductsUseCase: GetProductsByBrandUseCase,
+    private val getSubCategoriesUseCase: GetSubCategoriesUseCase,
     private val networkManager: NetworkManager,
 ) : ViewModel() {
 
@@ -33,25 +35,51 @@ class BrandsViewModel @Inject constructor(
     val productsState: StateFlow<ProductsUiState> = _productsState.asStateFlow()
 
 
-    init {
+//    init {
+//        if (!networkManager.isNetworkAvailable()) {
+//            _brandsState.tryEmit(BrandsUiState.NoNetwork)
+//        } else getBrandsData()
+//
+//    }
+
+     fun getCategoriesData() = viewModelScope.launch {
         if (!networkManager.isNetworkAvailable()) {
             _brandsState.tryEmit(BrandsUiState.NoNetwork)
-        } else getBrandsData()
+        } else {
+            try {
+                val brands = getBrandsUseCase(30).catch { emit(null) }.firstOrNull()
+                val categories = getSubCategoriesUseCase(Unit).catch { emit(null) }.firstOrNull()
 
+                if (brands.isNullOrEmpty()) {
+                    _brandsState.value = BrandsUiState.Error("No Brands Found")
+                } else if (categories.isNullOrEmpty()) {
+                    _brandsState.value = BrandsUiState.Error("No Categories Found")
+                } else {
+                    _brandsState.value = BrandsUiState.Success(brands, categories)
+                }
+            } catch (e: Exception) {
+                Log.e("Error", e.message.toString())
+                _brandsState.value = BrandsUiState.Error(e.message.toString())
+            }
+        }
     }
 
-    private fun getBrandsData() = viewModelScope.launch {
-        try {
-            val brands = getBrandsUseCase(30).catch { emit(null) }.firstOrNull()
+     fun getBrandsData() = viewModelScope.launch {
+        if (!networkManager.isNetworkAvailable()) {
+            _brandsState.tryEmit(BrandsUiState.NoNetwork)
+        } else {
+            try {
+                val brands = getBrandsUseCase(30).catch { emit(null) }.firstOrNull()
 
-            if (brands.isNullOrEmpty()) {
-                _brandsState.value = BrandsUiState.Error("No Brands Found")
-            } else {
-                _brandsState.value = BrandsUiState.Success(brands)
+                if (brands.isNullOrEmpty()) {
+                    _brandsState.value = BrandsUiState.Error("No Brands Found")
+                } else {
+                    _brandsState.value = BrandsUiState.Success(brands, null)
+                }
+            } catch (e: Exception) {
+                Log.e("Error", e.message.toString())
+                _brandsState.value = BrandsUiState.Error(e.message.toString())
             }
-        } catch (e: Exception) {
-            Log.e("Error", e.message.toString())
-            _brandsState.value = BrandsUiState.Error(e.message.toString())
         }
     }
 

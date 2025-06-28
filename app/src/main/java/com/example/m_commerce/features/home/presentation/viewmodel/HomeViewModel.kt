@@ -22,6 +22,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getBrandsUseCase: GetBrandsUseCase,
     private val getCouponsUseCase: GetCouponsUseCase,
+    private val getSubCategoriesUseCase: GetSubCategoriesUseCase,
     private val networkManager: NetworkManager,
     ) : ViewModel() {
 
@@ -40,15 +41,16 @@ class HomeViewModel @Inject constructor(
                 .catch { emit(emptyList()) }
                 .firstOrNull() ?: emptyList()
 
-           // val couponCodes = coupons.map { it }
 
             val brands = getBrandsUseCase(50).catch { emit(null) }.firstOrNull()
+            val categories = getSubCategoriesUseCase(Unit).catch { emit(null) }.firstOrNull()
 
-            //TODO: This might be a bad idea
             if (brands.isNullOrEmpty()) {
                 _dataState.value = HomeUiState.Error("No Brands Found")
-            } else {
-                _dataState.value = HomeUiState.Success(brands, coupons)
+            } else if (categories.isNullOrEmpty()) {
+                _dataState.value = HomeUiState.Error("No Categories Found")
+            } else{
+                _dataState.value = HomeUiState.Success(brands, categories, coupons)
             }
         } catch (e: Exception) {
             Log.e("Error", e.message.toString())

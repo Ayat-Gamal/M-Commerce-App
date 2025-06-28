@@ -72,7 +72,7 @@ fun GuestMode(
 
         Spacer(Modifier.height(24.dp))
         CustomButton(
-            modifier = Modifier.padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth(),
             text = "Sign in",
             onClick = {
                 navController.navigate(AppRoutes.LoginScreen)
@@ -80,7 +80,7 @@ fun GuestMode(
 
         Spacer(Modifier.height(24.dp))
         CustomButton(
-            modifier = Modifier.padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth(),
             text = "Create Account",
             onClick = {
                 navController.navigate(AppRoutes.RegisterScreen)

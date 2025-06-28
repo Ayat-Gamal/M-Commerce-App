@@ -36,10 +36,9 @@ fun OnboardingScreenUI(
     onNavigateToLogin: () -> Unit,
 ) {
     val pages = listOf(
-        R.drawable.ic_launcher_background,
-        R.drawable.ic_launcher_background,
-        R.drawable.ic_launcher_background,
-        R.drawable.ic_launcher_background,
+        R.drawable.onboard1,
+        R.drawable.onboard2,
+        R.drawable.onboard3,
     )
 
     val animationScope = rememberCoroutineScope()

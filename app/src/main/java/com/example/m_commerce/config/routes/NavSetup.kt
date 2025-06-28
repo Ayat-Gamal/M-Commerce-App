@@ -21,7 +21,7 @@ import com.example.m_commerce.features.AddressMangment.presentation.screen.MapSc
 import com.example.m_commerce.features.auth.presentation.login.LoginScreen
 import com.example.m_commerce.features.auth.presentation.register.RegisterScreen
 import com.example.m_commerce.features.brand.presentation.screen.BrandScreenUI
-import com.example.m_commerce.features.brand.presentation.screen.BrandsScreenUI
+import com.example.m_commerce.features.brand.presentation.screen.BrandsDetailsScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryDetailsScreenUI
 import com.example.m_commerce.features.categories.presentation.screen.CategoryScreenUI
 import com.example.m_commerce.features.home.presentation.screens.HomeScreenUI
@@ -39,7 +39,6 @@ import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.stripe.android.paymentsheet.PaymentSheet
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavSetup(
     navController: NavHostController,
@@ -52,7 +51,7 @@ fun NavSetup(
 ) {
     val user = FirebaseAuth.getInstance().currentUser
     val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
-//    val startingScreen = AppRoutes.Onboarding
+//    val startingScreen = AppRoutes.CartScreen
 
 
     NavHost(
@@ -63,7 +62,7 @@ fun NavSetup(
 
         composable<AppRoutes.Onboarding> {
             showBottomNavbar.value = false
-            OnboardingScreenUI{
+            OnboardingScreenUI {
                 navController.navigateAndClear(AppRoutes.LoginScreen)
             }
         }
@@ -90,7 +89,7 @@ fun NavSetup(
 
         composable<AppRoutes.BrandsScreen> {
             showBottomNavbar.value = false
-            BrandsScreenUI(navController = navController)
+            BrandsDetailsScreenUI(navController = navController)
         }
         composable<AppRoutes.BrandDetailsScreen> {
             showBottomNavbar.value = false
@@ -110,9 +109,16 @@ fun NavSetup(
 
         composable<AppRoutes.CategoryScreen> {
             showBottomNavbar.value = true
-            CategoryScreenUI { category ->
+            CategoryScreenUI(navigateToCategory = { category ->
                 navController.navigate(AppRoutes.CategoryDetailsScreen(category.name ?: "Empty ID"))
-            }
+            },
+                navigateToSubCategory = { category ->
+                    navController.navigate(
+                        AppRoutes.CategoryDetailsScreen(
+                            category.name ?: "Empty ID"
+                        )
+                    )
+                })
         }
 
         composable<AppRoutes.CategoryDetailsScreen> {
@@ -125,10 +131,13 @@ fun NavSetup(
         }
 
         composable<AppRoutes.CartScreen> {
+            showBottomNavbar.value = true
+
             CartScreenUI(paddingValues, paymentSheet = paymentSheet, navController = navController)
         }
 
         composable<AppRoutes.ProfileScreen> {
+
             showBottomNavbar.value = true
             ProfileScreenUI(navController)
         }
@@ -184,6 +193,7 @@ fun NavSetup(
             CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
+            showBottomNavbar.value = false
             MapScreenUi(navController)
         }
         composable<AppRoutes.HelpCenterScreen> {

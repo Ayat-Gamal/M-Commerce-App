@@ -14,7 +14,7 @@ fun SpecialOffersSection(
     couponCodes: List<Coupon>,
     navigateToSpecialOffers: (() -> Unit)? = null,
 ) {
-    SectionTemplate(title = "Special Offers", seeAllOnClick = navigateToSpecialOffers ) {
+    SectionTemplate(title = "Offers and Discounts", seeAllOnClick = navigateToSpecialOffers , titleSpace = 0) {
         SpecialOfferCard(couponCodes = couponCodes,   snackBarHostState = snackBarHostState,)
     }
 }
