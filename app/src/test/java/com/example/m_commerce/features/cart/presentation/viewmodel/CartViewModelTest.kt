@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.cart.presentation.viewmodel
 
 import ProductVariant
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.cart.domain.entity.Cart
 import com.example.m_commerce.features.cart.domain.usecases.GetCartByIdUseCase
 import com.example.m_commerce.features.cart.domain.usecases.RemoveProductVariantUseCase
@@ -34,7 +35,7 @@ class CartViewModelTest {
     private val updateCart = mockk<UpdateCartUseCase>(relaxed = true)
     private val removeLine = mockk<RemoveProductVariantUseCase>(relaxed = true)
     private val applyCoupon = mockk<ApplyCouponUseCase>(relaxed = true)
-
+    private val networkManager = mockk<NetworkManager>(relaxed = true)
     private lateinit var viewModel: CartViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -45,7 +46,10 @@ class CartViewModelTest {
         mockkStatic(FirebaseAuth::class)
         every { FirebaseAuth.getInstance().currentUser } returns mockk(relaxed = true)
 
-        viewModel = CartViewModel(getCartById, updateCart, removeLine, applyCoupon)
+        viewModel = CartViewModel(
+            getCartById, updateCart, removeLine, applyCoupon,
+            networkManager
+        )
     }
 
     @After
@@ -92,7 +96,8 @@ class CartViewModelTest {
             getCartByIdUseCase = getCartById,
             updateCartUseCase = updateCart,
             removeProductVariantUseCase = removeLine,
-            applyCouponUseCase = applyCoupon
+            applyCouponUseCase = applyCoupon,
+            networkManager
         )
 
         // Act
