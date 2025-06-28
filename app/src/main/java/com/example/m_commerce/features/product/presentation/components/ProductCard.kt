@@ -56,7 +56,7 @@ fun ProductCard(
     val parts = formattedPrice.split(".")
     val intPrice = parts[0]
     val decPrice = parts[1]
-    val currency = currencyViewModel.formatPrice(formattedPrice).split(" ")[1]
+    val currency = currencyViewModel.formatPrice(formattedPrice).split(" ").first()
 
     val titleParts = product.title.split("|")
     var title: String
@@ -65,16 +65,17 @@ fun ProductCard(
     } else {
         title = titleParts[0]
     }
-    Log.d("TAG", "ProductCard: ${titleParts}")
+    Log.d("TAG", "ProductCard: ${currency}  $formattedPrice")
 
     val shape = RoundedCornerShape(16.dp)
+    val shapeOuter = RoundedCornerShape((16*1.3).dp)
 
     Column(modifier = modifier
-        .shadow(elevation = 4.dp, spotColor = Gray, shape = shape, clip = true)
-        .background(color = White, shape = shape)
+        .shadow(elevation = 4.dp, spotColor = Gray, shape = shapeOuter, clip = true)
+        .background(color = White, shape = shapeOuter)
         .clickable { onClick() }
+        .clip(shape = shapeOuter)
         .padding(8.dp)
-        .clip(shape = shape)
     ) {
         Box(modifier = Modifier.background(color = Color.Transparent), contentAlignment = Alignment.TopEnd) {
             NetworkImage(

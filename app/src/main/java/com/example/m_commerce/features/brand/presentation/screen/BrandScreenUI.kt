@@ -16,6 +16,7 @@ import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
+import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.components.ProductsGridView
@@ -39,7 +40,7 @@ fun BrandScreenUI(
     Scaffold(modifier = modifier,
         topBar = {
             DefaultTopBar(
-                title = brandName,
+                title = brandName.capitalizeFirstLetters(),
                 navController = navController,
             )
         }

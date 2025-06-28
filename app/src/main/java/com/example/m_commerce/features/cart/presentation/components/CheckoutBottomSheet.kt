@@ -29,11 +29,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.m_commerce.config.theme.Black
+import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
@@ -64,7 +67,8 @@ fun CheckoutBottomSheet(
     if (showSheet.value) {
         ModalBottomSheet(
             onDismissRequest = { showSheet.value = false },
-            sheetState = sheetState
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = modifier
@@ -148,8 +152,9 @@ fun PaymentOptionCard(
                 color = if (isSelected) Teal else Color.Transparent,
                 shape = RoundedCornerShape(8.dp)
             )
+            .shadow(2.dp, shape = RoundedCornerShape(8.dp), clip = true)
             .background(
-                color = if (isSelected) Teal.copy(alpha = 0.2f) else White,
+                color = if (isSelected) Teal else White,
                 shape = RoundedCornerShape(8.dp)
             )
             .clip(RoundedCornerShape(8.dp))
@@ -166,6 +171,7 @@ fun PaymentOptionCard(
         ) {
             Text(
                 text = title,
+                color = if (isSelected) White else Black,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
             )
         }
