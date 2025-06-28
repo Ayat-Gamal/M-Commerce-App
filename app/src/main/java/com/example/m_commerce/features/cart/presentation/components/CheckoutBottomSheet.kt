@@ -93,7 +93,10 @@ fun CheckoutBottomSheet(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                CustomButton("Place Order") {
+                CustomButton(
+                    "Place Order",
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     onPlaceOrder(selectedPaymentMethod)
                     showSheet.value = false
                 }

@@ -74,7 +74,9 @@ fun RegisterFormSection(
     )
     Spacer(Modifier.height(24.dp))
 
-    CustomButton(text = "Sign Up",
+    CustomButton(
+        modifier = Modifier.fillMaxWidth(),
+        text = "Sign Up",
         backgroundColor = Teal,
         textColor = White,
         isLoading = isLoading.value,

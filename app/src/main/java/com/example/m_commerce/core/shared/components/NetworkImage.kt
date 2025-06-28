@@ -27,6 +27,7 @@ fun NetworkImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(url)
             .crossfade(true)
+            .crossfade(500)
             .placeholder(R.drawable.ic_launcher_foreground)
             .fallback(R.drawable.ic_launcher_foreground)
             .build(),

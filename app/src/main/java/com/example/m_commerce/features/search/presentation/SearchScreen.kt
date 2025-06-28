@@ -72,6 +72,7 @@ import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.features.product.presentation.components.ProductCard
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -284,7 +285,8 @@ fun CustomDivider() {
 fun LabelRangeSlider(
     priceRange: ClosedFloatingPointRange<Float>,
     viewModel: SearchViewModel = hiltViewModel(),
-    onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
+    currencyViewModel: CurrencyViewModel = hiltViewModel(),
+            onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
 ) {
     val range = viewModel.priceRange.collectAsStateWithLifecycle()
 
@@ -298,8 +300,8 @@ fun LabelRangeSlider(
 
             )
         Text(
-            "EGP ${priceRange.start.toInt()} - EGP ${priceRange.endInclusive.toInt()}",
-            fontSize = 18.sp,
+            text = "${currencyViewModel.formatPrice(priceRange.start.toString())} - ${currencyViewModel.formatPrice(priceRange.endInclusive.toString())} "
+            ,fontSize = 18.sp,
             color = Color.Gray
         )
     }
@@ -332,13 +334,13 @@ fun LabelRangeSlider(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "EGP ${range.value.start.toInt()}",
+            text =  currencyViewModel.formatPrice(range.value.start.toString()),
             fontSize = 16.sp,
             color = Color.Gray
         )
 
         Text(
-            text = "EGP ${range.value.endInclusive.toInt()}",
+            text = currencyViewModel.formatPrice(range.value.endInclusive.toString()),
             fontSize = 16.sp,
             color = Color.Gray
         )

@@ -121,13 +121,21 @@ fun CartReceipt(
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 cart?.let {
-                    val exchangeRate by currencyViewModel.exchangeRate.collectAsState()
+
+                    val taxRate = 0.14f
+                    val amount = it.totalAmount.toFloatOrNull() ?: 0f
+
+                    val totalTaxAmount = amount * taxRate
+                    val taxAmountStr = totalTaxAmount.toString()
+
+                    val totalAmountWithTax = amount + totalTaxAmount
+                    val totalAmountWithTaxStr = totalAmountWithTax.toString()
 
                     val receiptItems = listOf(
                         ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem(
                             "Tax",
-                            currencyViewModel.formatPrice(it.totalTaxAmount ?: "0.00")
+                            currencyViewModel.formatPrice( taxAmountStr)
                         ),
                         //ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" ))
                         ReceiptItem(
@@ -145,12 +153,10 @@ fun CartReceipt(
 
                     Divider(Modifier.padding(vertical = 8.dp, horizontal = 8.dp))
 
-                    //val convertedTotal = (it.totalAmount.toFloatOrNull() ?: 0f) * exchangeRate
-
                     CartReceiptItem(
                         ReceiptItem(
                             "Total",
-                            currencyViewModel.formatPrice(it.totalAmount ?: "0.00")
+                            currencyViewModel.formatPrice(totalAmountWithTaxStr ?: "0.00")
                         )
                     )
                 }
@@ -206,7 +212,7 @@ fun CartReceipt(
                     end = 16.dp,
                     bottom = paddingValues.calculateBottomPadding(),
                     top = 16.dp
-                ),
+                ).fillMaxWidth(),
                 isLoading = state,
                 text = "Checkout",
                 backgroundColor = Teal,

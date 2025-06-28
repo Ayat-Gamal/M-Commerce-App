@@ -1,23 +1,21 @@
 package com.example.m_commerce.features.product.presentation.screen
 
-import android.annotation.SuppressLint
-import android.util.Log
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -27,18 +25,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,33 +53,65 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.example.m_commerce.config.theme.DarkestGray
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.Failed
+import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
+import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
 import com.example.m_commerce.features.product.presentation.components.VariantHeaderText
 import com.example.m_commerce.features.product.presentation.components.VariantValueText
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.launch
 
+@Composable
+fun BottomBar(price: String, isLoading: Boolean, onAddToCart: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row {
+            Text("$", color = Teal, fontWeight = FontWeight.Bold, fontSize = 30.sp)
+            Text(
+                text = price,
+                color = Color.DarkGray,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Spacer(Modifier.width(16.dp))
+        CustomButton(
+            onClick = onAddToCart,
+            text = "Add to Cart",
+            modifier = Modifier.fillMaxWidth(),
+            isLoading = isLoading,
+            fontSize = 18,
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            isCart = true
+        )
+    }
+}
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun ProductDetailsScreenUI(
     snackBarHostState: SnackbarHostState,
@@ -88,12 +122,29 @@ fun ProductDetailsScreenUI(
 ) {
     val scope = rememberCoroutineScope()
     var isFavorite by remember { mutableStateOf(false) }
-    var isFavoriteInitialized by remember { mutableStateOf(false) }
+    val isLoading = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+    var selectedSize by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val user = FirebaseAuth.getInstance().currentUser
+
+    LaunchedEffect(uiState) {
+        if (uiState is ProductUiState.Success) {
+            val product = (uiState as ProductUiState.Success).product
+            if (selectedSize.isEmpty() && product.sizes.isNotEmpty()) {
+                selectedSize = product.sizes[0]
+            }
+            if (selectedColor.isEmpty() && product.colors.isNotEmpty()) {
+                selectedColor = product.colors[0]
+            }
+            isFavorite = (uiState as ProductUiState.Success).isFavorite
+        }
+    }
+
 
     LaunchedEffect(Unit) {
         viewModel.getProductById(productId)
-
         viewModel.message.collect { event ->
             scope.launch {
                 snackBarHostState.currentSnackbarData?.dismiss()
@@ -112,307 +163,323 @@ fun ProductDetailsScreenUI(
         }
     }
 
-    val isLoading = remember { mutableStateOf(false) }
-
-    val scrollState = rememberScrollState()
-
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     Scaffold(
-        topBar = { BackButton(navController) }
-    ) {
-        when (uiState) {
-            is ProductUiState.Success -> {
-                val product = (uiState as ProductUiState.Success).product
-                val pagerState = rememberPagerState(pageCount = { product.images.size })
-                var selectedSize by remember { mutableStateOf(if (product.sizes.isNotEmpty()) product.sizes[0] else "") }
-                var selectedColor by remember { mutableStateOf(if (product.sizes.isNotEmpty()) product.colors[0] else "") }
-
-                LaunchedEffect(uiState) {
-                    if (!isFavoriteInitialized) {
-                        isFavorite = (uiState as ProductUiState.Success).isFavorite
-                        isFavoriteInitialized = true
+        topBar = {
+            if (uiState is ProductUiState.Success) {
+                TopBar(navController, user, isFavorite) {
+                    toggleFavorite(viewModel, isFavorite, productId).also {
+                        isFavorite = !isFavorite
                     }
                 }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .verticalScroll(scrollState)
-                    ) {
-
-                        // images
-                        HorizontalPager(
-                            state = pagerState,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(250.dp)
-                        ) { page ->
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(product.images[page])
-                                    .crossfade(true)
-                                    .crossfade(500)
-                                    .build(),
-                                contentDescription = "Image $page",
-                                contentScale = ContentScale.FillWidth,
-                                modifier = Modifier.fillMaxSize()
-                            )
+            } else {
+                TopBar(navController, null, false) {}
+            }
+        },
+        bottomBar = {
+            if (uiState is ProductUiState.Success) {
+                val product = (uiState as ProductUiState.Success).product
+                BottomBar(product.price, isLoading.value) {
+                    if (user != null) {
+                        isLoading.value = true
+                        val variantId = viewModel.findSelectedVariantId(
+                            product.variants,
+                            selectedSize,
+                            selectedColor
+                        )
+                        variantId?.let { viewModel.addToCart(it) }
+                    } else {
+                        scope.launch {
+                            snackBarHostState.showSnackbar("Please sign in to add items to your cart")
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+            }
+        }
+    ) { paddingValues ->
+        when (uiState) {
+            is ProductUiState.Error -> Failed((uiState as ProductUiState.Error).message)
+            is ProductUiState.Loading -> Box(
+                Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
 
-                        // indicators and wishlist icon
-                        Box(
+            is ProductUiState.NoNetwork -> NoNetwork()
+            is ProductUiState.Success -> {
+                val product = (uiState as ProductUiState.Success).product
+                LoadData(
+                    product = product,
+                    scrollState = scrollState,
+                    paddingValues = paddingValues,
+                    selectedSize = selectedSize,
+                    onSizeSelected = { selectedSize = it },
+                    selectedColor = selectedColor,
+                    onColorSelected = { selectedColor = it }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun QuantitySelector(quantity: Int, onQuantityChange: (Int) -> Unit) {
+    Row(
+        Modifier
+            .padding(4.dp)
+            .background(
+                Color.LightGray.copy(0.3f),
+                RoundedCornerShape(25.dp)
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        IconButton(onClick = { onQuantityChange(quantity + 1) }) {
+            Icon(
+                Icons.Filled.Add,
+                contentDescription = "Increase",
+                Modifier
+                    .size(35.dp)
+                    .clip(CircleShape)
+                    .background(White)
+                    .padding(8.dp),
+                tint = Color.DarkGray
+            )
+        }
+        Text(quantity.toString(), fontSize = 16.sp, color = Color.Black)
+        IconButton(onClick = { if (quantity > 1) onQuantityChange(quantity - 1) }) {
+            Icon(
+                Icons.Filled.Remove,
+                contentDescription = "Decrease",
+                Modifier
+                    .size(35.dp)
+                    .clip(CircleShape)
+                    .background(White)
+                    .padding(8.dp),
+                tint = Color.DarkGray
+            )
+        }
+    }
+}
+
+
+@Composable
+fun LoadData(
+    product: Product,
+    scrollState: ScrollState,
+    paddingValues: PaddingValues,
+    selectedSize: String,
+    onSizeSelected: (String) -> Unit,
+    selectedColor: String,
+    onColorSelected: (String) -> Unit
+) {
+    var quantity by remember { mutableStateOf(1) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = paddingValues.calculateBottomPadding())
+            .verticalScroll(scrollState)
+    ) {
+        val pagerState = rememberPagerState { product.images.size }
+
+        // Image Carousel
+        Box(contentAlignment = Alignment.BottomCenter) {
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth()) { page ->
+                NetworkImage(
+                    modifier = Modifier.fillMaxWidth(),
+                    url = product.images[page],
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+            DotsIndicator(
+                totalDots = product.images.size,
+                selectedIndex = pagerState.currentPage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = (-70).dp)
+                    .clip(CircleShape)
+                    .background(White.copy(0.5f))
+            )
+        }
+
+        // Main Content Card
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = (-50).dp)
+                .background(White, shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp))
+                .padding(24.dp)
+        ) {
+            // Title & Category
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        product.title.capitalizeEachWord(),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color.Black.copy(0.8f)
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        product.category.capitalizeEachWord(),
+                        fontSize = 14.sp,
+                        color = Color.DarkGray
+                    )
+                }
+
+                // Quantity Box
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    QuantitySelector(quantity) { quantity = it }
+                    Text("In stock", fontSize = 14.sp, color = Color.DarkGray)
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            // Color
+            if (product.colors.isNotEmpty()) {
+                Row {
+                    VariantHeaderText("Color")
+                    Spacer(Modifier.width(4.dp))
+                    VariantValueText(selectedColor)
+                }
+                Spacer(Modifier.height(12.dp))
+                LazyRow {
+                    items(product.colors) { colorName ->
+                        val color = parseColorFromName(colorName)
+                        val isSelected = selectedColor == colorName
+                        Surface(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            contentAlignment = Alignment.CenterEnd
+                                .size(35.dp)
+                                .clickable { onColorSelected(colorName) },
+                            shape = CircleShape,
+                            color = color,
+                            shadowElevation = 4.dp
                         ) {
-                            DotsIndicator(
-                                totalDots = product.images.size,
-                                selectedIndex = pagerState.currentPage,
-                                modifier = Modifier.padding(top = 16.dp)
-                            )
-                            if (user != null) {
+                            if (isSelected) {
                                 Icon(
-                                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                    contentDescription = "Favorite icon",
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            if (!viewModel.isConnected()) {
-                                                return@clickable
-                                            }
-
-                                            if (isFavorite) {
-                                                viewModel.deleteProductFromWishlist(product.id)
-                                            } else {
-                                                viewModel.addProductToWishlist(product.id)
-                                            }
-
-                                            isFavorite = !isFavorite
-                                        },
-                                    tint = if (isFavorite) Color.Red else LocalContentColor.current
+                                    imageVector = Icons.Rounded.Check,
+                                    contentDescription = null,
+                                    tint = if (color == White) Color.DarkGray else White,
+                                    modifier = Modifier.padding(4.dp)
                                 )
                             }
                         }
-
-                        // Divider
-                        Spacer(Modifier.height(16.dp))
-                        HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 2.dp)
-                        Spacer(Modifier.height(16.dp))
-
-                        // category and title
-                        Text(
-                            product.category,
-                            modifier = Modifier.padding(start = 16.dp),
-                            fontSize = 18.sp,
-                            color = Color.LightGray,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = product.title,
-                            modifier = Modifier.padding(start = 16.dp),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(24.dp))
-
-                        // Color
-                        if (product.colors.isNotEmpty()) {
-                            Row {
-                                VariantHeaderText("Color")
-                                VariantValueText(selectedColor)
-                            }
-                            Spacer(Modifier.height(8.dp))
-                            LazyRow(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                            ) {
-                                items(product.colors) { colorName ->
-                                    val color = parseColorFromName(colorName)
-                                    val isSelected = selectedColor == colorName
-
-                                    Box(
-                                        modifier = Modifier
-                                            .size(60.dp)
-                                            .clip(CircleShape)
-                                            .border(
-                                                width = if (isSelected) 1.dp else 0.dp,
-                                                color = if (isSelected) Teal else Color.Transparent,
-                                                shape = CircleShape
-                                            )
-                                            .background(Color.Transparent)
-                                            .padding(6.dp)
-                                            .clip(CircleShape)
-                                            .background(color)
-                                            .border(
-                                                width = 1.dp,
-                                                color = Color.LightGray,
-                                                shape = CircleShape
-                                            )
-                                            .clickable { selectedColor = colorName }
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.height(16.dp))
-                        }
-
-                        // Size
-                        if (product.sizes.isNotEmpty()) {
-                            Row {
-                                VariantHeaderText("Size")
-                                VariantValueText(selectedSize)
-                            }
-                            Spacer(Modifier.height(8.dp))
-
-                            LazyRow(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                items(product.sizes) { size ->
-                                    val isSelected = selectedSize == size
-                                    FilterChip(
-                                        selected = isSelected,
-                                        onClick = { selectedSize = size },
-                                        label = {
-                                            Text(
-                                                text = size.uppercase(),
-                                                fontSize = 24.sp,
-                                                fontWeight = FontWeight.Normal,
-                                                modifier = Modifier.padding(vertical = 12.dp)
-                                            )
-                                        },
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = FilterChipDefaults.filterChipColors(
-                                            containerColor = Color.Transparent,
-                                            selectedContainerColor = Teal,
-                                            labelColor = Color.DarkGray,
-                                            selectedLabelColor = Color.White
-                                        ),
-                                        border = FilterChipDefaults.filterChipBorder(
-                                            enabled = true,
-                                            selected = isSelected,
-                                            borderColor = Color.LightGray,
-                                            borderWidth = 1.dp,
-                                            selectedBorderColor = Color.Transparent
-                                        ),
-                                        elevation = null
-                                    )
-                                }
-                            }
-                            Spacer(Modifier.height(16.dp))
-                        }
-
-                        // Divider
-                        HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 2.dp)
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = "Product Details",
-                            modifier = Modifier.padding(start = 16.dp),
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(16.dp))
-                        HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 2.dp)
-
-                        // Description
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = "Description",
-                            modifier = Modifier.padding(start = 16.dp),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(16.dp))
-
-                        Text(
-                            text = product.description,
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            fontSize = 16.sp,
-                            color = DarkestGray
-                        )
-                        Spacer(Modifier.height(16.dp))
-
                     }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
 
-                    HorizontalDivider(color = Color(0xFFE0E0E0), thickness = 2.dp)
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(horizontal = 20.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(end = 16.dp)
-                        ) {
-                            Text("Total Price", color = Color.Gray)
-                            Spacer(Modifier.height(4.dp))
-                            Text(currencyViewModel.formatPrice(product.price),
-                                color = Color.DarkGray,
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 24.sp
-                            )
-                        }
-
-                        CustomButton(
-                            onClick = {
-                                if (user != null) {
-                                    isLoading.value = true
-                                    val variantId = viewModel.findSelectedVariantId(
-                                        product.variants,
-                                        selectedSize,
-                                        selectedColor
-                                    )
-                                    viewModel.addToCart(variantId!!)
-                                } else {
-                                    scope.launch {
-                                        snackBarHostState.showSnackbar("Please sign in to add items to your cart")
-                                    }
-                                }
+            // Size
+            if (product.sizes.isNotEmpty()) {
+                Row {
+                    VariantHeaderText("Size")
+                    Spacer(Modifier.width(4.dp))
+                    VariantValueText(selectedSize)
+                }
+                Spacer(Modifier.height(8.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    items(product.sizes) { size ->
+                        val isSelected = selectedSize == size
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { onSizeSelected(size) },
+                            label = {
+                                Text(
+                                    text = size.uppercase(),
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(vertical = 6.dp)
+                                )
                             },
-                            text = "Add to Cart",
-                            modifier = Modifier.weight(1f),
-                            isLoading = isLoading.value
+                            shape = RoundedCornerShape(8.dp),
+                            colors = FilterChipDefaults.filterChipColors(
+                                containerColor = Color.Transparent,
+                                selectedContainerColor = Teal,
+                                labelColor = Color.DarkGray,
+                                selectedLabelColor = White
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = isSelected,
+                                borderColor = Color.LightGray,
+                                borderWidth = 1.dp,
+                                selectedBorderColor = Color.Transparent
+                            )
                         )
                     }
                 }
             }
 
-            is ProductUiState.Error -> {
-                Failed((uiState as ProductUiState.Error).message)
-            }
-
-            ProductUiState.Loading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            ProductUiState.NoNetwork -> NoNetwork()
+            Spacer(Modifier.height(24.dp))
+            VariantHeaderText("Description")
+            Spacer(Modifier.height(8.dp))
+            Text(text = product.description, fontSize = 14.sp, color = Color.Gray)
         }
     }
-
 }
+
+fun toggleFavorite(viewModel: ProductViewModel, isFavorite: Boolean, productId: String) {
+    if (!viewModel.isConnected()) {
+        return
+    }
+
+    if (isFavorite) {
+        viewModel.deleteProductFromWishlist(productId)
+    } else {
+        viewModel.addProductToWishlist(productId)
+    }
+}
+
+@Composable
+fun TopBar(
+    navController: NavController,
+    user: FirebaseUser?,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit
+) {
+
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BackButton(
+            navController = navController,
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(White.copy(0.5f))
+        )
+        if (user != null) {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                IconButton(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(White.copy(0.5f)),
+                    onClick = onFavoriteClick
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) Color.Red else LocalContentColor.current
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 fun parseColorFromName(name: String): Color {
     return when (name.lowercase()) {
         "black" -> Color.Black
-        "white" -> Color.White
+        "white" -> White
         "beige" -> Color(0xFFF5F5DC)
         "light_brown" -> Color(0xFF8B5E3C)
         "burgandy" -> Color(0xFF800020)
@@ -438,7 +505,7 @@ fun DotsIndicator(
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.padding(all = 8.dp)
     ) {
         repeat(totalDots) { index ->
             Box(
@@ -452,4 +519,10 @@ fun DotsIndicator(
     }
 }
 
+fun String.capitalizeEachWord(): String =
+    this.lowercase()
+        .split(" ")
+        .joinToString(" ") { word ->
+            word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
 
