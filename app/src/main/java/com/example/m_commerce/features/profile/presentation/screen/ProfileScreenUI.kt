@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.core.shared.components.NetworkImage
@@ -45,18 +46,18 @@ fun ProfileScreenUI(
     val user = FirebaseAuth.getInstance().currentUser
     val options: List<ProfileOption> = if (user != null) {
         listOf(
-            ProfileOption("Manage Address", Icons.Default.LocationOn),
-            ProfileOption("My Orders", Icons.Default.ShoppingCart),
-            ProfileOption("My Wishlist", Icons.Default.Favorite),
-            ProfileOption("Currency", Icons.Default.CurrencyExchange),
-            ProfileOption("Help Center", Icons.Default.LocationOn),
-            ProfileOption("Logout", Icons.AutoMirrored.Filled.Logout),
+            ProfileOption("Manage Address", R.raw.address),
+            ProfileOption("My Orders", R.raw.history),
+            ProfileOption("My Wishlist", R.raw.heart_fill),
+            ProfileOption("Currency", R.raw.currency),
+            ProfileOption("Help Center", R.raw.help),
+            ProfileOption("Logout", R.raw.logout),
         )
     } else {
         listOf(
-            ProfileOption("Currency", Icons.Default.CurrencyExchange),
-            ProfileOption("Help Center", Icons.Default.LocationOn),
-            ProfileOption("Login", Icons.Default.LocationOn),
+            ProfileOption("Currency", R.raw.currency),
+            ProfileOption("Help Center", R.raw.help),
+            ProfileOption("Login", R.raw.login),
         )
     }
 
@@ -69,7 +70,7 @@ fun ProfileScreenUI(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Background)
-                .padding(16.dp)
+//                .padding(16.dp)
         ) {
             Column(
                 modifier = Modifier.padding(padding),

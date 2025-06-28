@@ -117,7 +117,17 @@ fun OrderTrackingCard(modifier: Modifier = Modifier, order: OrderHistory, curren
 
             HorizontalDivider(Modifier.padding(vertical = 12.dp))
             Column {
-                order.items.forEach { item -> LineItemCard(item = item) }
+                order.items.forEach { item ->
+                    LineItemCard(item = item)
+                    if (order.items.last() != item) {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+
+                    }else{
+                        DashedDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+                    }
+                }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = "Total")
                     Text(text = currencyViewModel.formatPrice(order.totalPrice))
@@ -164,7 +174,6 @@ fun LineItemCard(modifier: Modifier = Modifier, item: LineItem) {
                 Text(text = "Qty: ×${item.quantity}")
             }
         }
-        DashedDivider(modifier = Modifier.padding(vertical = 12.dp))
     }
 
 }

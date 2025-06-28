@@ -13,7 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
@@ -27,10 +32,10 @@ fun SearchSection(
     navController: NavHostController,
 ) {
 
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
         Column {
-            Text("Hi, User")
-            Text("Let\'s go shopping")
+            Text("Hi, User", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("Let's go shopping", fontSize = 12.sp, fontStyle = FontStyle.Italic)
         }
         SvgButton(R.raw.search) {
             navController.navigate(AppRoutes.SearchScreen(false))

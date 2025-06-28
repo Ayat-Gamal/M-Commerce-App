@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -27,18 +28,14 @@ import com.example.m_commerce.features.categories.domain.entity.Category
 @Composable
 fun CategoryMiniCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: Category) {
 
-
-
-
-
     Row(
         modifier = modifier
             .border(1.dp, color = Color.Gray, shape = RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(8.dp)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-
         SvgImage(resId = categoryIconsMapping[category.name] ?: R.raw.other_category)
 
         Spacer(modifier = Modifier.width(8.dp))

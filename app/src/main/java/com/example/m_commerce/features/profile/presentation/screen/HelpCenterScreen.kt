@@ -42,7 +42,22 @@ import com.example.m_commerce.features.profile.domain.entity.Person
 
 
 val teamMembers = listOf(
-
+    Person(
+        name = "Ahmed Mohamed Saad ",
+        title = "Mobile Software Engineer",
+        imageUrl = "https://avatars.githubusercontent.com/u/193324840?v=4",
+        githubUrl = "https://github.com/ahmedsaad207",
+        linkedinUrl = "https://www.linkedin.com/in/dev-ahmed-saad/",
+        facebookUrl = ""
+    ),
+    Person(
+        name = "Ayat Gamal Mustafa",
+        title = "Mobile Software Engineer",
+        imageUrl = "https://avatars.githubusercontent.com/u/90482904?v=4",
+        githubUrl = "https://github.com/ahmedsaad207",
+        linkedinUrl = "https://www.linkedin.com/in/ayat-gamal-700946229/",
+        facebookUrl = ""
+    ),
     Person(
         name = "Mohamed Tag El-Deen Ahmed",
         title = "Mobile Software Engineer",
@@ -59,22 +74,6 @@ val teamMembers = listOf(
         linkedinUrl = "https://www.linkedin.com/in/youssif-nasser/",
         facebookUrl = ""
     ),
-    Person(
-        name = "Ahmed Mohamed Saad ",
-        title = "Mobile Software Engineer",
-        imageUrl = "https://avatars.githubusercontent.com/u/193324840?v=4",
-        githubUrl = "https://github.com/ahmedsaad207",
-        linkedinUrl = "https://www.linkedin.com/in/dev-ahmed-saad/",
-        facebookUrl = ""
-    ),
-    Person(
-        name = "Ayat Gamal Mustafa",
-        title = "Mobile Software Engineer",
-        imageUrl = "https://avatars.githubusercontent.com/u/90482904?v=4",
-        githubUrl = "https://github.com/ahmedsaad207",
-        linkedinUrl = "https://www.linkedin.com/in/ayat-gamal-700946229/",
-        facebookUrl = ""
-    )
 )
 
 @Composable

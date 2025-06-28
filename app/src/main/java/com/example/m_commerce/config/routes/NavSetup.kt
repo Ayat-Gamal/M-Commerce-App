@@ -51,7 +51,7 @@ fun NavSetup(
 ) {
     val user = FirebaseAuth.getInstance().currentUser
     val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
-//    val startingScreen = AppRoutes.CartScreen
+//    val startingScreen = AppRoutes.MapScreen
 
 
     NavHost(
@@ -131,10 +131,13 @@ fun NavSetup(
         }
 
         composable<AppRoutes.CartScreen> {
+            showBottomNavbar.value = true
+
             CartScreenUI(paddingValues, paymentSheet = paymentSheet, navController = navController)
         }
 
         composable<AppRoutes.ProfileScreen> {
+
             showBottomNavbar.value = true
             ProfileScreenUI(navController)
         }
@@ -190,6 +193,7 @@ fun NavSetup(
             CurrencyScreenUi(navController)
         }
         composable<AppRoutes.MapScreen> {
+            showBottomNavbar.value = false
             MapScreenUi(navController)
         }
         composable<AppRoutes.HelpCenterScreen> {

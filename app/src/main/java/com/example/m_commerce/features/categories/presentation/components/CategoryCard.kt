@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,8 +39,9 @@ fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: D
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .clip(RoundedCornerShape(24.dp))
-            .clickable { onClick() }) {
+            .shadow(elevation = 4.dp, shape = RoundedCornerShape(24.dp), clip = true)
+            .clickable { onClick() }
+    ) {
         Image(
             painter = painterResource(mapping[category.name] ?: R.drawable.uncategorized),
             contentScale = ContentScale.Crop,

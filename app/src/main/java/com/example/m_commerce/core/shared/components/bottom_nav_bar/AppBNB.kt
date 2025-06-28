@@ -42,7 +42,7 @@ fun BottomNavBar(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 32.dp, end = 32.dp, bottom = 12.dp)
+            .padding(start = 54.dp, end = 54.dp, bottom = 12.dp)
             .navigationBarsPadding()
             .clickable(enabled = false, onClick = {}),
         contentAlignment = Alignment.Center
@@ -53,7 +53,7 @@ fun BottomNavBar(navController: NavHostController) {
                     color = DarkestGray,
                     shape = RoundedCornerShape(50)
                 )
-                .padding(12.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -76,7 +76,7 @@ fun BottomNavBar(navController: NavHostController) {
 fun BnbIcon(item: BottomNavItem, isSelected: Boolean, navController: NavHostController) {
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(40.dp)
             .clip(CircleShape)
             .background(if (isSelected) White else Color.Transparent)
             .clickable {

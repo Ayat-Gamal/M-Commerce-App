@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.dividerGray
@@ -51,7 +52,6 @@ import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewMo
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.stripe.android.paymentsheet.PaymentSheet
-import kotlinx.coroutines.launch
 
 @Composable
 fun CartScreenUI(
@@ -88,10 +88,6 @@ fun CartScreenUI(
             DefaultTopBar(
                 title = "Cart",
                 navController = null,
-                titleCentered = true,
-                modifier = Modifier.background(
-                    Background
-                )
             )
         },
         bottomBar = {
@@ -105,7 +101,10 @@ fun CartScreenUI(
                     cart = cart,
                     orderViewModel = orderViewModel,
                     snackBarHostState = snackBarHostState
-                )
+                ) {
+                    navController.navigate(AppRoutes.ManageAddressScreen)
+
+                }
             }
         },
         snackbarHost = {
@@ -157,8 +156,6 @@ fun CartScreenUI(
                         modifier = Modifier.padding(24.dp)
                     )
                 }
-
-
             }
         }
     }
@@ -194,23 +191,23 @@ fun CartContent(
                 .height(LocalConfiguration.current.screenHeightDp.dp * 0.4f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(cartLines) { line ->
+            items(cartLines) { product ->
                 CartItemCard(
-                    product = line,
+                    product = product,
                     onIncrease = {
-                        viewModel.increaseQuantity(line.lineId)
+                        viewModel.increaseQuantity(product.lineId)
                     },
                     onDecrease = {
-                        viewModel.decreaseQuantity(line.lineId)
+                        viewModel.decreaseQuantity(product.lineId)
                     },
                     onRemove = {
-                        pendingRemovalLine = line
+                        pendingRemovalLine = product
                         showDialog = true
                     },
                     currencyViewModel
                 )
 
-                if (cartLines.indexOf(line) < cartLines.size - 1) {
+                if (cartLines.indexOf(product) < cartLines.size - 1) {
                     Divider(
                         color = dividerGray,
                         thickness = 1.dp,

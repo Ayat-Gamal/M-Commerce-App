@@ -3,6 +3,7 @@ package com.example.m_commerce.features.cart.presentation.components
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.m_commerce.BuildConfig
+import com.example.m_commerce.R
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.OfferColor
@@ -36,6 +38,9 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
+import com.example.m_commerce.core.shared.components.DashedDivider
+import com.example.m_commerce.core.shared.components.LottieAlertDialog
+import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.core.utils.containsPositiveNumber
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
 import com.example.m_commerce.features.cart.domain.entity.Cart
@@ -59,7 +64,8 @@ fun CartReceipt(
     paymentSheet: PaymentSheet,
     orderViewModel: OrderViewModel,
     cart: Cart,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    navigateToAddress: () -> Unit
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     var promoCode by rememberSaveable { mutableStateOf("") }
@@ -71,6 +77,10 @@ fun CartReceipt(
     val publishableKey = BuildConfig.PAYMENT_PUBLISHABLE_KEY
     val scope = rememberCoroutineScope()
     val showSheet: MutableState<Boolean> = remember { mutableStateOf(false) }
+    var showCompleteDialog by remember { mutableStateOf(false) }
+    var shouldClearCart by remember { mutableStateOf(false) }
+
+
 
     LaunchedEffect(Unit) {
         PaymentConfiguration.init(context, publishableKey)
@@ -85,22 +95,61 @@ fun CartReceipt(
     }
 
     LaunchedEffect(orderState.value) {
+        Log.d(
+            "OrderItem",
+            "CartReceipt: Entered Launch Effect ${orderState.value}"
+        )
         when (val state = orderState.value) {
             is OrderUiState.Error -> {
                 scope.launch {
                     Log.d("Order", "Error: ${state.message}")
                     snackBarHostState.showSnackbar("Error: ${state.message}")
                 }
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Error State ${orderState.value}"
+                )
             }
 
             is OrderUiState.Success -> {
-                cartViewModel.clearCart(cart.lines)
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Success State ${orderState.value}"
+                )
+                showCompleteDialog = true
+                shouldClearCart = true
             }
 
-            else -> Unit
+            OrderUiState.Idle -> {
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Idle"
+                )
+
+            }
+            OrderUiState.Loading -> {
+                Log.d(
+                    "OrderItem",
+                    "CartReceipt: Loading"
+                )
+            }
         }
     }
 
+    LottieAlertDialog(
+        showDialog = showCompleteDialog,
+        onDismiss = {
+            showCompleteDialog = false
+            if (shouldClearCart) {
+                cartViewModel.clearCart(cart.lines)
+                shouldClearCart = false
+            }
+        },
+        lottieRawResId = R.raw.success_lottie,
+        btnLabel = "Continue Shopping",
+        lottieSize = 240,
+        text = "Order Placed Successfully"
+    )
 
     Column(modifier = Modifier.background(Background)) {
         Column(
@@ -151,7 +200,7 @@ fun CartReceipt(
                         CartReceiptItem(item)
                     }
 
-                    Divider(Modifier.padding(vertical = 8.dp, horizontal = 8.dp))
+                    DashedDivider(Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
 
                     CartReceiptItem(
                         ReceiptItem(
@@ -164,7 +213,7 @@ fun CartReceipt(
 
             var state by remember { mutableStateOf(false) }
 
-            CheckoutBottomSheet(showSheet = showSheet) { paymentMethod ->
+            CheckoutBottomSheet(showSheet = showSheet, navigateToAddresses = navigateToAddress) { paymentMethod ->
 
                 if (!cartViewModel.isConnected()) return@CheckoutBottomSheet
 
@@ -207,12 +256,14 @@ fun CartReceipt(
             }
 
             CustomButton(
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = paddingValues.calculateBottomPadding(),
-                    top = 16.dp
-                ).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = paddingValues.calculateBottomPadding(),
+                        top = 16.dp
+                    )
+                    .fillMaxWidth(),
                 isLoading = state,
                 text = "Checkout",
                 backgroundColor = Teal,
