@@ -1,5 +1,7 @@
 package com.example.m_commerce.features.AddressMangment.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +13,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
-import com.shopify.buy3.Storefront
+
 @Composable
 fun AddressCard(
     address: Address,
@@ -36,22 +44,29 @@ fun AddressCard(
     onDelete: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
+            .padding(start = 16.dp , end = 16.dp , top = 8.dp )
             .combinedClickable(
                 onClick = { onSelect?.invoke() },
                 onLongClick = { onLongPress?.invoke() }
             )
-            .padding(16.dp)
+            .border(
+                width = 1.dp,
+                color = if (expanded) Teal else Color.LightGray,
+                shape = RoundedCornerShape(12.dp)
+            )
+
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.Top
         ) {
             Icon(
-                imageVector = Icons.Filled.LocationOn,
+                imageVector = Icons.Outlined.LocationOn,
                 contentDescription = null,
                 tint = Teal,
                 modifier = Modifier.size(24.dp)
@@ -84,18 +99,37 @@ fun AddressCard(
                     )
                 }
             }
-
-            if (!isDefault && onDelete != null) {
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier.size(24.dp)
+            if(!isDefault && onDelete != null){
+                Box(
+                    contentAlignment = Alignment.TopEnd,
+                    modifier = Modifier.background(Color.Transparent)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete address",
-                        tint = Color.Red
-                    )
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(Color.White)
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            onClick = {
+                                expanded = false
+                                onDelete?.invoke()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Set as Default") },
+                            onClick = {
+                                expanded = false
+                                onLongPress?.invoke()
+                            }
+                        )
+                    }
                 }
+
             }
         }
     }
