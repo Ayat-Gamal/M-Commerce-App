@@ -22,9 +22,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.m_commerce.config.theme.DarkestGray
 import com.example.m_commerce.config.theme.Gray
+import androidx.compose.foundation.layout.navigationBarsPadding
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.SvgImage
+import com.example.m_commerce.core.utils.extentions.navigateAndClear
 
 @Composable
 fun BottomNavBar(navController: NavHostController) {
@@ -40,7 +42,9 @@ fun BottomNavBar(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 32.dp),
+            .padding(start = 54.dp, end = 54.dp, bottom = 12.dp)
+            .navigationBarsPadding()
+            .clickable(enabled = false, onClick = {}),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -49,7 +53,7 @@ fun BottomNavBar(navController: NavHostController) {
                     color = DarkestGray,
                     shape = RoundedCornerShape(50)
                 )
-                .padding(12.dp)
+                .padding(8.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -72,11 +76,11 @@ fun BottomNavBar(navController: NavHostController) {
 fun BnbIcon(item: BottomNavItem, isSelected: Boolean, navController: NavHostController) {
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(40.dp)
             .clip(CircleShape)
             .background(if (isSelected) White else Color.Transparent)
             .clickable {
-                navController.navigate(item.route)
+                navController.navigateAndClear(item.route)
             },
         contentAlignment = Alignment.Center
     ) {

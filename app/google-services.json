@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "757548828616",
+    "project_id": "m-commerce-user",
+    "storage_bucket": "m-commerce-user.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757548828616:android:453f686c40f3b34d6ae2fd",
+        "android_client_info": {
+          "package_name": "com.example.m_commerce"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "757548828616-gg773e02lrc2efn64occtffm3r46v182.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.m_commerce",
+            "certificate_hash": "38c26edac5aa16783bd6e2e08986b1490800ba08"
+          }
+        },
+        {
+          "client_id": "757548828616-37jp4djt555bkkhbn6p9l1ftmpqab3f3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6JzHlCbxzUrEZsjn0Os3wL_IxdPrOfqk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "757548828616-37jp4djt555bkkhbn6p9l1ftmpqab3f3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
