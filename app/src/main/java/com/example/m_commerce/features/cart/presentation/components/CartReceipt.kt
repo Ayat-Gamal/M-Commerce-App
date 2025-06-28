@@ -59,7 +59,8 @@ fun CartReceipt(
     paymentSheet: PaymentSheet,
     orderViewModel: OrderViewModel,
     cart: Cart,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    navigateToAddress: () -> Unit
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     var promoCode by rememberSaveable { mutableStateOf("") }
@@ -164,7 +165,7 @@ fun CartReceipt(
 
             var state by remember { mutableStateOf(false) }
 
-            CheckoutBottomSheet(showSheet = showSheet) { paymentMethod ->
+            CheckoutBottomSheet(showSheet = showSheet, navigateToAddresses = navigateToAddress) { paymentMethod ->
 
                 if (!cartViewModel.isConnected()) return@CheckoutBottomSheet
 

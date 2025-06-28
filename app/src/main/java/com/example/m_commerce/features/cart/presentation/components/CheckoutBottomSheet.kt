@@ -1,7 +1,10 @@
 package com.example.m_commerce.features.cart.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -27,11 +28,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.m_commerce.config.theme.Teal
+import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
+import com.example.m_commerce.core.shared.components.SmallButton
 import com.example.m_commerce.features.AddressMangment.domain.entity.Address
 import com.example.m_commerce.features.AddressMangment.presentation.viewmodel.AddressViewModel
 import com.example.m_commerce.features.orders.data.PaymentMethod
@@ -42,6 +48,7 @@ fun CheckoutBottomSheet(
     modifier: Modifier = Modifier,
     showSheet: MutableState<Boolean>,
     addressViewModel: AddressViewModel = hiltViewModel(),
+    navigateToAddresses: () -> Unit,
     onPlaceOrder: (PaymentMethod) -> Unit,
 ) {
 
@@ -64,9 +71,7 @@ fun CheckoutBottomSheet(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Shipping to", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Spacer(modifier = Modifier.height(8.dp))
-                CheckDefaultAddress(addressState)
+                Shipping(navigateToAddresses, addressState)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
                 Text("Payment Method", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -106,15 +111,28 @@ fun CheckoutBottomSheet(
 }
 
 @Composable
-fun CheckDefaultAddress(addressState: State<Address?>) {
+private fun Shipping(
+    navigateToAddresses: () -> Unit,
+    addressState: State<Address?>
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text("Shipment Address", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text(if (addressState.value != null) "Change" else "Add Address" , color = Teal, fontWeight = FontWeight.Bold, modifier = Modifier.clickable {
+            navigateToAddresses()
+        })
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    CheckDefaultAddress(addressState)
+}
 
+@Composable
+fun CheckDefaultAddress(addressState: State<Address?>) {
     if (addressState.value != null) {
         Text(addressState.value!!.address1)
     } else {
-        Text("Loading...")
+        Text("No default address found, please add one")
     }
 }
-
 
 @Composable
 fun PaymentOptionCard(
@@ -122,14 +140,22 @@ fun PaymentOptionCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 2.dp)
+            .border(
+                width = 2.dp,
+                color = if (isSelected) Teal else Color.Transparent,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .background(
+                color = if (isSelected) Teal.copy(alpha = 0.2f) else White,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clip(RoundedCornerShape(8.dp))
             .clickable { onClick() }
+
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -141,11 +167,6 @@ fun PaymentOptionCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-            )
-            RadioButton(
-                selected = isSelected,
-                onClick = null,
-                enabled = false
             )
         }
     }

@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.dividerGray
@@ -105,7 +106,10 @@ fun CartScreenUI(
                     cart = cart,
                     orderViewModel = orderViewModel,
                     snackBarHostState = snackBarHostState
-                )
+                ){
+                    navController.navigate(AppRoutes.ManageAddressScreen)
+
+                }
             }
         },
         snackbarHost = {
