@@ -88,10 +88,6 @@ fun CartScreenUI(
             DefaultTopBar(
                 title = "Cart",
                 navController = null,
-                titleCentered = true,
-                modifier = Modifier.background(
-                    Background
-                )
             )
         },
         bottomBar = {

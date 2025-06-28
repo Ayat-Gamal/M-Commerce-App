@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.m_commerce.BuildConfig
+import com.example.m_commerce.R
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.OfferColor
@@ -38,6 +39,7 @@ import com.example.m_commerce.config.theme.TextBackground
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.DashedDivider
+import com.example.m_commerce.core.shared.components.LottieAlertDialog
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.core.utils.containsPositiveNumber
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
@@ -75,6 +77,10 @@ fun CartReceipt(
     val publishableKey = BuildConfig.PAYMENT_PUBLISHABLE_KEY
     val scope = rememberCoroutineScope()
     val showSheet: MutableState<Boolean> = remember { mutableStateOf(false) }
+    var showCompleteDialog by remember { mutableStateOf(false) }
+    var shouldClearCart by remember { mutableStateOf(false) }
+
+
 
     LaunchedEffect(Unit) {
         PaymentConfiguration.init(context, publishableKey)
@@ -110,8 +116,8 @@ fun CartReceipt(
                     "OrderItem",
                     "CartReceipt: Success State ${orderState.value}"
                 )
-                cartViewModel.clearCart(cart.lines)
-
+                showCompleteDialog = true
+                shouldClearCart = true
             }
 
             OrderUiState.Idle -> {
@@ -130,6 +136,20 @@ fun CartReceipt(
         }
     }
 
+    LottieAlertDialog(
+        showDialog = showCompleteDialog,
+        onDismiss = {
+            showCompleteDialog = false
+            if (shouldClearCart) {
+                cartViewModel.clearCart(cart.lines)
+                shouldClearCart = false
+            }
+        },
+        lottieRawResId = R.raw.success_lottie,
+        btnLabel = "Continue Shopping",
+        lottieSize = 240,
+        text = "Order Placed Successfully"
+    )
 
     Column(modifier = Modifier.background(Background)) {
         Column(

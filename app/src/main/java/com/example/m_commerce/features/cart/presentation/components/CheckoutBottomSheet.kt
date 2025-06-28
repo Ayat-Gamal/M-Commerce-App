@@ -90,7 +90,7 @@ fun CheckoutBottomSheet(
                     }
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 PaymentOptionCard(
                     title = PaymentMethod.CreditCard.value,
@@ -134,7 +134,7 @@ fun CheckDefaultAddress(addressState: State<Address?>) {
     if (addressState.value != null) {
         Text(addressState.value!!.address1)
     } else {
-        Text("No default address found, please add one")
+        Text("No default address found, please add one", color = Color.Red)
     }
 }
 
