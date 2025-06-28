@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -135,8 +136,7 @@ fun ManageAddressScreenUi(
 
             when {
                 isLoading && defaultAddress == null -> {
-                    CircularProgressIndicator(
-                    )
+                    Text( modifier = Modifier.padding(16.dp).fillMaxWidth(), text = "Loading...")
                 }
 
                 defaultAddress != null -> {
@@ -164,17 +164,16 @@ fun ManageAddressScreenUi(
             HorizontalDivider(modifier = Modifier.padding(16.dp))
 
             Text(
-                text = "Select Location",
+                text = "Saved Locations",
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 16.dp , bottom = 4.dp)
             )
             when {
                 isLoading && addresses.isEmpty() -> {
-                    CircularProgressIndicator(
-                    )
+                    Text( modifier = Modifier.padding(16.dp).fillMaxWidth(), text = "Loading...")
                 }
 
-                addresses.isEmpty() -> { // TODO
+                addresses.isEmpty() -> {
                     Text(
                         text = if (viewModel.isConnected()) "No addresses " else "No internet connection",
                         modifier = Modifier.padding(16.dp)
