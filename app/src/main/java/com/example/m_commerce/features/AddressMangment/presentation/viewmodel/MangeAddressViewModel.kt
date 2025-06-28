@@ -14,8 +14,6 @@ import com.example.m_commerce.features.AddressMangment.domain.usecases.GetDefaul
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SaveAddressUseCase
 import com.example.m_commerce.features.AddressMangment.domain.usecases.SetDefaultAddressUseCase
 import com.example.m_commerce.features.AddressMangment.presentation.ui_states.DeleteState
-import com.example.m_commerce.features.product.presentation.ProductUiState
-import com.example.m_commerce.features.product.presentation.SnackBarMessage
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -183,34 +181,48 @@ class AddressViewModel @Inject constructor(
             _addresses.value = emptyList()
             return
         }
-
         viewModelScope.launch {
             _isLoading.value = true
-            getAddressesUseCase().collect { response ->
-                when (response) {
+
+            getAddressesUseCase().collect { addressesResponse ->
+                when (addressesResponse) {
                     is Response.Success -> {
-//                        Log.i("TAG", "loadAddresses: here ${response} ")
-                        _isLoading.value = true
-                        getDefaultAddressUseCase().collect() { response ->
-                            when (response) {
-                                is Response.Success -> _defaultAddress.value = response.data
-                                is Response.Error -> _errorMessage.value = response.message
+                        val allAddresses = addressesResponse.data
+
+                        getDefaultAddressUseCase().collect { defaultResponse ->
+                            when (defaultResponse) {
+                                is Response.Success -> {
+                                    val defaultAddress = defaultResponse.data
+                                    _defaultAddress.value = defaultAddress
+
+                                    val filtered = allAddresses
+                                        .filter { it.address1 != defaultAddress.address1 }
+                                        .distinctBy { it.address1 }
+
+                                    _addresses.value = filtered
+                                }
+
+                                is Response.Error -> _errorMessage.value = defaultResponse.message
                                 Response.Loading -> _isLoading.value = true
                             }
                         }
-                        _addresses.value = response.data
+
+                        _isLoading.value = false
                     }
 
-                    is Response.Error -> _deleteState.value =
-                        DeleteState.Error(response.message ?: "Failed to load addresses")
+                    is Response.Error -> {
+                        _deleteState.value = DeleteState.Error(
+                            addressesResponse.message ?: "Failed to load addresses"
+                        )
+                        _isLoading.value = false
+                    }
 
                     Response.Loading -> _isLoading.value = true
                 }
-                _isLoading.value = false
             }
-
-
         }
+
+
     }
 
     fun resetDeleteState() {

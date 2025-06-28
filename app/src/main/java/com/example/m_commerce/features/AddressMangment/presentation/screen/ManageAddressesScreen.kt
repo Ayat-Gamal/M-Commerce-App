@@ -1,7 +1,6 @@
 package com.example.m_commerce.features.AddressMangment.presentation.screen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -131,7 +130,7 @@ fun ManageAddressScreenUi(
             Text(
                 text = "Default Address",
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(start = 16.dp)
             )
 
             when {
@@ -162,9 +161,13 @@ fun ManageAddressScreenUi(
                     )
                 }
             }
-
             HorizontalDivider(modifier = Modifier.padding(16.dp))
 
+            Text(
+                text = "Select Location",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp , bottom = 4.dp)
+            )
             when {
                 isLoading && addresses.isEmpty() -> {
                     CircularProgressIndicator(
@@ -173,7 +176,7 @@ fun ManageAddressScreenUi(
 
                 addresses.isEmpty() -> { // TODO
                     Text(
-                        text = if (viewModel.isConnected()) "No addresses saved" else "No internet connection",
+                        text = if (viewModel.isConnected()) "No addresses " else "No internet connection",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
