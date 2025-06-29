@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
-import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetter
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
@@ -96,7 +95,7 @@ fun CartItemCard(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(
+                    Text(modifier = Modifier.padding(end= 22.dp),
                         text = product.productTitle.capitalizeFirstLetters(),
                         fontWeight = FontWeight.Bold
                     )
@@ -113,11 +112,12 @@ fun CartItemCard(
                         ProductQuantity(onDecrease, product, onIncrease)
                         ItemPrice(currency, price)
                     }
+                    if (!availabilityCheck.value) {
+                        Text("Currently Not Available", color = Color.Red)
+                    }
                 }
             }
-            if (!availabilityCheck.value) {
-                Text("Currently Not Available", color = Color.Red)
-            }
+
         }
         Icon(
             imageVector = Icons.Default.Close,

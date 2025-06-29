@@ -3,14 +3,12 @@ package com.example.m_commerce.features.cart.presentation.components
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +38,6 @@ import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.DashedDivider
 import com.example.m_commerce.core.shared.components.LottieAlertDialog
-import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
 import com.example.m_commerce.core.utils.containsPositiveNumber
 import com.example.m_commerce.features.cart.data.model.ReceiptItem
 import com.example.m_commerce.features.cart.domain.entity.Cart
@@ -83,6 +80,8 @@ fun CartReceipt(
 
 
     LaunchedEffect(Unit) {
+        cartViewModel.applyCoupon("")
+
         PaymentConfiguration.init(context, publishableKey)
 
         createPaymentIntent { result ->
@@ -180,6 +179,11 @@ fun CartReceipt(
                     val totalAmountWithTax = amount + totalTaxAmount
                     val totalAmountWithTaxStr = totalAmountWithTax.toString()
 
+                    val discountAmount = (((it.totalAmount.toFloatOrNull() ?: 0f) + totalTaxAmount) - (it.subtotalAmount?.toFloatOrNull() ?: 0f))
+                    var discountAmountStr = discountAmount.toString()
+                    if(discountAmount.toInt() == totalTaxAmount.toInt() ){
+                        discountAmountStr = "0.00"
+                    }
                     val receiptItems = listOf(
                         ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem(
@@ -189,10 +193,7 @@ fun CartReceipt(
                         //ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" ))
                         ReceiptItem(
                             "Discount",
-                            currencyViewModel.formatPrice(
-                                ((it.totalAmount.toFloatOrNull()
-                                    ?: 0f) - (it.subtotalAmount?.toFloatOrNull() ?: 0f)).toString()
-                            ),
+                            currencyViewModel.formatPrice(discountAmountStr),
                             isDiscount = true
                         )
                     )
