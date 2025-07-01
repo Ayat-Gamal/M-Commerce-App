@@ -14,10 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -27,13 +27,14 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.Empty
+import com.example.m_commerce.core.shared.components.Failed
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.SvgButton
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.components.ProductsGridView
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
 
 @Composable
 fun WishListScreen(
@@ -42,36 +43,26 @@ fun WishListScreen(
     viewModel: WishlistViewModel = hiltViewModel(),
 ) {
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val currentProducts = rememberUpdatedState(newValue = viewModel::getProducts)
-    val scope = rememberCoroutineScope()
+    val ctx = LocalContext.current
+    val networkManager = NetworkManager(ctx)
+    val isOnline by networkManager.observeNetworkChanges()
+        .collectAsStateWithLifecycle(networkManager.isNetworkAvailable())
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                currentProducts.value()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+    LaunchedEffect(isOnline) {
+        viewModel.getProducts()
     }
     LaunchedEffect(Unit) {
         viewModel.message.collect { event ->
-            scope.launch {
-                snackBarHostState.currentSnackbarData?.dismiss()
+            snackBarHostState.currentSnackbarData?.dismiss()
 
-                val result = snackBarHostState.showSnackbar(
-                    message = event.message,
-                    actionLabel = event.actionLabel,
-                    duration = SnackbarDuration.Short
-                )
+            val result = snackBarHostState.showSnackbar(
+                message = event.message,
+                actionLabel = event.actionLabel,
+                duration = SnackbarDuration.Short
+            )
 
-                if (result == SnackbarResult.ActionPerformed) {
-                    event.onAction?.invoke()
-                }
+            if (result == SnackbarResult.ActionPerformed) {
+                event.onAction?.invoke()
             }
         }
     }
@@ -100,15 +91,11 @@ fun WishListScreen(
             }
 
             WishlistUiState.Empty -> {
-                Log.d("TAG", "WishlistUiState.Empty")
                 Empty("No products added yet")
             }
 
             is WishlistUiState.Error -> {
-                Log.i(
-                    "TAG",
-                    "WishlistUiState.Error/ ${(uiState as WishlistUiState.Error).error}"
-                )
+                Failed((uiState as WishlistUiState.Error).error)
             }
 
             WishlistUiState.Loading -> {

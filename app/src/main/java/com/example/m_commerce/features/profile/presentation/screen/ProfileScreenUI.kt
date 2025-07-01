@@ -45,7 +45,7 @@ fun ProfileScreenUI(
     val user = FirebaseAuth.getInstance().currentUser
 
     LaunchedEffect(Unit) {
-        if (user != null) {
+        if (user != null && viewModel.isConnected()) {
             viewModel.loadName()
         }
     }
@@ -125,6 +125,5 @@ fun ProfileScreenUI(
             }
         }
     }
-
 }
 
