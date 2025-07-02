@@ -81,14 +81,19 @@ fun CartReceipt(
         cartViewModel.applyCoupon("")
 
         PaymentConfiguration.init(context, publishableKey)
+         var rate = currencyViewModel.exchangeRate.value ?: 1.0f
 
-        createPaymentIntent { result ->
+        createPaymentIntent(
+            amount = (cart.totalAmountWithTax.toDouble() * 100 * rate  ).toInt(),
+            currency = currencyViewModel.defaultCurrencyCode ?: "EGP" ,
+            callback =
+         { result ->
             result.onSuccess { clientSecret ->
                 paymentIntentClientSecret = clientSecret
             }.onFailure { error ->
                 error.printStackTrace()
             }
-        }
+        })
     }
 
     LaunchedEffect(orderState.value) {

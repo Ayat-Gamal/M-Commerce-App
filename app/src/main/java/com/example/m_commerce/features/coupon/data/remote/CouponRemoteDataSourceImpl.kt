@@ -89,19 +89,26 @@ class CouponRemoteDataSourceImpl @Inject constructor(
         clientGraph.mutateGraph(mutation).enqueue { result ->
             when (result) {
                 is GraphCallResult.Success -> {
-                    val userErrors = result.response.data?.cartDiscountCodesUpdate?.userErrors
-                    if (userErrors.isNullOrEmpty()) {
-                        trySend(true)
-                    } else {
-                        val message = userErrors.joinToString { it.message }
-                        Log.e("Tag", "applyCoupon user error: $message")
-                        close(Throwable(message))
+                    val discountCodes = result.response.data?.cartDiscountCodesUpdate?.cart?.discountCodes
+                    if (!discountCode.isNullOrEmpty()){
+
+                        trySend(discountCodes?.get(0)?.applicable ?: false )
                     }
+                    else{
+                        trySend(false)
+                    }
+                //                    if (userErrors.isNullOrEmpty()) {
+//                        trySend(true)
+//                    } else {
+//                        val message = userErrors.joinToString { it.message }
+//                        Log.e("Tag", "applyCoupon user error: $message")
+//                        close(Throwable(message))
+//                    }
                 }
 
                 is GraphCallResult.Failure -> {
                     Log.e("Tag", "applyCoupon failed", result.error)
-                    close(result.error)
+                    trySend(false)
                 }
             }
         }
