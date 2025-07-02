@@ -16,7 +16,7 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
-import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
+import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
@@ -53,7 +53,7 @@ fun BrandScreenUI(
         }
     ) { padding ->
         when (state) {
-            is ProductsUiState.Loading -> LoadingScreenCase()
+            is ProductsUiState.Loading -> Loading()
             is ProductsUiState.Error -> FailedScreenCase(msg = (state as ProductsUiState.Error).message)
             is ProductsUiState.Success -> LoadedData(
                 padding = padding,

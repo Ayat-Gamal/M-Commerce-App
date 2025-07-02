@@ -38,6 +38,7 @@ class HomeViewModel @Inject constructor(
             _dataState.emit(HomeUiState.NoNetwork)
             return@launch
         }
+            _dataState.emit(HomeUiState.Loading)
 
         try {
             val coupons = getCouponsUseCase()

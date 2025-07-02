@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.product.presentation.components
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,6 +44,7 @@ import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun ProductCard(
     modifier: Modifier = Modifier,
@@ -59,11 +61,10 @@ fun ProductCard(
     val currency = currencyViewModel.formatPrice(formattedPrice).split(" ").first()
 
     val titleParts = product.title.split("|")
-    var title: String
-    if (titleParts.size > 1) {
-        title = titleParts[1].trim()
+    val title: String = if (titleParts.size > 1) {
+        titleParts[1].trim()
     } else {
-        title = titleParts[0]
+        titleParts[0]
     }
     Log.d("TAG", "ProductCard: ${currency}  $formattedPrice")
 

@@ -19,7 +19,7 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
-import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
+import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.brand.presentation.components.BrandCard
@@ -44,7 +44,7 @@ fun BrandsDetailsScreenUI(
     }
 
     when (state) {
-        is BrandsUiState.Loading -> LoadingScreenCase()
+        is BrandsUiState.Loading -> Loading()
         is BrandsUiState.Error -> FailedScreenCase(msg = (state as BrandsUiState.Error).message)
         is BrandsUiState.Success -> LoadedData(
             brands = (state as BrandsUiState.Success).brands.drop(1), navController = navController,

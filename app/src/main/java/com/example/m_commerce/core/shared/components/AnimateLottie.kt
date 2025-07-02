@@ -21,7 +21,6 @@ fun AnimateLottie(modifier: Modifier = Modifier, resourceId: Int) {
         isPlaying = true
     )
 
-
     LottieAnimation(
         composition = preloaderLottieComposition,
         progress = { preloaderProgress },

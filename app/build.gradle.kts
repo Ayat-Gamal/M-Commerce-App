@@ -140,6 +140,7 @@ dependencies {
 // Navigation
     val nav_version = "2.8.8"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+//    implementation("androidx.navigation:navigation-animation:2.7.7")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
 // Lifecycle & ViewModel
