@@ -85,6 +85,13 @@ class CartRemoteDataSourceImpl @Inject constructor(
                         amt.currencyCode()
                     }
                 }
+                cart.appliedGiftCards {
+                    it.presentmentAmountUsed{
+                        it.amount()
+                        it.currencyCode()
+                    }
+                }
+
                 cart.buyerIdentity { buyer ->
                     buyer.email()
                     buyer.phone()
