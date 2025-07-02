@@ -80,6 +80,8 @@ fun CartReceipt(
 
 
     LaunchedEffect(Unit) {
+        cartViewModel.applyCoupon("")
+
         PaymentConfiguration.init(context, publishableKey)
 
         createPaymentIntent { result ->
@@ -168,28 +170,26 @@ fun CartReceipt(
             Column(modifier = Modifier.fillMaxWidth()) {
                 cart?.let {
 
-                    val taxRate = 0.14f
-                    val amount = it.totalAmount.toFloatOrNull() ?: 0f
-
-                    val totalTaxAmount = amount * taxRate
-                    val taxAmountStr = totalTaxAmount.toString()
-
-                    val totalAmountWithTax = amount + totalTaxAmount
-                    val totalAmountWithTaxStr = totalAmountWithTax.toString()
-
+//                    val taxRate = 0.14f
+//                    val amount = it.totalAmount.toFloatOrNull() ?: 0f
+//                    val totalTaxAmount = amount * taxRate
+//                    val taxAmountStr = totalTaxAmount.toString()
+//                    val totalAmountWithTax = amount + totalTaxAmount
+//                    val totalAmountWithTaxStr = totalAmountWithTax.toString()
+//                    val discountAmount = (((it.totalAmount.toFloatOrNull() ?: 0f) + totalTaxAmount) - (it.subtotalAmount?.toFloatOrNull() ?: 0f))
+//                    var discountAmountStr = discountAmount.toString()
+//                    if(discountAmount.toInt() == totalTaxAmount.toInt() ){
+//                        discountAmountStr = "0.00"
+//                    }
                     val receiptItems = listOf(
                         ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem(
                             "Tax",
-                            currencyViewModel.formatPrice( taxAmountStr)
+                            currencyViewModel.formatPrice( cart.calculatedTaxAmount)
                         ),
-                        //ReceiptItem("Duties" ,  currencyViewModel.formatPrice(it.totalDutyAmount ?: "0.00" ))
                         ReceiptItem(
                             "Discount",
-                            currencyViewModel.formatPrice(
-                                ((it.totalAmount.toFloatOrNull()
-                                    ?: 0f) - (it.subtotalAmount?.toFloatOrNull() ?: 0f)).toString()
-                            ),
+                            currencyViewModel.formatPrice(cart.discountAmount),
                             isDiscount = true
                         )
                     )
@@ -202,7 +202,7 @@ fun CartReceipt(
                     CartReceiptItem(
                         ReceiptItem(
                             "Total",
-                            currencyViewModel.formatPrice(totalAmountWithTaxStr ?: "0.00")
+                            currencyViewModel.formatPrice(cart.totalAmountWithTax)
                         )
                     )
                 }
@@ -242,13 +242,7 @@ fun CartReceipt(
                         paymentMethod = paymentMethod
                     )
 
-//                    if(orderState.value is OrderUiState.Error) {
-//                        scope.launch {
-//                            snackBarHostState.showSnackbar( "Error: ${(orderState.value as OrderUiState.Error).message}")
-//                        }
-//                        return@CheckoutBottomSheet
-//                    }
-//                    cartViewModel.clearCart(cart.lines)
+
                 }
             }
 

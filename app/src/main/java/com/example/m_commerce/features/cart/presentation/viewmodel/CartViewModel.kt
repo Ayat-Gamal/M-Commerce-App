@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.cart.presentation.viewmodel
 
 import ProductVariant
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,7 @@ class CartViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+
     private val _snackBarFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val snackBarFlow = _snackBarFlow.asSharedFlow()
 
@@ -60,6 +62,13 @@ class CartViewModel @Inject constructor(
                     cart.lines.isEmpty() -> _uiState.value = CartUiState.Empty
                     else -> {
                         Log.i("TAG", "Cart details: ${cart.lines}")
+                        cart.apply {
+                            this.calculatedTaxAmount = getTotalTaxAmount(this.totalAmount)
+                            this.discountAmount = getTotalDiscountAmount(this.totalAmount , this.subtotalAmount)
+                            //Log.i("TAG", "this this getCartById:${getTotalAmountWithTaxAmount(this.totalAmount)} ")
+                            this.totalAmountWithTax = getTotalAmountWithTaxAmount(this.subtotalAmount , this.discountAmount )
+
+                        }
                         _uiState.value = CartUiState.Success(cart)
                     }
                 }
@@ -177,7 +186,38 @@ class CartViewModel @Inject constructor(
         }
     }
 
-     fun isConnected(): Boolean {
+
+    private fun getTotalTaxAmount(totalAmount: String): String {
+        val taxRate = 0.14f
+        val amount = totalAmount.toFloatOrNull() ?: 0f
+        val totalTaxAmount = amount * taxRate
+        val taxAmountStr = totalTaxAmount.toString()
+
+        return taxAmountStr
+    }
+
+    private fun getTotalAmountWithTaxAmount(totalAmount: String , discountAmount: String): String {
+        val taxAmount = getTotalTaxAmount(totalAmount).toFloatOrNull() ?: 0f
+        val discount = discountAmount.toFloatOrNull() ?: 0f
+        val totalAmountWithTax = totalAmount.toFloat() + taxAmount - discount
+        return (totalAmountWithTax).toString()
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun getTotalDiscountAmount(totalAmount: String, subTotalAmount: String): String {
+        val taxAmount = getTotalTaxAmount(totalAmount).toFloatOrNull() ?: 0f
+        val total = totalAmount.toFloatOrNull() ?: 0f
+        val subtotal = subTotalAmount.toFloatOrNull() ?: 0f
+
+        val discountAmount = (total + taxAmount) - subtotal
+
+        if (discountAmount.toInt() == taxAmount.toInt()) {
+            return "0.00"
+        }
+        return String.format("%.2f", discountAmount)
+    }
+
+    fun isConnected(): Boolean {
         return if (!networkManager.isNetworkAvailable()) {
             _snackBarFlow.tryEmit(UiEvent.ShowSnackbar("No internet connection"))
             false

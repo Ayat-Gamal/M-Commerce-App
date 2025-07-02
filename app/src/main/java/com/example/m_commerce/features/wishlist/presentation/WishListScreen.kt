@@ -1,14 +1,9 @@
 package com.example.m_commerce.features.wishlist.presentation
 
-import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -16,18 +11,13 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
-import com.example.m_commerce.core.shared.components.AnimateLottie
 import com.example.m_commerce.core.shared.components.BlockingLoadingOverlay
 import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.Failed
@@ -39,6 +29,7 @@ import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.components.ProductsGridView
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 @Composable
 fun WishListScreen(
@@ -91,7 +82,8 @@ fun WishListScreen(
                     LoadData(
                         (uiState as WishlistUiState.Success).data,
                         navController,
-                        isLoading = isLoading)
+                        isLoading = isLoading
+                    )
                 }
             }
 
@@ -131,4 +123,3 @@ private fun LoadData(
         BlockingLoadingOverlay(isLoading)
     }
 }
-
