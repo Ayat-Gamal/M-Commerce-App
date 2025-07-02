@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,10 +19,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomButton
+import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 
 @Composable
 fun BottomBar(price: String, isLoading: Boolean, onAddToCart: () -> Unit) {
+
+    val pricaArr = price.split(" ")
+    val currency = pricaArr[0].trim()
+    val value = pricaArr[1].trim()
+
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -29,24 +37,24 @@ fun BottomBar(price: String, isLoading: Boolean, onAddToCart: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row {
-            Text("$", color = Teal, fontWeight = FontWeight.Bold, fontSize = 30.sp)
+        Row (verticalAlignment = Alignment.Top){
+            Text(currency, color = Teal, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Text(
-                text = price,
+                text = value,
                 color = Color.DarkGray,
                 fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
+                fontSize = 26.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
-        Spacer(Modifier.width(16.dp))
+//        Spacer(Modifier.width(24.dp))
         CustomButton(
             onClick = onAddToCart,
             text = "Add to Cart",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.wrapContentWidth(),
             isLoading = isLoading,
-            fontSize = 18,
+//            fontSize = 18,
             contentPadding = PaddingValues(horizontal = 16.dp),
             isCart = true
         )
