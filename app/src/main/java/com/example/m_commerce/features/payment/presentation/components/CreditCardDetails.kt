@@ -191,7 +191,6 @@ fun CreditCardDetailsUi() {
             backgroundColor = Teal,
             textColor = White,
             height = 50,
-            cornerRadius = 12,
             onClick = {
                 val expiry = "$selectedMonth/$selectedYear"
             }

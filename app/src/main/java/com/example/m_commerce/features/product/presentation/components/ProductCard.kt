@@ -2,22 +2,14 @@ package com.example.m_commerce.features.product.presentation.components
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,7 +29,7 @@ import com.example.m_commerce.config.theme.Gray
 import com.example.m_commerce.config.theme.White
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.SvgButton
-import com.example.m_commerce.core.shared.components.SvgImage
+import com.example.m_commerce.core.shared.components.TagWithText
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
@@ -68,7 +60,7 @@ fun ProductCard(
     Log.d("TAG", "ProductCard: ${currency}  $formattedPrice")
 
     val shape = RoundedCornerShape(16.dp)
-    val shapeOuter = RoundedCornerShape((16*1.3).dp)
+    val shapeOuter = RoundedCornerShape((16 * 1.3).dp)
 
     Column(modifier = modifier
         .shadow(elevation = 4.dp, spotColor = Gray, shape = shapeOuter, clip = true)
@@ -85,47 +77,20 @@ fun ProductCard(
                     .clip(shape = shape)
             )
 
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(6.dp)
-                    .background(color = Color.White.copy(alpha = 0.6f), shape = RoundedCornerShape(6.dp))
-                    .border(1.dp, Color.Gray, RoundedCornerShape(6.dp))
-                    .padding(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SvgImage(resId = R.raw.tag, size = 12)
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = product.brand.capitalizeFirstLetters(),
-                    style = TextStyle(fontSize = 11.sp),
-                )
-            }
+
+            TagWithText(product.brand.capitalizeFirstLetters(), modifier = Modifier
+                .padding(6.dp)
+                .align(Alignment.BottomStart))
             if (deleteFromWishList != null)
                 Box(
                     modifier = Modifier
                         .padding(6.dp)
                         .background(color = Color.White.copy(alpha = 0.4f), shape = CircleShape)
                 ) {
-            SvgButton(R.raw.heart_fill, size = 18, colorFilter = ColorFilter.tint(Color.Red)) {
-                deleteFromWishList()
-            }
-        }
-//                IconButton(onClick = deleteFromWishList) {
-//                Box(
-//                    modifier = Modifier
-//                        .size(40.dp)
-//                        .background(color = Color.White.copy(alpha = 0.8f), shape = CircleShape)
-//                        .padding(8.dp)
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Favorite,
-//                        contentDescription = "Add to wish list",
-//                        tint = Color.Red,
-//                        modifier = Modifier.align(Alignment.Center)
-//                    )
-//                }
-//            }
+                    SvgButton(R.raw.heart_fill, size = 18, colorFilter = ColorFilter.tint(Color.Red)) {
+                        deleteFromWishList()
+                    }
+                }
         }
         Column(
             modifier = Modifier
@@ -147,3 +112,4 @@ fun ProductCard(
         }
     }
 }
+

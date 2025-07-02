@@ -260,7 +260,6 @@ fun CartReceipt(
                 backgroundColor = Teal,
                 textColor = White,
                 height = 50,
-                cornerRadius = 12,
                 onClick = {
                     showSheet.value = true
                 }

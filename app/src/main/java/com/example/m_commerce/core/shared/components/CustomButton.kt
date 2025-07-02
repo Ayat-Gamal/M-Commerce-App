@@ -26,11 +26,10 @@ fun CustomButton(
     text: String,
     modifier: Modifier = Modifier,
     height: Int = 56,
-    cornerRadius: Int = 24,
     backgroundColor: Color = Teal,
     textColor: Color = Color.Unspecified,
     isLoading: Boolean = false,
-    fontSize: Int = 24,
+    fontSize: Int = 16,
     contentPadding: PaddingValues = PaddingValues(),
     isCart: Boolean = false,
     onClick: () -> Unit

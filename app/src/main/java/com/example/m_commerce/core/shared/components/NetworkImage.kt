@@ -28,8 +28,8 @@ fun NetworkImage(
             .data(url)
             .crossfade(true)
             .crossfade(500)
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .fallback(R.drawable.ic_launcher_foreground)
+            .placeholder(R.drawable.white)
+            .fallback(R.drawable.white)
             .build(),
         contentDescription = contentDescription,
         contentScale = contentScale

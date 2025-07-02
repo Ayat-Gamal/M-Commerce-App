@@ -11,6 +11,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.m_commerce.R
@@ -27,7 +28,8 @@ fun AuthSocialSection() {
         contentPadding = PaddingValues(0.dp)
     ) {
         AsyncImage(
-            model = R.drawable.ic_google,
+            model = R.drawable.google,
+            contentScale = ContentScale.Crop,
             contentDescription = "Google Logo",
             modifier = Modifier.size(32.dp)
         )

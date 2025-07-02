@@ -188,7 +188,6 @@ fun AddAddressScreen(
                 text = "Save Address",
                 backgroundColor =  Teal,
                 textColor = White,
-                cornerRadius = 12,
                 onClick = {
                     val requiredFields = mapOf(
                         "title" to addressType,
