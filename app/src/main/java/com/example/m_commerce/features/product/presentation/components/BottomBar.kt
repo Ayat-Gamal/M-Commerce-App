@@ -48,11 +48,11 @@ fun BottomBar(price: String, isLoading: Boolean, onAddToCart: () -> Unit) {
                 overflow = TextOverflow.Ellipsis
             )
         }
-//        Spacer(Modifier.width(24.dp))
+        Spacer(Modifier.width(12.dp))
         CustomButton(
             onClick = onAddToCart,
             text = "Add to Cart",
-            modifier = Modifier.wrapContentWidth(),
+            modifier = Modifier.fillMaxWidth(),
             isLoading = isLoading,
 //            fontSize = 18,
             contentPadding = PaddingValues(horizontal = 16.dp),
