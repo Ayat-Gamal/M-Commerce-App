@@ -1,6 +1,5 @@
 package com.example.m_commerce.features.home.presentation.screens
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
@@ -23,7 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
-import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
+import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.categories.domain.entity.Category
@@ -34,7 +33,6 @@ import com.example.m_commerce.features.home.presentation.components.category.Cat
 import com.example.m_commerce.features.home.presentation.components.specialoffer.SpecialOffersSection
 import com.example.m_commerce.features.home.presentation.ui_state.HomeUiState
 import com.example.m_commerce.features.home.presentation.viewmodel.HomeViewModel
-import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
@@ -67,7 +65,7 @@ fun HomeScreenUI(
     val state by viewModel.dataState.collectAsStateWithLifecycle()
 
     when (state) {
-        is HomeUiState.Loading -> LoadingScreenCase()
+        is HomeUiState.Loading -> Loading()
         is HomeUiState.Error -> FailedScreenCase(msg = (state as HomeUiState.Error).message)
         is HomeUiState.Success -> {
             val (brands, subCategories, couponCodes, userName) = (state as HomeUiState.Success)

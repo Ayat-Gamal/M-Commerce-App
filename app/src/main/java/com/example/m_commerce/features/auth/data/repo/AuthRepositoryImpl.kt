@@ -37,7 +37,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun createCart(token: String): Flow<String> {
         return shopifyDataSource
-            .createCustomerCart()
+            .createCustomerCart(token)
     }
 
     override suspend fun storeTokenAndCartId(token: String, cartId: String, uid: String) {

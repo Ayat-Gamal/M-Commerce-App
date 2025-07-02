@@ -82,8 +82,7 @@ class CustomersRemoteDataSourceImpl @Inject constructor(
         emit(token)
     }.catch { }
 
-    override suspend fun createCustomerCart() = flow {
-        val token = "3488af256e67f99519ac442366714cf6"
+    override suspend fun createCustomerCart(token: String) = flow {
         val cartID = suspendCoroutine { cont ->
             val buyerIdentity = Storefront.CartBuyerIdentityInput()
                 .setCustomerAccessToken(token)

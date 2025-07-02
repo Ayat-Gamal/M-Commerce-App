@@ -42,9 +42,11 @@ import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.dividerGray
 import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.Empty
+import com.example.m_commerce.core.shared.components.Failed
 import com.example.m_commerce.core.shared.components.GuestMode
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.UiEvent
@@ -130,10 +132,7 @@ fun CartScreenUI(
         ) {
             when (uiState) {
                 is CartUiState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = Teal
-                    )
+                    Loading()
                 }
 
                 is CartUiState.Success -> {
@@ -158,12 +157,13 @@ fun CartScreenUI(
                 is CartUiState.NoNetwork -> NoNetwork()
 
                 is CartUiState.Error -> {
-                    Text(
-                        text = "We will come back Soon ",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(24.dp)
-                    )
+                    Failed((uiState as CartUiState.Error).error)
+//                    Text(
+//                        text = "We will come back Soon ",
+//                        style = MaterialTheme.typography.titleLarge,
+//                        textAlign = TextAlign.Center,
+//                        modifier = Modifier.padding(24.dp)
+//                    )
                 }
             }
         }

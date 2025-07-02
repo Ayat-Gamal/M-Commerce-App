@@ -36,17 +36,6 @@ class CartViewModel @Inject constructor(
     private val _snackBarFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val snackBarFlow = _snackBarFlow.asSharedFlow()
 
-
-//    init {
-//        if (!networkManager.isNetworkAvailable()) {
-//            _uiState.tryEmit(CartUiState.NoNetwork)
-//        } else {
-//            if (FirebaseAuth.getInstance().currentUser == null) {
-//                _uiState.tryEmit(CartUiState.Guest)
-//            } else getCartById()
-//        }
-//    }
-
     fun getCart() {
         if (!networkManager.isNetworkAvailable()) {
             _uiState.tryEmit(CartUiState.NoNetwork)
@@ -63,6 +52,7 @@ class CartViewModel @Inject constructor(
         if (currentUser == null) {
             _uiState.value = CartUiState.Guest
         }
+            _uiState.value = CartUiState.Loading
 
         try {
             getCartByIdUseCase.invoke().collect { cart ->
