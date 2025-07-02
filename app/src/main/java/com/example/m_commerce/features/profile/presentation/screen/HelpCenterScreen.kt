@@ -1,6 +1,7 @@
 package com.example.m_commerce.features.profile.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,12 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Facebook
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +33,7 @@ import coil3.compose.AsyncImage
 import com.example.m_commerce.R
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.TextBackground
+import com.example.m_commerce.core.shared.components.SvgImage
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.profile.domain.entity.Person
 
@@ -132,17 +129,25 @@ fun PersonCard(person: Person) {
             ) {
                 Text(text = person.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 Text(text = person.title, color = Color.Gray, fontSize = 13.sp)
-
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { launchUrl(person.githubUrl) }) {
-                        Icon(painter = painterResource(id = R.drawable.gihub), contentDescription = "GitHub")
-                    }
-                    IconButton(onClick = { launchUrl(person.linkedinUrl) }) {
-                        Icon(painter = painterResource(id = R.drawable.linkedin), contentDescription = "LinkedIn")
-                    }
-                    IconButton(onClick = { launchUrl(person.facebookUrl) }) {
-                        Icon(imageVector = Icons.Default.Facebook, contentDescription = "Facebook")
-                    }
+                    SvgImage(
+                        resId = R.drawable.gihub,
+                        contentDescription = "",
+                        modifier = Modifier.clip(CircleShape)
+                            .padding(8.dp).clickable {
+                                launchUrl(person.githubUrl)
+                            }
+                    )
+
+                    SvgImage(
+                        resId = R.drawable.linkedin,
+                        contentDescription = "",
+                        modifier = Modifier.clip(CircleShape)
+                            .padding(8.dp).clickable {
+                                launchUrl(person.linkedinUrl)
+                            }
+                    )
+
                 }
             }
         }
