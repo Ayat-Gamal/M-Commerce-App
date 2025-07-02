@@ -49,7 +49,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,7 +61,6 @@ import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.TagWithText
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
-import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.ProductUiState
@@ -148,7 +146,8 @@ fun ProductDetailsScreenUI(
         bottomBar = {
             if (uiState is ProductUiState.Success) {
                 val product = (uiState as ProductUiState.Success).product
-                BottomBar(product.price, isLoading.value) {
+                val formattedPrice = currencyViewModel.formatPrice(product.price)
+                BottomBar(formattedPrice, isLoading.value) {
 
                     if (!product.availableForSale) {
                         scope.launch {

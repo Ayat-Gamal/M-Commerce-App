@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -55,7 +56,7 @@ fun CustomButton(
                 modifier = Modifier.size(20.dp)
             )
         } else {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 if (isCart) {
                     Icon(
                         modifier = Modifier.padding(start = 16.dp, end = 12.dp),

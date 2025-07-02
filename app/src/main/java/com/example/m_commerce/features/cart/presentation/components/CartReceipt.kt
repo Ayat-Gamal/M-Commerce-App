@@ -61,7 +61,6 @@ private fun onPaymentSheetResult(
     when (result) {
         is PaymentSheetResult.Completed -> {
             Log.d("Stripe", "✅ Payment completed")
-            // Trigger success callback to place order
             onSuccess()
         }
 
@@ -108,7 +107,8 @@ fun CartReceipt(
             onPaymentSheetResult(result, items.value) {
                 orderViewModel.createOrderAndSendEmail(
                     items = items.value,
-                    paymentMethod = PaymentMethod.CreditCard
+                    paymentMethod = PaymentMethod.CreditCard,
+                    priceAndCurrency =  currencyViewModel.formatPrice(cart.totalAmountWithTax)
                 )
             }
         }
@@ -119,20 +119,20 @@ fun CartReceipt(
          var rate = currencyViewModel.exchangeRate.value ?: 1.0f
 
         createPaymentIntent(
-            amount = (cart.totalAmountWithTax.toDouble() * 100 * rate  ).toInt(),
-            currency = currencyViewModel.defaultCurrencyCode ?: "EGP" ,
+            amount = (cart.totalAmountWithTax.toDouble() * 100 * rate).toInt(),
+            currency = currencyViewModel.defaultCurrencyCode ?: "EGP",
             callback =
-         { result ->
-            result.onSuccess { clientSecret ->
-                Log.d("Stripe", "✅ Got client secret: $clientSecret")
-                paymentIntentClientSecret = clientSecret
-            }.onFailure { error ->
-                Log.e("Stripe", "❌ Failed to create intent: ${error.message}")
-                scope.launch {
-                    snackBarHostState.showSnackbar("Payment initialization failed")
+            { result ->
+                result.onSuccess { clientSecret ->
+                    Log.d("Stripe", "✅ Got client secret: $clientSecret")
+                    paymentIntentClientSecret = clientSecret
+                }.onFailure { error ->
+                    Log.e("Stripe", "❌ Failed to create intent: ${error.message}")
+                    scope.launch {
+                        snackBarHostState.showSnackbar("Payment initialization failed")
+                    }
                 }
-            }
-        })
+            })
     }
 
 
@@ -279,16 +279,13 @@ fun CartReceipt(
                     state = false
                 } else {
 
-
-                    Log.d(
-                        "OrderItem",
-                        "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}"
-                    )
+                    Log.d("Cart", "CartReceipt: ${cart.totalAmountWithTax}")
+                    val priceAndCurrency = currencyViewModel.formatPrice(cart.totalAmountWithTax)
+                    Log.d("Cart", "CartReceipt: ${priceAndCurrency}")
                     orderViewModel.createOrderAndSendEmail(
                         items = lineItems,
-                        paymentMethod = paymentMethod
-                    )
-
+                        paymentMethod = paymentMethod,
+                        priceAndCurrency = priceAndCurrency,)
 
                 }
             }
