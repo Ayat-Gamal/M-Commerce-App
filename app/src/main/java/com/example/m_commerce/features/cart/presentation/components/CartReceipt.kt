@@ -83,14 +83,19 @@ fun CartReceipt(
         cartViewModel.applyCoupon("")
 
         PaymentConfiguration.init(context, publishableKey)
+         var rate = currencyViewModel.exchangeRate.value ?: 1.0f
 
-        createPaymentIntent { result ->
+        createPaymentIntent(
+            amount = (cart.totalAmountWithTax.toDouble() * 100 * rate  ).toInt(),
+            currency = currencyViewModel.defaultCurrencyCode ?: "EGP" ,
+            callback =
+         { result ->
             result.onSuccess { clientSecret ->
                 paymentIntentClientSecret = clientSecret
             }.onFailure { error ->
                 error.printStackTrace()
             }
-        }
+        })
     }
 
     LaunchedEffect(orderState.value) {
@@ -170,17 +175,7 @@ fun CartReceipt(
             Column(modifier = Modifier.fillMaxWidth()) {
                 cart?.let {
 
-//                    val taxRate = 0.14f
-//                    val amount = it.totalAmount.toFloatOrNull() ?: 0f
-//                    val totalTaxAmount = amount * taxRate
-//                    val taxAmountStr = totalTaxAmount.toString()
-//                    val totalAmountWithTax = amount + totalTaxAmount
-//                    val totalAmountWithTaxStr = totalAmountWithTax.toString()
-//                    val discountAmount = (((it.totalAmount.toFloatOrNull() ?: 0f) + totalTaxAmount) - (it.subtotalAmount?.toFloatOrNull() ?: 0f))
-//                    var discountAmountStr = discountAmount.toString()
-//                    if(discountAmount.toInt() == totalTaxAmount.toInt() ){
-//                        discountAmountStr = "0.00"
-//                    }
+
                     val receiptItems = listOf(
                         ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem(
