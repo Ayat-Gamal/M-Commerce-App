@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -63,6 +62,8 @@ import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.TagWithText
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
+import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
+import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
@@ -178,12 +179,7 @@ fun ProductDetailsScreenUI(
     ) { paddingValues ->
         when (uiState) {
             is ProductUiState.Error -> Failed((uiState as ProductUiState.Error).message)
-            is ProductUiState.Loading -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            is ProductUiState.Loading -> Loading()
 
             is ProductUiState.NoNetwork -> NoNetwork()
             is ProductUiState.Success -> {

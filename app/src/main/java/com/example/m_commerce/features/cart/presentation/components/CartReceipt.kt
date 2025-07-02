@@ -48,6 +48,7 @@ import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.payment.presentation.screen.createPaymentIntent
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
+import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import kotlinx.coroutines.launch
@@ -114,9 +115,17 @@ fun CartReceipt(
     }.build()
 
     LaunchedEffect(Unit) {
+        cartViewModel.applyCoupon("")
+
+        PaymentConfiguration.init(context, publishableKey)
+         var rate = currencyViewModel.exchangeRate.value ?: 1.0f
         cartViewModel.applyCoupon("") // optional if you want to reset promo
 
-        createPaymentIntent { result ->
+        createPaymentIntent(
+            amount = (cart.totalAmountWithTax.toDouble() * 100 * rate  ).toInt(),
+            currency = currencyViewModel.defaultCurrencyCode ?: "EGP" ,
+            callback =
+         { result ->
             result.onSuccess { clientSecret ->
                 Log.d("Stripe", "✅ Got client secret: $clientSecret")
                 paymentIntentClientSecret = clientSecret
@@ -126,7 +135,7 @@ fun CartReceipt(
                     snackBarHostState.showSnackbar("Payment initialization failed")
                 }
             }
-        }
+        })
     }
 
 
@@ -203,7 +212,8 @@ fun CartReceipt(
                 onApplyClick = {
                     cartViewModel.applyCoupon(promoCode)
                 },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                cartViewModel
             )
 
             Column(modifier = Modifier.fillMaxWidth()) {

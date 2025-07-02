@@ -3,6 +3,9 @@ package com.example.m_commerce.features.cart.presentation.viewmodel
 import ProductVariant
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.core.utils.NetworkManager
@@ -34,22 +37,16 @@ class CartViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    private val _applyCouponLoading = MutableStateFlow(false)
+    val applyCouponLoading = _applyCouponLoading.asStateFlow()
 
     private val _snackBarFlow = MutableSharedFlow<UiEvent>(replay = 0, extraBufferCapacity = 1)
     val snackBarFlow = _snackBarFlow.asSharedFlow()
 
+    var isLoading by mutableStateOf(false)
+        private set
 
-//    init {
-//        if (!networkManager.isNetworkAvailable()) {
-//            _uiState.tryEmit(CartUiState.NoNetwork)
-//        } else {
-//            if (FirebaseAuth.getInstance().currentUser == null) {
-//                _uiState.tryEmit(CartUiState.Guest)
-//            } else getCartById()
-//        }
-//    }
-
-    fun getCart() {
+    suspend fun getCart() {
         if (!networkManager.isNetworkAvailable()) {
             _uiState.tryEmit(CartUiState.NoNetwork)
         } else {
@@ -59,7 +56,7 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun getCartById() = viewModelScope.launch {
+    suspend fun getCartById() {
 
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
@@ -74,14 +71,20 @@ class CartViewModel @Inject constructor(
                         Log.i("TAG", "Cart details: ${cart.lines}")
                         cart.apply {
                             this.calculatedTaxAmount = getTotalTaxAmount(this.totalAmount)
-                            this.discountAmount = getTotalDiscountAmount(this.totalAmount , this.subtotalAmount)
+                            this.discountAmount =
+                                getTotalDiscountAmount(this.totalAmount, this.subtotalAmount)
                             //Log.i("TAG", "this this getCartById:${getTotalAmountWithTaxAmount(this.totalAmount)} ")
-                            this.totalAmountWithTax = getTotalAmountWithTaxAmount(this.subtotalAmount , this.discountAmount )
+                            this.totalAmountWithTax = getTotalAmountWithTaxAmount(
+                                this.subtotalAmount,
+                                this.discountAmount
+                            )
 
                         }
                         _uiState.value = CartUiState.Success(cart)
                     }
                 }
+                isLoading = false
+                _applyCouponLoading.emit(false)
             }
         } catch (e: Exception) {
             Log.i("TAG", "yes getCartById: ")
@@ -90,7 +93,10 @@ class CartViewModel @Inject constructor(
                 e.message?.contains("network", ignoreCase = true) == true -> CartUiState.NoNetwork
                 else -> CartUiState.Error(e.message ?: "Unknown error")
             }
+            isLoading = false
+            _applyCouponLoading.emit(false)
         }
+
     }
 
     fun increaseQuantity(lineId: String) = viewModelScope.launch {
@@ -135,6 +141,7 @@ class CartViewModel @Inject constructor(
     }
 
     fun removeLine(cartLineId: String) = viewModelScope.launch {
+        isLoading = true
         try {
             removeProductVariantUseCase(cartLineId).collect { success ->
                 if (success) {
@@ -165,24 +172,29 @@ class CartViewModel @Inject constructor(
     }
 
     fun applyCoupon(couponCode: String) = viewModelScope.launch {
+        Log.i("TAG", "applyCoupon: ")
         if (!isConnected()) return@launch
+
+        _applyCouponLoading.emit(true)
+
         try {
             applyCouponUseCase(couponCode).collect { success ->
                 if (success) {
                     getCartById()
                 } else {
-                    viewModelScope.launch {
-                        _snackBarFlow.emit(UiEvent.ShowSnackbar("Failed to apply coupon"))
-                    }
+                    _snackBarFlow.emit(UiEvent.ShowSnackbar("Failed to apply coupon"))
                 }
             }
         } catch (e: Exception) {
             _uiState.value = CartUiState.Error(e.message ?: "Apply failed")
+            _applyCouponLoading.emit(false)
+            _applyCouponLoading.emit(false)
         }
     }
 
     private suspend fun updateLineQuantity(lineId: String, newQuantity: Int) {
         try {
+            isLoading = true
             updateCartUseCase.invoke(productVariantId = lineId, quantity = newQuantity)
                 .collect { success ->
                     if (success) {
@@ -206,7 +218,7 @@ class CartViewModel @Inject constructor(
         return taxAmountStr
     }
 
-    private fun getTotalAmountWithTaxAmount(totalAmount: String , discountAmount: String): String {
+    private fun getTotalAmountWithTaxAmount(totalAmount: String, discountAmount: String): String {
         val taxAmount = getTotalTaxAmount(totalAmount).toFloatOrNull() ?: 0f
         val discount = discountAmount.toFloatOrNull() ?: 0f
         val totalAmountWithTax = totalAmount.toFloat() + taxAmount - discount

@@ -41,6 +41,7 @@ import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 
 @Composable
@@ -72,7 +73,8 @@ fun CurrencyScreenUi(
         ) {
             when {
                 state.isLoading -> {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+//                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    Loading()
                 }
 
                 state.error.isNotEmpty() -> {

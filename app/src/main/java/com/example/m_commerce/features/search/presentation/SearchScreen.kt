@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +36,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -72,11 +72,13 @@ import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Black
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.White
+import com.example.m_commerce.core.shared.components.BlockingLoadingOverlay
 import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.Failed
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.SearchBarWithClear
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
+import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.features.product.presentation.components.ProductCard
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import kotlinx.coroutines.launch
@@ -99,6 +101,7 @@ fun SearchScreen(
     var rangeValue by remember { mutableStateOf(0f..300f) }
     var initialized by remember { mutableStateOf(false) }
     val showFilterDropDownMenu = expandedFilter != null
+    val isLoading = viewModel.isLoading
 
     var query by remember { mutableStateOf("") }
 
@@ -156,135 +159,148 @@ fun SearchScreen(
         }
     ) { paddingValues ->
 
-        LazyVerticalGrid(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
+        Box(Modifier.fillMaxSize()) {
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp)
+            ) {
 
-            // header
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Column {
-                    if (uiState is SearchUiState.Success || uiState is SearchUiState.Empty) {
-                        LabelRangeSlider(selectedRange, rangeValue) {
-                            selectedRange = it
-                            viewModel.searchAndFilter(query, selectedFilters, it)
+                // header
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Column {
+                        if (uiState is SearchUiState.Success || uiState is SearchUiState.Empty) {
+                            LabelRangeSlider(selectedRange, rangeValue) {
+                                selectedRange = it
+                                viewModel.searchAndFilter(query, selectedFilters, it)
+                            }
+                            Spacer(Modifier.height(24.dp))
                         }
-                        Spacer(Modifier.height(24.dp))
-                    }
-                    FilterBar(
-                        selectedFilters = selectedFilters,
-                        expandedFilter = expandedFilter,
-                        onFilterClicked = { filter ->
-                            expandedFilter = if (expandedFilter == filter) null else filter
-                        },
-                    )
-                    Spacer(Modifier.height(16.dp))
-
-                    CustomDivider()
-                    AnimatedVisibility(
-                        visible = showFilterDropDownMenu,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        FilterDropMenu(
-                            filterType = expandedFilter ?: "",
+                        FilterBar(
                             selectedFilters = selectedFilters,
-                            onItemSelected = { selected ->
-                                val currentList = selectedFilters[expandedFilter] ?: emptyList()
-                                val updatedList = if (currentList.contains(selected)) {
-                                    currentList - selected
+                            expandedFilter = expandedFilter,
+                            onFilterClicked = { filter ->
+                                expandedFilter = if (expandedFilter == filter) null else filter
+                            },
+                        )
+                        Spacer(Modifier.height(16.dp))
+
+                        CustomDivider()
+                        AnimatedVisibility(
+                            visible = showFilterDropDownMenu,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically()
+                        ) {
+                            FilterDropMenu(
+                                filterType = expandedFilter ?: "",
+                                selectedFilters = selectedFilters,
+                                onItemSelected = { selected ->
+                                    val currentList = selectedFilters[expandedFilter] ?: emptyList()
+                                    val updatedList = if (currentList.contains(selected)) {
+                                        currentList - selected
 //                                    selectedFilters.remove(expandedFilter)
 //                                    viewModel.searchAndFilter(query, selectedFilters, selectedRange)
-                                } else {
-                                    currentList + selected
+                                    } else {
+                                        currentList + selected
 //                                    selectedFilters[expandedFilter!!] = selected
-                                }
+                                    }
 
-                                if (updatedList.isEmpty()) selectedFilters.remove(expandedFilter)
-                                else selectedFilters[expandedFilter!!] = updatedList
+                                    if (updatedList.isEmpty()) selectedFilters.remove(expandedFilter)
+                                    else selectedFilters[expandedFilter!!] = updatedList
 
-                                viewModel.searchAndFilter(query, selectedFilters, selectedRange)
-                                // expandedFilter = null
-                            },
-                            clearFilter = {
-                                selectedFilters.remove(expandedFilter)
-                                viewModel.searchAndFilter(query, selectedFilters, selectedRange)
-                            },
-                            viewModel = viewModel
+                                    viewModel.searchAndFilter(query, selectedFilters, selectedRange)
+                                    // expandedFilter = null
+                                },
+                                clearFilter = {
+                                    selectedFilters.remove(expandedFilter)
+                                    viewModel.searchAndFilter(query, selectedFilters, selectedRange)
+                                },
+                                viewModel = viewModel
+                            )
+                        }
+
+                        Text(
+                            "Showing Results for $query",
+                            style = MaterialTheme.typography.titleLarge
                         )
-                    }
-
-                    Text(
-                        "Showing Results for $query",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Spacer(Modifier.height(16.dp))
-                }
-            }
-
-            when (uiState) {
-                is SearchUiState.Success -> {
-                    val data = (uiState as SearchUiState.Success).products
-                    items(data.size) {
-                        ProductCard(
-                            product = data[it],
-                            onClick = {
-                                navController.navigate(AppRoutes.ProductDetailsScreen(data[it].id))
-                            },
-                            deleteFromWishList =
-                            if (isWishlist) {
-                                {
-                                    viewModel.deleteProduct(
-                                        data[it],
-                                        query,
-                                        selectedFilters,
-                                        selectedRange
-                                    )
-                                }
-                            } else null,
-                        )
+                        Spacer(Modifier.height(16.dp))
                     }
                 }
 
-                is SearchUiState.Empty -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Empty("No result found")
-                    }
-                }
+                when (uiState) {
+                    is SearchUiState.Success -> {
+                        val data = (uiState as SearchUiState.Success).products
 
-                is SearchUiState.Error -> {
-                    val err = (uiState as SearchUiState.Error).err
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Failed(err)
-                    }
-                }
-
-                is SearchUiState.Loading -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        val screenHeight = LocalConfiguration.current.screenHeightDp.dp / 2
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(screenHeight),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+                        items(
+                            items = data,
+                            key = { item -> item.id }
+                        ) { product ->
+                            Box(Modifier.animateItem()) {
+                                ProductCard(
+                                    product = product,
+                                    onClick = {
+                                        navController.navigate(
+                                            AppRoutes.ProductDetailsScreen(
+                                                product.id
+                                            )
+                                        )
+                                    },
+                                    deleteFromWishList =
+                                    if (isWishlist) {
+                                        {
+                                            viewModel.deleteProduct(
+                                                product,
+                                                query,
+                                                selectedFilters,
+                                                selectedRange
+                                            )
+                                        }
+                                    } else null,
+                                )
+                            }
                         }
                     }
-                }
 
-                SearchUiState.NoNetwork -> {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        NoNetwork()
+                    is SearchUiState.Empty -> {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Empty("No result found")
+                        }
+                    }
+
+                    is SearchUiState.Error -> {
+                        val err = (uiState as SearchUiState.Error).err
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Failed(err)
+                        }
+                    }
+
+                    is SearchUiState.Loading -> {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            val screenHeight = LocalConfiguration.current.screenHeightDp.dp / 2
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(screenHeight),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Loading()
+                            }
+                        }
+                    }
+
+                    SearchUiState.NoNetwork -> {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            NoNetwork()
+                        }
                     }
                 }
             }
         }
+        BlockingLoadingOverlay(isLoading)
     }
 
 
@@ -318,8 +334,11 @@ fun LabelRangeSlider(
 
             )
         Text(
-            text = "${currencyViewModel.formatPrice(priceRange.start.toString())} - ${currencyViewModel.formatPrice(priceRange.endInclusive.toString())} "
-            ,fontSize = 18.sp,
+            text = "${currencyViewModel.formatPrice(priceRange.start.toString())} - ${
+                currencyViewModel.formatPrice(
+                    priceRange.endInclusive.toString()
+                )
+            } ", fontSize = 18.sp,
             color = Color.Gray
         )
     }
@@ -359,7 +378,7 @@ fun LabelRangeSlider(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text =  currencyViewModel.formatPrice(priceRange.start.toString()),
+            text = currencyViewModel.formatPrice(priceRange.start.toString()),
             fontSize = 16.sp,
             color = Color.Gray
         )
@@ -395,8 +414,10 @@ fun CustomTrack(
     inactiveColor: Color = Color.LightGray
 ) {
     val density = LocalDensity.current
-    val startFraction = (state.activeRangeStart - state.valueRange.start) / (state.valueRange.endInclusive - state.valueRange.start)
-    val endFraction = (state.activeRangeEnd - state.valueRange.start) / (state.valueRange.endInclusive - state.valueRange.start)
+    val startFraction =
+        (state.activeRangeStart - state.valueRange.start) / (state.valueRange.endInclusive - state.valueRange.start)
+    val endFraction =
+        (state.activeRangeEnd - state.valueRange.start) / (state.valueRange.endInclusive - state.valueRange.start)
 
     BoxWithConstraints(
         modifier = Modifier

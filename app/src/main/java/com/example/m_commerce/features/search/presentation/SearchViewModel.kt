@@ -1,5 +1,8 @@
 package com.example.m_commerce.features.search.presentation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,6 +51,9 @@ class SearchViewModel @Inject constructor(
     private var allProducts = emptyList<Product>()
     private var filteredProducts = emptyList<Product>()
 
+    var isLoading by mutableStateOf(false)
+        private set
+
     var colors = mutableListOf<String>()
     var categories = mutableListOf<String>()
     var brands = mutableListOf<String>()
@@ -71,30 +77,34 @@ class SearchViewModel @Inject constructor(
             return@launch
         }
 
-        _uiState.emit(SearchUiState.Loading)
+        isLoading = true
+        //_uiState.emit(SearchUiState.Loading)
         deleteFromWishlist(product.id)
             .catch { _message.emit(SnackBarMessage("Failed to remove product from wishlist: ${it.message}")) }
             .collect {
+
+                allProducts = allProducts.filter { newProduct -> newProduct.id != product.id }
+                searchAndFilter(query, selectedFilters, range)
+                isLoading = false
                 _message.emit(SnackBarMessage(
                     message = it,
                     actionLabel = "Undo",
                     onAction = {
+                        isLoading = true
                         viewModelScope.launch {
                             addToWishlist(product.id)
                                 .catch { e ->
                                     _message.emit(SnackBarMessage("Failed to add product to wishlist: ${e.message}"))
                                 }
                                 .collect {
-                                    _uiState.emit(SearchUiState.Loading)
+                                    //_uiState.emit(SearchUiState.Loading)
                                     allProducts = allProducts + product
                                     searchAndFilter(query, selectedFilters, range)
+                                    isLoading = false
                                 }
                         }
                     }
                 ))
-
-                allProducts = allProducts.filter { newProduct -> newProduct.id != product.id }
-                searchAndFilter(query, selectedFilters, range)
             }
     }
 
@@ -125,7 +135,8 @@ class SearchViewModel @Inject constructor(
         _uiState.value = if (filteredProducts.isEmpty()) {
             SearchUiState.Empty
         } else {
-            SearchUiState.Success(filteredProducts)
+            val sortedProducts = filteredProducts.sortedBy { it.id }
+            SearchUiState.Success(sortedProducts)
         }
     }
 

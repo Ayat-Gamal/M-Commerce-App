@@ -1,6 +1,9 @@
 package com.example.m_commerce.config.routes
 
 import CartScreenUI
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
@@ -48,14 +51,35 @@ fun NavSetup(
 ) {
     val user = FirebaseAuth.getInstance().currentUser
     val startingScreen = if (user != null) AppRoutes.HomeScreen else AppRoutes.LoginScreen
-//    val startingScreen = AppRoutes.MapScreen
 
 
-    NavHost(
-        navController = navController,
+    NavHost(navController = navController,
         startDestination = startingScreen,
-        modifier = modifier.padding(0.dp)
-    ) {
+        modifier = modifier.padding(0.dp),
+        enterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> fullWidth },
+                animationSpec = tween(durationMillis = 300)
+            )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> -fullWidth },
+                animationSpec = tween(durationMillis = 300)
+            )
+        },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> -fullWidth },
+                animationSpec = tween(durationMillis = 300)
+            )
+        },
+        popExitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> fullWidth },
+                animationSpec = tween(durationMillis = 300)
+            )
+        }) {
 
         composable<AppRoutes.Onboarding> {
             showBottomNavbar.value = false
@@ -72,15 +96,13 @@ fun NavSetup(
                 navController.navigate(AppRoutes.BrandsScreen)
             }, navigateToBrand = { brand ->
                 navController.navigate(AppRoutes.BrandDetailsScreen(brand.name ?: "Empty"))
-            },
-                navigateToCategory = { category ->
-                    navController.navigate(
-                        AppRoutes.CategoryDetailsScreen(
-                            category.name ?: "Empty ID"
-                        )
+            }, navigateToCategory = { category ->
+                navController.navigate(
+                    AppRoutes.CategoryDetailsScreen(
+                        category.name ?: "Empty ID"
                     )
-                }, navController = navController,
-                snackBarHostState = snackBarHostState
+                )
+            }, navController = navController, snackBarHostState = snackBarHostState
             )
         }
 
@@ -97,32 +119,34 @@ fun NavSetup(
         composable<AppRoutes.ProductDetailsScreen> {
             showBottomNavbar.value = false
             val productArgs = it.toRoute<AppRoutes.ProductDetailsScreen>()
+
             ProductDetailsScreenUI(
-                productId = productArgs.productId,
-                navController = navController
+                productId = productArgs.productId, navController = navController
             )
         }
 
         composable<AppRoutes.CategoryScreen> {
             showBottomNavbar.value = true
             CategoryScreenUI(navigateToCategory = { category ->
-                navController.navigate(AppRoutes.CategoryDetailsScreen(category.name ?: "Empty ID"))
-            },
-                navigateToSubCategory = { category ->
-                    navController.navigate(
-                        AppRoutes.CategoryDetailsScreen(
-                            category.name ?: "Empty ID"
-                        )
+                navController.navigate(
+                    AppRoutes.CategoryDetailsScreen(
+                        category.name ?: "Empty ID"
                     )
-                })
+                )
+            }, navigateToSubCategory = { category ->
+                navController.navigate(
+                    AppRoutes.CategoryDetailsScreen(
+                        category.name ?: "Empty ID"
+                    )
+                )
+            })
         }
 
         composable<AppRoutes.CategoryDetailsScreen> {
             showBottomNavbar.value = false
             val categoryArgs = it.toRoute<AppRoutes.CategoryDetailsScreen>()
             CategoryDetailsScreenUI(
-                categoryName = categoryArgs.categoryId,
-                navController = navController
+                categoryName = categoryArgs.categoryId, navController = navController
             )
         }
 
