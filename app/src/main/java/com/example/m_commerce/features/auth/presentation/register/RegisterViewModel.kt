@@ -13,8 +13,10 @@ import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
 import com.example.m_commerce.features.auth.domain.validation.ValidateName
 import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
 import com.example.m_commerce.features.auth.domain.validation.ValidationResult
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -129,5 +132,21 @@ class RegisterViewModel @Inject constructor(
         if (!confirmPasswordResult.successful) return confirmPasswordResult
 
         return ValidationResult(true)
+    }
+
+    fun signUpWithGoogle(account: GoogleSignInAccount) {
+        viewModelScope.launch {
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            val result = FirebaseAuth.getInstance().signInWithCredential(credential).await()
+            val user = result.user
+            if (user != null) {
+                setupUser(
+                    email = user.email ?: "user@gmail.com",
+                    password = "111111",
+                    name = user.displayName ?: "User",
+                    user = user
+                )
+            }
+        }
     }
 }

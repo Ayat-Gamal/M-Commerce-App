@@ -78,7 +78,7 @@ fun CartReceipt(
     var shouldClearCart by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        cartViewModel.applyCoupon("")
+//        cartViewModel.applyCoupon("")
 
         PaymentConfiguration.init(context, publishableKey)
          var rate = currencyViewModel.exchangeRate.value ?: 1.0f

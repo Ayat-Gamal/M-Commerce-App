@@ -109,7 +109,7 @@ fun LoginScreen(
 
             item { LoginFormSection(isLoading = isLoading) }
             item { LoginDividerSection() }
-            item { AuthSocialSection() }
+            item { AuthSocialSection(viewModel) }
             item {
                 AuthFooterSection(
                     questionText = "Don't have an account?",

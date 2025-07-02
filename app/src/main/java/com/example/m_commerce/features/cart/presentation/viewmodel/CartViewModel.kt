@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.cart.domain.usecases.GetCartByIdUseCase
 import com.example.m_commerce.features.cart.domain.usecases.RemoveProductVariantUseCase
@@ -58,6 +59,7 @@ class CartViewModel @Inject constructor(
 
     suspend fun getCartById() {
 
+        resetCart()
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             _uiState.value = CartUiState.Guest
@@ -96,7 +98,6 @@ class CartViewModel @Inject constructor(
             isLoading = false
             _applyCouponLoading.emit(false)
         }
-
     }
 
     fun increaseQuantity(lineId: String) = viewModelScope.launch {
@@ -171,6 +172,15 @@ class CartViewModel @Inject constructor(
         }
     }
 
+    fun resetCart() = viewModelScope.launch{
+        if (!isConnected()) return@launch
+
+        _applyCouponLoading.emit(true)
+        try {
+            applyCouponUseCase("").first()
+        } catch (e: Exception) {}
+    }
+
     fun applyCoupon(couponCode: String) = viewModelScope.launch {
         Log.i("TAG", "applyCoupon: ")
         if (!isConnected()) return@launch
@@ -183,11 +193,12 @@ class CartViewModel @Inject constructor(
                     getCartById()
                 } else {
                     _snackBarFlow.emit(UiEvent.ShowSnackbar("Failed to apply coupon"))
+                    _applyCouponLoading.emit(false)
+
                 }
             }
         } catch (e: Exception) {
             _uiState.value = CartUiState.Error(e.message ?: "Apply failed")
-            _applyCouponLoading.emit(false)
             _applyCouponLoading.emit(false)
         }
     }

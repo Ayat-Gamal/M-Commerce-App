@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.auth.presentation.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.features.auth.domain.usecases.LoginUserUseCase
@@ -7,10 +8,13 @@ import com.example.m_commerce.features.auth.domain.validation.ValidateEmail
 import com.example.m_commerce.features.auth.domain.validation.ValidatePassword
 import com.example.m_commerce.features.auth.domain.validation.ValidationResult
 import com.example.m_commerce.features.auth.presentation.register.AuthState
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +37,22 @@ class LoginViewModel @Inject constructor(
 
     private var _messageState = MutableSharedFlow<String>()
     val messageState = _messageState.asSharedFlow()
+
+    fun loginWithGoogle(account: GoogleSignInAccount) = viewModelScope.launch {
+
+        Log.i("TAG", "loginWithGoogle: login with google method called ")
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        val result = FirebaseAuth.getInstance().signInWithCredential(credential).await()
+        val user = result.user
+        Log.i("TAG", "loginWithGoogle: user is verified: ${user?.isEmailVerified}")
+
+        if (user != null && user.isEmailVerified) {
+            _uiState.emit(AuthState.Success(user))
+        } else {
+            FirebaseAuth.getInstance().signOut()
+            _messageState.emit("Please activate your email")
+        }
+    }
 
     fun login(email: String, password: String) {
 
