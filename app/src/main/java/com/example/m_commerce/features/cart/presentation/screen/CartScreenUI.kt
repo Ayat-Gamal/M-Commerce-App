@@ -1,4 +1,4 @@
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,39 +7,35 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
 import com.example.m_commerce.config.theme.dividerGray
+import com.example.m_commerce.core.shared.components.BlockingLoadingOverlay
 import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.Failed
@@ -55,7 +51,6 @@ import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.stripe.android.paymentsheet.PaymentSheet
 
 @Composable
@@ -73,6 +68,7 @@ fun CartScreenUI(
     val networkManager = NetworkManager(ctx)
     val isOnline by networkManager.observeNetworkChanges()
         .collectAsStateWithLifecycle(networkManager.isNetworkAvailable())
+    val isLoading = cartViewModel.isLoading
 
     LaunchedEffect(isOnline) {
         cartViewModel.getCart()
@@ -141,6 +137,7 @@ fun CartScreenUI(
                         cartLines = cart.lines,
                         viewModel = cartViewModel,
                         currencyViewModel = currencyViewModel,
+                        isLoading = isLoading
                     )
                 }
 
@@ -171,11 +168,13 @@ fun CartScreenUI(
 }
 
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun CartContent(
     cartLines: List<ProductVariant>,
     viewModel: CartViewModel,
     currencyViewModel: CurrencyViewModel,
+    isLoading: Boolean
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var pendingRemovalLine: ProductVariant? by remember { mutableStateOf(null) }
@@ -194,37 +193,44 @@ fun CartContent(
                 showDialog = false
             }
         )
-        LazyColumn(
-            modifier = Modifier
+        Box(
+            Modifier
                 .weight(1f)
-                .height(LocalConfiguration.current.screenHeightDp.dp * 0.4f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(top = 16.dp)
+                .height(LocalConfiguration.current.screenHeightDp.dp * 0.4f)
         ) {
-            items(cartLines) { product ->
-                CartItemCard(
-                    product = product,
-                    onIncrease = {
-                        viewModel.increaseQuantity(product.lineId)
-                    },
-                    onDecrease = {
-                        viewModel.decreaseQuantity(product.lineId)
-                    },
-                    onRemove = {
-                        pendingRemovalLine = product
-                        showDialog = true
-                    },
-                    currencyViewModel
-                )
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(cartLines) { product ->
+                    Box(Modifier.animateItem()) {
+                        CartItemCard(
+                            product = product,
+                            onIncrease = {
+                                viewModel.increaseQuantity(product.lineId)
+                            },
+                            onDecrease = {
+                                viewModel.decreaseQuantity(product.lineId)
+                            },
+                            onRemove = {
+                                pendingRemovalLine = product
+                                showDialog = true
+                            },
+                            currencyViewModel
+                        )
+                    }
 
-                if (cartLines.indexOf(product) < cartLines.size - 1) {
-                    Divider(
-                        color = dividerGray,
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+                    if (cartLines.indexOf(product) < cartLines.size - 1) {
+                        Divider(
+                            color = dividerGray,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+
                 }
-
             }
+            BlockingLoadingOverlay(isLoading)
         }
     }
 }

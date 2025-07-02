@@ -77,8 +77,6 @@ fun CartReceipt(
     var showCompleteDialog by remember { mutableStateOf(false) }
     var shouldClearCart by remember { mutableStateOf(false) }
 
-
-
     LaunchedEffect(Unit) {
         cartViewModel.applyCoupon("")
 
@@ -164,23 +162,12 @@ fun CartReceipt(
                 onApplyClick = {
                     cartViewModel.applyCoupon(promoCode)
                 },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                cartViewModel
             )
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                cart?.let {
-
-//                    val taxRate = 0.14f
-//                    val amount = it.totalAmount.toFloatOrNull() ?: 0f
-//                    val totalTaxAmount = amount * taxRate
-//                    val taxAmountStr = totalTaxAmount.toString()
-//                    val totalAmountWithTax = amount + totalTaxAmount
-//                    val totalAmountWithTaxStr = totalAmountWithTax.toString()
-//                    val discountAmount = (((it.totalAmount.toFloatOrNull() ?: 0f) + totalTaxAmount) - (it.subtotalAmount?.toFloatOrNull() ?: 0f))
-//                    var discountAmountStr = discountAmount.toString()
-//                    if(discountAmount.toInt() == totalTaxAmount.toInt() ){
-//                        discountAmountStr = "0.00"
-//                    }
+                cart.let {
                     val receiptItems = listOf(
                         ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem(

@@ -76,7 +76,7 @@ fun CartItemCard(
         ) {
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
                     .shadow(2.dp, shape = RoundedCornerShape(12.dp), clip = true)
                     .background(White, shape = RoundedCornerShape(12.dp))
                     .fillMaxWidth()
