@@ -117,7 +117,7 @@ dependencies {
     implementation("com.shopify.mobilebuysdk:buy3:2025.4.0")
 
 // Stripe SDK
-    implementation("com.stripe:stripe-android:21.18.0")
+    implementation("com.stripe:stripe-android:21.20.0")
 
 // Coil (Image Loading)
     implementation("io.coil-kt.coil3:coil-compose:3.0.4")

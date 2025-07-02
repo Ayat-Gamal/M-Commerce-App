@@ -1,4 +1,5 @@
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.m_commerce.BuildConfig
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
@@ -51,10 +52,14 @@ import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
+import com.example.m_commerce.features.orders.data.PaymentMethod
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
+import com.example.m_commerce.features.payment.presentation.screen.createPaymentIntent
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
-import com.google.firebase.auth.FirebaseAuth
+import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
 
 @Composable
 fun CartScreenUI(
@@ -64,20 +69,28 @@ fun CartScreenUI(
     cartViewModel: CartViewModel = hiltViewModel(),
     currencyViewModel: CurrencyViewModel = hiltViewModel(),
     orderViewModel: OrderViewModel = hiltViewModel(),
-    paymentSheet: PaymentSheet
+//    paymentSheet: PaymentSheet,
+
+
 ) {
 
-    val ctx = LocalContext.current
-    val networkManager = NetworkManager(ctx)
+
+    val context = LocalContext.current
+
+    val networkManager = NetworkManager(context)
     val isOnline by networkManager.observeNetworkChanges()
         .collectAsStateWithLifecycle(networkManager.isNetworkAvailable())
+
+    val uiState by cartViewModel.uiState.collectAsState()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+
+
 
     LaunchedEffect(isOnline) {
         cartViewModel.getCart()
     }
 
-    val uiState by cartViewModel.uiState.collectAsState()
-    val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         cartViewModel.snackBarFlow.collect { event ->
@@ -106,10 +119,11 @@ fun CartScreenUI(
                     paddingValues,
                     cartViewModel = cartViewModel,
                     currencyViewModel = currencyViewModel,
-                    paymentSheet = paymentSheet,
+//                    paymentSheet = paymentSheet,
                     cart = cart,
                     orderViewModel = orderViewModel,
-                    snackBarHostState = snackBarHostState
+                    snackBarHostState = snackBarHostState,
+
                 ) {
                     navController.navigate(AppRoutes.ManageAddressScreen)
 

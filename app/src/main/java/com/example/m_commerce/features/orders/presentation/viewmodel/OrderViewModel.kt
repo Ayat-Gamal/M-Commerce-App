@@ -1,8 +1,6 @@
 package com.example.m_commerce.features.orders.presentation.viewmodel
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.m_commerce.core.utils.NetworkManager
@@ -22,13 +20,11 @@ import com.example.m_commerce.features.orders.domain.usecases.CreateOrderUseCase
 import com.example.m_commerce.features.orders.domain.usecases.GetOrdersUseCase
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderHistoryUiState
 import com.example.m_commerce.features.orders.presentation.ui_state.OrderUiState
-import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,7 +35,7 @@ class OrderViewModel @Inject constructor(
     private val getDefaultAddressUseCase: GetDefaultAddressUseCase,
     private val getOrdersUseCase: GetOrdersUseCase,
     private val networkManager: NetworkManager,
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow<OrderUiState>(OrderUiState.Idle)
     val state: StateFlow<OrderUiState> = _state
@@ -60,8 +56,10 @@ class OrderViewModel @Inject constructor(
             Log.d("OrderHistory", "ViewModel loading orders")
 
             getOrdersUseCase()
-                .catch { e -> _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error")
-                    Log.e("OrderHistory", "loadOrders: ",e )}
+                .catch { e ->
+                    _ordersState.value = OrderHistoryUiState.Error(e.message ?: "Unknown error")
+                    Log.e("OrderHistory", "loadOrders: ", e)
+                }
                 .collect { result ->
                     Log.i("OrderHistory", "loadOrders: ${_ordersState.value}")
                     _ordersState.value = result
@@ -118,7 +116,6 @@ class OrderViewModel @Inject constructor(
 
                 val variables = DraftOrderCreateVariables(
                     email = user.email ?: "youssifn.mostafa@gmail.com",
-//                    email = "youssifn.mostafa@gmail.com",
                     shippingAddress = shippingAddress,
                     lineItems = items,
                     note = null
@@ -130,18 +127,9 @@ class OrderViewModel @Inject constructor(
                 )
 
                 createOrderUseCase(request).collect { order ->
-                    Log.d("Shopify", "Order created: ${order.id}")
-                    when (paymentMethod) {
-                        PaymentMethod.CreditCard -> {
-                            //sendOrderConfirmationEmail(order.id)
-                        }
-
-                        else -> {
-                            Log.i("Order", "createOrderAndSendEmail: ${order.id}")
-                            completeOrder(order.id)
-                        }
-                    }
-                            _state.value = OrderUiState.Success(order)
+//                    Log.d("Shopify", "Order created: ${order.id}")
+                    completeOrder(order.id)
+                    _state.value = OrderUiState.Success(order)
                 }
             } catch (e: Exception) {
                 Log.e("Order", "Order creation failed", e)
