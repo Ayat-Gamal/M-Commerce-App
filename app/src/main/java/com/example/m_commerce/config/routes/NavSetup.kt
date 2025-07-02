@@ -38,7 +38,6 @@ import com.example.m_commerce.features.profile.presentation.screen.ProfileScreen
 import com.example.m_commerce.features.search.presentation.SearchScreen
 import com.example.m_commerce.features.wishlist.presentation.WishListScreen
 import com.google.firebase.auth.FirebaseAuth
-import com.stripe.android.paymentsheet.PaymentSheet
 
 @Composable
 fun NavSetup(
@@ -47,7 +46,7 @@ fun NavSetup(
     modifier: Modifier = Modifier,
     showBottomNavbar: MutableState<Boolean>,
     paddingValues: PaddingValues,
-    paymentSheet: PaymentSheet
+//    paymentSheet: PaymentSheet
 
 ) {
     val user = FirebaseAuth.getInstance().currentUser
@@ -154,7 +153,9 @@ fun NavSetup(
         composable<AppRoutes.CartScreen> {
             showBottomNavbar.value = true
 
-            CartScreenUI(paddingValues, paymentSheet = paymentSheet, navController = navController)
+            CartScreenUI(paddingValues,
+//                paymentSheet = paymentSheet,
+                navController = navController)
         }
 
         composable<AppRoutes.ProfileScreen> {
@@ -175,11 +176,11 @@ fun NavSetup(
             CheckoutScreenUI(navController)
         }
 
-        composable<AppRoutes.PaymentScreen> {
-            showBottomNavbar.value = false
-
-            PaymentScreenUI(navController, paymentSheet = paymentSheet)
-        }
+//        composable<AppRoutes.PaymentScreen> {
+//            showBottomNavbar.value = false
+//
+//            PaymentScreenUI(navController, paymentSheet = paymentSheet)
+//        }
 
         composable<AppRoutes.UserOrdersScreen> {
             showBottomNavbar.value = false

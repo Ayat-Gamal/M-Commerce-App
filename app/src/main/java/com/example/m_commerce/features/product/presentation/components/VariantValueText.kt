@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun VariantValueText(selectedSize: String?) {
     Text(
-        selectedSize?.uppercase() ?: "",
+        selectedSize ?: "",
         modifier = Modifier.padding(start = 4.dp),
         fontSize = 18.sp,
         color = Color.Black,

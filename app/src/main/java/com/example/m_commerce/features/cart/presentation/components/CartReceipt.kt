@@ -50,7 +50,30 @@ import com.example.m_commerce.features.payment.presentation.screen.createPayment
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
 import kotlinx.coroutines.launch
+
+private fun onPaymentSheetResult(
+    result: PaymentSheetResult,
+    items: List<LineItem>,
+    onSuccess: () -> Unit
+) {
+    when (result) {
+        is PaymentSheetResult.Completed -> {
+            Log.d("Stripe", "✅ Payment completed")
+            // Trigger success callback to place order
+            onSuccess()
+        }
+
+        is PaymentSheetResult.Canceled -> {
+            Log.d("Stripe", "⚠️ Payment canceled")
+        }
+
+        is PaymentSheetResult.Failed -> {
+            Log.e("Stripe", "❌ Payment failed: ${result.error.localizedMessage}")
+        }
+    }
+}
 
 
 @Composable
@@ -58,11 +81,11 @@ fun CartReceipt(
     paddingValues: PaddingValues,
     cartViewModel: CartViewModel,
     currencyViewModel: CurrencyViewModel,
-    paymentSheet: PaymentSheet,
+//    paymentSheet: PaymentSheet,
     orderViewModel: OrderViewModel,
     cart: Cart,
     snackBarHostState: SnackbarHostState,
-    navigateToAddress: () -> Unit
+    navigateToAddress: () -> Unit,
 ) {
     val uiState by cartViewModel.uiState.collectAsState()
     var promoCode by rememberSaveable { mutableStateOf("") }
@@ -77,11 +100,26 @@ fun CartReceipt(
     var showCompleteDialog by remember { mutableStateOf(false) }
     var shouldClearCart by remember { mutableStateOf(false) }
 
+
+    val items = remember { mutableStateOf<List<LineItem>>(emptyList()) }
+
+    val paymentSheet = remember {
+        PaymentSheet.Builder { result ->
+            onPaymentSheetResult(result, items.value) {
+                orderViewModel.createOrderAndSendEmail(
+                    items = items.value,
+                    paymentMethod = PaymentMethod.CreditCard
+                )
+            }
+        }
+    }.build()
+
     LaunchedEffect(Unit) {
 //        cartViewModel.applyCoupon("")
 
         PaymentConfiguration.init(context, publishableKey)
          var rate = currencyViewModel.exchangeRate.value ?: 1.0f
+        cartViewModel.applyCoupon("") // optional if you want to reset promo
 
         createPaymentIntent(
             amount = (cart.totalAmountWithTax.toDouble() * 100 * rate  ).toInt(),
@@ -89,12 +127,18 @@ fun CartReceipt(
             callback =
          { result ->
             result.onSuccess { clientSecret ->
+                Log.d("Stripe", "✅ Got client secret: $clientSecret")
                 paymentIntentClientSecret = clientSecret
             }.onFailure { error ->
-                error.printStackTrace()
+                Log.e("Stripe", "❌ Failed to create intent: ${error.message}")
+                scope.launch {
+                    snackBarHostState.showSnackbar("Payment initialization failed")
+                }
             }
         })
     }
+
+
 
     LaunchedEffect(orderState.value) {
         Log.d(
@@ -129,6 +173,7 @@ fun CartReceipt(
                 )
 
             }
+
             OrderUiState.Loading -> {
                 Log.d(
                     "OrderItem",
@@ -177,7 +222,7 @@ fun CartReceipt(
                         ReceiptItem("Subtotal", currencyViewModel.formatPrice(it.subtotalAmount)),
                         ReceiptItem(
                             "Tax",
-                            currencyViewModel.formatPrice( cart.calculatedTaxAmount)
+                            currencyViewModel.formatPrice(cart.calculatedTaxAmount)
                         ),
                         ReceiptItem(
                             "Discount",
@@ -204,10 +249,30 @@ fun CartReceipt(
 
             CheckoutBottomSheet(showSheet = showSheet, navigateToAddresses = navigateToAddress) { paymentMethod ->
 
+                val lineItems = cart.lines.map {
+                    LineItem(
+                        variantId = it.id,
+                        title = it.productTitle,
+                        quantity = it.quantity,
+                    )
+
+                }
+
+                items.value = lineItems
+
                 if (!cartViewModel.isConnected()) return@CheckoutBottomSheet
 
                 if (paymentMethod == PaymentMethod.CreditCard) {
                     state = true
+                    val lineItems = cart.lines.map {
+                        LineItem(
+                            variantId = it.id,
+                            title = it.productTitle,
+                            quantity = it.quantity
+                        )
+                    }
+                    items.value = lineItems
+
                     paymentIntentClientSecret?.let {
                         paymentSheet.presentWithPaymentIntent(
                             it,
@@ -217,14 +282,7 @@ fun CartReceipt(
                     state = false
                 } else {
 
-                    val lineItems = cart.lines.map {
-                        LineItem(
-                            variantId = it.id,
-                            title = it.productTitle,
-                            quantity = it.quantity,
-                        )
 
-                    }
                     Log.d(
                         "OrderItem",
                         "CartReceipt: ${lineItems.size} ==  ${lineItems[0].variantId} == ${lineItems[0].title} == ${lineItems[0].quantity} == ${lineItems[0].originalUnitPrice} == ${lineItems[0].specs} == ${lineItems[0].image}"
@@ -252,7 +310,6 @@ fun CartReceipt(
                 backgroundColor = Teal,
                 textColor = White,
                 height = 50,
-                cornerRadius = 12,
                 onClick = {
                     showSheet.value = true
                 }

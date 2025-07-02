@@ -2,7 +2,6 @@ package com.example.m_commerce.features.home.presentation.screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,35 +18,36 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.m_commerce.BuildConfig
 import com.example.m_commerce.config.routes.NavSetup
 import com.example.m_commerce.config.theme.MCommerceTheme
 import com.example.m_commerce.core.shared.components.bottom_nav_bar.BottomNavBar
-import com.example.m_commerce.features.payment.presentation.paymentResultcallback
+import com.example.m_commerce.features.orders.data.model.variables.LineItem
+import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var paymentSheet: PaymentSheet
 
     private lateinit var showBottomNavbar: MutableState<Boolean>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        paymentSheet = PaymentSheet(this, paymentResultcallback)
+        PaymentConfiguration.init(applicationContext, BuildConfig.PAYMENT_PUBLISHABLE_KEY)
+
         enableEdgeToEdge()
-            setContent {
-                MCommerceTheme {
-                    showBottomNavbar = remember { mutableStateOf(false) }
-                    MainLayout(
-                        showBottomNavbar = showBottomNavbar,
-                        paymentSheet = paymentSheet
-                    )
-                }
+        setContent {
+            MCommerceTheme {
+                showBottomNavbar = remember { mutableStateOf(false) }
+                MainLayout(
+                    showBottomNavbar = showBottomNavbar,
+//                    paymentSheet = paymentSheet
+                )
             }
+        }
     }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
     fun MainLayout(
         navController: NavHostController = rememberNavController(),
         showBottomNavbar: MutableState<Boolean>,
-        paymentSheet: PaymentSheet
+        paymentSheet: PaymentSheet? = null
     ) {
 
         val snackBarHostState = remember { SnackbarHostState() }
@@ -81,10 +81,28 @@ class MainActivity : ComponentActivity() {
                 modifier = noBottomPadding,
                 showBottomNavbar,
                 paddingValues = innerPadding,
-                paymentSheet = paymentSheet
+//                paymentSheet = paymentSheet
             )
         }
     }
 
+}
+
+private fun onPaymentResult(result: PaymentSheetResult, items: List<LineItem>) {
+    when (result) {
+        is PaymentSheetResult.Completed -> {
+
+
+            println("✅ Payment completed")
+        }
+
+        is PaymentSheetResult.Canceled -> {
+            println("⚠️ Payment canceled")
+        }
+
+        is PaymentSheetResult.Failed -> {
+            println("❌ Payment failed: ${result.error.localizedMessage}")
+        }
+    }
 }
 

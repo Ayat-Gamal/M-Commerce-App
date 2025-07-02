@@ -25,22 +25,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,67 +46,37 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.theme.Teal
-import com.example.m_commerce.core.shared.components.CustomButton
 import com.example.m_commerce.core.shared.components.Failed
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.NoNetwork
+import com.example.m_commerce.core.shared.components.TagWithText
+import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
+import com.example.m_commerce.features.product.presentation.components.BottomBar
+import com.example.m_commerce.features.product.presentation.components.DotsIndicator
+import com.example.m_commerce.features.product.presentation.components.QuantitySelector
+import com.example.m_commerce.features.product.presentation.components.TransParentTopBar
 import com.example.m_commerce.features.product.presentation.components.VariantHeaderText
 import com.example.m_commerce.features.product.presentation.components.VariantValueText
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.launch
 
-@Composable
-fun BottomBar(price: String, isLoading: Boolean, onAddToCart: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row {
-            Text("$", color = Teal, fontWeight = FontWeight.Bold, fontSize = 30.sp)
-            Text(
-                text = price,
-                color = Color.DarkGray,
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-        Spacer(Modifier.width(16.dp))
-        CustomButton(
-            onClick = onAddToCart,
-            text = "Add to Cart",
-            modifier = Modifier.fillMaxWidth(),
-            isLoading = isLoading,
-            fontSize = 18,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            isCart = true
-        )
-    }
-}
 
 @Composable
 fun ProductDetailsScreenUI(
@@ -173,13 +136,13 @@ fun ProductDetailsScreenUI(
     Scaffold(
         topBar = {
             if (uiState is ProductUiState.Success) {
-                TopBar(navController, user, isFavorite) {
+                TransParentTopBar(navController, user, isFavorite) {
                     toggleFavorite(viewModel, isFavorite, productId).also {
                         isFavorite = !isFavorite
                     }
                 }
             } else {
-                TopBar(navController, null, false) {}
+                TransParentTopBar(navController, null, false) {}
             }
         },
         bottomBar = {
@@ -236,57 +199,6 @@ fun ProductDetailsScreenUI(
     }
 }
 
-@Composable
-fun QuantitySelector(quantity: Int, onQuantityChange: (Int) -> Unit) {
-    Row(
-        Modifier
-            .padding(4.dp)
-            .background(
-                Color.LightGray.copy(0.2f),
-                RoundedCornerShape(25.dp)
-            )
-            .width(120.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Icon(
-            Icons.Filled.Remove,
-            contentDescription = "Decrease",
-            Modifier
-                .padding(8.dp)
-                .background(White, shape = CircleShape)
-                .clip(CircleShape)
-                .clickable { if (quantity > 1) onQuantityChange(quantity - 1) }
-                .padding(4.dp)
-//                    .size(35.dp)
-            ,
-            tint = Color.DarkGray
-        )
-
-        Text(
-            textAlign = TextAlign.Center,
-            text = quantity.toString(),
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-
-        Icon(
-            Icons.Filled.Add,
-            contentDescription = "Decrease",
-            Modifier
-                .padding(8.dp)
-                .background(White, shape = CircleShape)
-                .clip(CircleShape)
-                .clickable {
-                    onQuantityChange(quantity + 1)
-                }
-                .padding(4.dp),
-            tint = Color.DarkGray
-        )
-
-    }
-}
-
 
 @Composable
 fun LoadData(
@@ -310,21 +222,20 @@ fun LoadData(
 
         // Image Carousel
         Box(contentAlignment = Alignment.BottomCenter) {
-            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth()) { page ->
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth().height(400.dp)) { page ->
                 NetworkImage(
                     modifier = Modifier.fillMaxWidth(),
                     url = product.images[page],
-                    contentScale = ContentScale.FillWidth
+//                    contentScale = ContentScale.FillWidth
                 )
             }
             DotsIndicator(
                 totalDots = product.images.size,
                 selectedIndex = pagerState.currentPage,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = (-70).dp)
+                    .padding(bottom = 70.dp)
                     .clip(CircleShape)
-                    .background(White.copy(0.5f))
+                    .background(Color.Gray.copy(alpha = 0.4f))
             )
         }
 
@@ -334,23 +245,19 @@ fun LoadData(
                 .fillMaxWidth()
                 .offset(y = (-50).dp)
                 .background(White, shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp))
-                .padding(24.dp)
+                .padding(vertical = 24.dp)
         ) {
             // Title & Category
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
-                Column(Modifier.weight(1f)) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.Top) {
+                Column(Modifier.weight(1f).padding(end = 8.dp)) {
                     Text(
                         product.title.capitalizeEachWord(),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.Black.copy(0.8f)
                     )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        product.category.capitalizeEachWord(),
-                        fontSize = 14.sp,
-                        color = Color.DarkGray
-                    )
+                    Spacer(Modifier.height(8.dp))
+                    TagWithText(product.category.capitalizeFirstLetters())
                 }
 
                 // Quantity Box
@@ -367,27 +274,27 @@ fun LoadData(
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(12.dp))
 
             // Color
             if (product.colors.isNotEmpty()) {
-                Row {
+                Row(Modifier.padding(horizontal = 16.dp)) {
                     VariantHeaderText("Color")
                     Spacer(Modifier.width(4.dp))
-                    VariantValueText(selectedColor)
+                    VariantValueText(selectedColor.capitalizeFirstLetters())
                 }
                 Spacer(Modifier.height(12.dp))
-                LazyRow {
+                LazyRow(contentPadding = PaddingValues(horizontal = 16.dp)) {
                     items(product.colors) { colorName ->
                         val color = parseColorFromName(colorName)
                         val isSelected = selectedColor == colorName
-                        Surface(
+                        Box(
                             modifier = Modifier
                                 .size(35.dp)
+                                .shadow(4.dp, shape = CircleShape, clip = false)
+                                .background(color = color, shape = CircleShape)
+                                .clip(CircleShape)
                                 .clickable { onColorSelected(colorName) },
-                            shape = CircleShape,
-                            color = color,
-                            shadowElevation = 4.dp
                         ) {
                             if (isSelected) {
                                 Icon(
@@ -405,13 +312,13 @@ fun LoadData(
 
             // Size
             if (product.sizes.isNotEmpty()) {
-                Row {
+                Row( Modifier.padding(horizontal = 16.dp)) {
                     VariantHeaderText("Size")
                     Spacer(Modifier.width(4.dp))
                     VariantValueText(selectedSize)
                 }
                 Spacer(Modifier.height(8.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     items(product.sizes) { size ->
                         val isSelected = selectedSize == size
                         FilterChip(
@@ -426,7 +333,7 @@ fun LoadData(
                             },
                             shape = RoundedCornerShape(8.dp),
                             colors = FilterChipDefaults.filterChipColors(
-                                containerColor = Color.Transparent,
+                                containerColor = White,
                                 selectedContainerColor = Teal,
                                 labelColor = Color.DarkGray,
                                 selectedLabelColor = White
@@ -443,10 +350,13 @@ fun LoadData(
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
-            VariantHeaderText("Description")
-            Spacer(Modifier.height(8.dp))
-            Text(text = product.description, fontSize = 14.sp, color = Color.Gray)
+            Spacer(Modifier.height(12.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                VariantHeaderText("Description")
+                Spacer(Modifier.height(8.dp))
+                Text(text = product.description, fontSize = 14.sp, color = Color.Gray)
+            }
         }
     }
 }
@@ -460,50 +370,6 @@ fun toggleFavorite(viewModel: ProductViewModel, isFavorite: Boolean, productId: 
         viewModel.deleteProductFromWishlist(productId)
     } else {
         viewModel.addProductToWishlist(productId)
-    }
-}
-
-@Composable
-fun TopBar(
-    navController: NavController,
-    user: FirebaseUser?,
-    isFavorite: Boolean,
-    onFavoriteClick: () -> Unit
-) {
-
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        BackButton(
-            navController = navController,
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(White.copy(0.5f))
-        )
-        if (user != null) {
-            Box(
-                modifier = Modifier
-                    .padding(16.dp),
-                contentAlignment = Alignment.TopEnd
-            ) {
-                IconButton(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(White.copy(0.5f)),
-                    onClick = onFavoriteClick
-                ) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint = if (isFavorite) Color.Red else LocalContentColor.current
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -527,29 +393,6 @@ fun parseColorFromName(name: String): Color {
     }
 }
 
-@Composable
-fun DotsIndicator(
-    totalDots: Int,
-    selectedIndex: Int,
-    modifier: Modifier = Modifier,
-    unSelectedColor: Color = Color.Gray,
-) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(all = 8.dp)
-    ) {
-        repeat(totalDots) { index ->
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(if (index == selectedIndex) Teal else unSelectedColor)
-            )
-            Spacer(Modifier.width(4.dp))
-        }
-    }
-}
 
 fun String.capitalizeEachWord(): String =
     this.lowercase()

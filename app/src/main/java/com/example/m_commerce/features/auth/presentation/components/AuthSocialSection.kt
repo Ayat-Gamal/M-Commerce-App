@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import coil3.compose.AsyncImage
@@ -68,7 +69,8 @@ fun AuthSocialSection(viewModel: ViewModel) {
         contentPadding = PaddingValues(0.dp)
     ) {
         AsyncImage(
-            model = R.drawable.ic_google,
+            model = R.drawable.google,
+            contentScale = ContentScale.Crop,
             contentDescription = "Google Logo",
             modifier = Modifier.size(32.dp)
         )

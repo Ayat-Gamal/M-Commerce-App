@@ -3,6 +3,7 @@ package com.example.m_commerce.core.shared.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -57,11 +60,11 @@ fun LottieAlertDialog(
                             .padding(8.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-                    text?.let { Text(text) }
+//                    Spacer(modifier = Modifier.height(16.dp))
+                    text?.let { Text(text, fontSize = 16.sp) }
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    CustomButton(btnLabel) { onDismiss() }
+                    CustomButton(btnLabel, modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) { onDismiss() }
                 }
             }
         }
