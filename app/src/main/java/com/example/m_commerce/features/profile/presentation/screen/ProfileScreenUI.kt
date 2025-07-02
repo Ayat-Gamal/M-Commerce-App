@@ -50,7 +50,7 @@ fun ProfileScreenUI(
     var showDefaultAddressDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if (user != null) {
+        if (user != null && viewModel.isConnected()) {
             viewModel.loadName()
         }
     }
@@ -142,6 +142,5 @@ fun ProfileScreenUI(
             }
         }
     }
-
 }
 

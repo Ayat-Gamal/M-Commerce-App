@@ -2,6 +2,7 @@ package com.example.m_commerce.features.home.presentation.screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.m_commerce.config.routes.NavSetup
@@ -26,6 +28,7 @@ import com.example.m_commerce.core.shared.components.bottom_nav_bar.BottomNavBar
 import com.example.m_commerce.features.payment.presentation.paymentResultcallback
 import com.stripe.android.paymentsheet.PaymentSheet
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

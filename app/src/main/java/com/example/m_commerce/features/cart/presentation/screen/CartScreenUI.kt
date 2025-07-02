@@ -30,9 +30,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
@@ -43,6 +45,7 @@ import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.GuestMode
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.cart.presentation.CartUiState
 import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
@@ -64,11 +67,17 @@ fun CartScreenUI(
     paymentSheet: PaymentSheet
 ) {
 
-    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: "0"
-    Log.i("TAG", "CartScreenUI: uid: $uid")
+    val ctx = LocalContext.current
+    val networkManager = NetworkManager(ctx)
+    val isOnline by networkManager.observeNetworkChanges()
+        .collectAsStateWithLifecycle(networkManager.isNetworkAvailable())
+
+    LaunchedEffect(isOnline) {
+        cartViewModel.getCart()
+    }
+
     val uiState by cartViewModel.uiState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         cartViewModel.snackBarFlow.collect { event ->

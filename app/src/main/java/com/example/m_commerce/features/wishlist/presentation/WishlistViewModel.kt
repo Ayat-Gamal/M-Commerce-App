@@ -37,14 +37,12 @@ class WishlistViewModel @Inject constructor(
     private var _message = MutableSharedFlow<SnackBarMessage>()
     val message = _message.asSharedFlow()
 
-    init {
-        if (!networkManager.isNetworkAvailable()) {
-            _uiState.tryEmit(WishlistUiState.NoNetwork)
-        } else getProducts()
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getProducts() {
+        if (!networkManager.isNetworkAvailable()) {
+            _uiState.tryEmit(WishlistUiState.NoNetwork)
+            return
+        }
         viewModelScope.launch {
             getWishlist() // p1, p2
                 .flatMapConcat { ids ->
@@ -62,8 +60,9 @@ class WishlistViewModel @Inject constructor(
                 }
                 .catch { e -> _uiState.emit(WishlistUiState.Error(e.message ?: "Unknown error")) }
                 .collect { products ->
-                    if (products.isEmpty()) _uiState.emit(WishlistUiState.Empty)
-                    else _uiState.emit(WishlistUiState.Success(products))
+                    val sortedProducts = products.sortedBy { it.id }
+                    if (sortedProducts.isEmpty()) _uiState.emit(WishlistUiState.Empty)
+                    else _uiState.emit(WishlistUiState.Success(sortedProducts))
                 }
         }
     }
