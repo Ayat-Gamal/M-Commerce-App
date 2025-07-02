@@ -16,6 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +30,7 @@ import androidx.navigation.NavHostController
 import com.example.m_commerce.R
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
+import com.example.m_commerce.core.shared.components.CustomDialog
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.features.product.presentation.screen.capitalizeEachWord
@@ -43,9 +47,10 @@ fun ProfileScreenUI(
 ) {
     val name by viewModel.userNameState.collectAsStateWithLifecycle()
     val user = FirebaseAuth.getInstance().currentUser
+    var showDefaultAddressDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        if (user != null) {
+        if (user != null && viewModel.isConnected()) {
             viewModel.loadName()
         }
     }
@@ -71,6 +76,21 @@ fun ProfileScreenUI(
         topBar = {
             DefaultTopBar(title = "Profile ", navController = null)
         }) { padding ->
+
+        CustomDialog(
+            showDialog = showDefaultAddressDialog,
+            title = "Confirmation",
+            message = "Would you like to log out?",
+            onConfirm = {
+                showDefaultAddressDialog = false
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate(AppRoutes.LoginScreen) {
+                    popUpTo(AppRoutes.ProfileScreen) { inclusive = true }
+                }
+
+            },
+            onDismiss = { showDefaultAddressDialog = false }
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -116,15 +136,11 @@ fun ProfileScreenUI(
                     "Help Center" -> navController.navigate(AppRoutes.HelpCenterScreen)
                     "Login" -> navController.navigate(AppRoutes.LoginScreen)
                     "Logout" -> {
-                        FirebaseAuth.getInstance().signOut()
-                        navController.navigate(AppRoutes.LoginScreen) {
-                            popUpTo(AppRoutes.ProfileScreen) { inclusive = true }
-                        }
+                       showDefaultAddressDialog = true
                     }
                 }
             }
         }
     }
-
 }
 

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -16,6 +17,7 @@ import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
 import com.example.m_commerce.features.product.domain.entities.Product
@@ -33,7 +35,12 @@ fun BrandScreenUI(
 
     val state by viewModel.productsState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    val ctx = LocalContext.current
+    val networkManager = NetworkManager(ctx)
+    val isOnline by networkManager.observeNetworkChanges()
+        .collectAsStateWithLifecycle(networkManager.isNetworkAvailable())
+
+    LaunchedEffect(isOnline) {
         viewModel.getProductsByBrandName(brandName)
     }
 

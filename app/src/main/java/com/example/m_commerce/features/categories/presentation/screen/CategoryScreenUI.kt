@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,7 @@ import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
 import com.example.m_commerce.core.shared.components.screen_cases.LoadingScreenCase
+import com.example.m_commerce.core.utils.NetworkManager
 import com.example.m_commerce.features.brand.domain.entity.Brand
 import com.example.m_commerce.features.brand.presentation.ui_state.BrandsUiState
 import com.example.m_commerce.features.brand.presentation.viewmodel.BrandsViewModel
@@ -34,8 +36,12 @@ fun CategoryScreenUI(
 ) {
 
     val state by viewModel.brandsState.collectAsStateWithLifecycle()
+    val ctx = LocalContext.current
+    val networkManager = NetworkManager(ctx)
+    val isOnline by networkManager.observeNetworkChanges()
+        .collectAsStateWithLifecycle(networkManager.isNetworkAvailable())
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isOnline) {
         viewModel.getCategoriesData()
     }
 

@@ -13,7 +13,10 @@ data class Cart(
     val subtotalAmount: String,
     val totalTaxAmount: String?,
     val totalDutyAmount: String?,
-    val currency: String
+    val currency: String,
+    var discountAmount: String = "0.0",
+    var calculatedTaxAmount: String = "0.0",
+    var totalAmountWithTax: String = "0.0"
 ) {
     companion object {
         fun fromGraphQL(data: Storefront.Cart): Cart {
