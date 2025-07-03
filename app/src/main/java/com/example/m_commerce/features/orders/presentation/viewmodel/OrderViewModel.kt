@@ -62,12 +62,25 @@ class OrderViewModel @Inject constructor(
                 }
                 .collect { result ->
                     Log.i("OrderHistory", "loadOrders: ${_ordersState.value}")
-                    _ordersState.value = result
+
+                    if (result is OrderHistoryUiState.Success) {
+                        if (result.orders.isEmpty()) {
+                            _ordersState.emit(OrderHistoryUiState.Empty)
+                        } else {
+                            _ordersState.emit(result)
+                        }
+                    } else {
+                        _ordersState.emit(result)
+                    }
                 }
         }
 
 
-    fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod, priceAndCurrency: String) {
+    fun createOrderAndSendEmail(
+        items: List<LineItem>,
+        paymentMethod: PaymentMethod,
+        priceAndCurrency: String
+    ) {
         val (currency, price) = priceAndCurrency.split(" ")
         val totalPrice = price.trim().toDouble()
         val currencyCode = currency.trim()
@@ -86,7 +99,8 @@ class OrderViewModel @Inject constructor(
                 }
 
                 if (totalPrice > 2500.0 && paymentMethod == PaymentMethod.CashOnDelivery) {
-                    _state.value = OrderUiState.Error("Can't order with 2500 $currencyCode or more with cash on delivery")
+                    _state.value =
+                        OrderUiState.Error("Can't order with 2500 $currencyCode or more with cash on delivery")
                     return@launch
                 }
 
