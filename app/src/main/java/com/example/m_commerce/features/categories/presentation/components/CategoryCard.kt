@@ -43,7 +43,7 @@ fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: D
             .clickable { onClick() }
     ) {
         Image(
-            painter = painterResource(mapping[category.name] ?: R.drawable.uncategorized),
+            painter = painterResource(mapping[category.name] ?: R.drawable.teal),
             contentScale = ContentScale.Crop,
             contentDescription = null,
             modifier = Modifier.fillMaxSize()
@@ -53,7 +53,7 @@ fun CategoryCard(modifier: Modifier = Modifier, onClick: () -> Unit, category: D
                 .fillMaxSize()
                 .background(Black.copy(alpha = 0.3f), shape = RoundedCornerShape(24.dp))
         )
-        if (category.name != "SALE" && mapping[category.name] != null) Text(
+        if (category.name != "SALE" /*&& mapping[category.name] != null*/) Text(
             category.name?.capitalizeFirstLetters() ?: "null",
             modifier = Modifier
                 .drawBehind {

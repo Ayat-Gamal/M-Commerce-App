@@ -56,7 +56,7 @@ fun BrandCard(
                     .fillMaxWidth(),
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
-                painter = painterResource(id = mapping[brand.name] ?: R.drawable.uncategorized),
+                painter = painterResource(id = mapping[brand.name] ?: R.drawable.teal),
             )
         } else {
             brand.image?.let {
