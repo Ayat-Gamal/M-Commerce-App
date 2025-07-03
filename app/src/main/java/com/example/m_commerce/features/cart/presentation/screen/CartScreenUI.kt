@@ -1,5 +1,4 @@
-import android.util.Log
-import androidx.activity.ComponentActivity
+
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,9 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.m_commerce.BuildConfig
 import com.example.m_commerce.config.routes.AppRoutes
 import com.example.m_commerce.config.theme.Background
 import com.example.m_commerce.config.theme.Teal
@@ -52,14 +49,8 @@ import com.example.m_commerce.features.cart.presentation.UiEvent
 import com.example.m_commerce.features.cart.presentation.components.CartItemCard
 import com.example.m_commerce.features.cart.presentation.components.CartReceipt
 import com.example.m_commerce.features.cart.presentation.viewmodel.CartViewModel
-import com.example.m_commerce.features.orders.data.PaymentMethod
-import com.example.m_commerce.features.orders.data.model.variables.LineItem
 import com.example.m_commerce.features.orders.presentation.viewmodel.OrderViewModel
-import com.example.m_commerce.features.payment.presentation.screen.createPaymentIntent
 import com.example.m_commerce.features.profile.presentation.viewmodel.CurrencyViewModel
-import com.stripe.android.PaymentConfiguration
-import com.stripe.android.paymentsheet.PaymentSheet
-import com.stripe.android.paymentsheet.PaymentSheetResult
 
 @Composable
 fun CartScreenUI(
@@ -89,6 +80,7 @@ fun CartScreenUI(
 
 
     LaunchedEffect(isOnline) {
+        cartViewModel.resetCart()
         cartViewModel.getCart()
     }
 

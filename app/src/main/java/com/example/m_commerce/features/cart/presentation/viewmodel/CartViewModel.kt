@@ -98,6 +98,16 @@ class CartViewModel @Inject constructor(
         }
 
     }
+    suspend fun resetCart() {
+        try {
+            applyCouponUseCase("").first()
+        } catch (e: Exception) {
+            _uiState.value = CartUiState.Error(e.message ?: "Apply failed")
+        }
+        isLoading = false
+        _applyCouponLoading.emit(false)
+
+    }
 
     fun increaseQuantity(lineId: String) = viewModelScope.launch {
         if (!isConnected()) return@launch
@@ -182,12 +192,11 @@ class CartViewModel @Inject constructor(
                 if (success) {
                     getCartById()
                 } else {
-                    _snackBarFlow.emit(UiEvent.ShowSnackbar("Failed to apply coupon"))
+                    _snackBarFlow.emit(UiEvent.ShowSnackbar("invalid coupon now"))
                 }
             }
         } catch (e: Exception) {
             _uiState.value = CartUiState.Error(e.message ?: "Apply failed")
-            _applyCouponLoading.emit(false)
             _applyCouponLoading.emit(false)
         }
     }
