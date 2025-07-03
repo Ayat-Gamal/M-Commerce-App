@@ -67,7 +67,12 @@ class OrderViewModel @Inject constructor(
         }
 
 
-    fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod) {
+    fun createOrderAndSendEmail(items: List<LineItem>, paymentMethod: PaymentMethod, priceAndCurrency: String) {
+        val (currency, price) = priceAndCurrency.split(" ")
+        val totalPrice = price.trim().toDouble()
+        val currencyCode = currency.trim()
+
+//        Log.d("Cart", "createOrderAndSendEmail: -$totalPrice-$price--$currencyCode-")
         viewModelScope.launch {
             _state.value = OrderUiState.Loading
 
@@ -77,6 +82,11 @@ class OrderViewModel @Inject constructor(
                 val user = FirebaseAuth.getInstance().currentUser ?: run {
                     _state.value = OrderUiState.Error("User not authenticated")
                     Log.d("RETURN DEFAULT ADDRESS", "TEST 2")
+                    return@launch
+                }
+
+                if (totalPrice > 2500.0 && paymentMethod == PaymentMethod.CashOnDelivery) {
+                    _state.value = OrderUiState.Error("Can't order with 2500 $currencyCode or more with cash on delivery")
                     return@launch
                 }
 

@@ -61,6 +61,7 @@ import com.example.m_commerce.core.shared.components.Failed
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.TagWithText
+import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.core.shared.components.screen_cases.Loading
 import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.features.product.domain.entities.Product
@@ -147,7 +148,8 @@ fun ProductDetailsScreenUI(
         bottomBar = {
             if (uiState is ProductUiState.Success) {
                 val product = (uiState as ProductUiState.Success).product
-                BottomBar(product.price, isLoading.value) {
+                val formattedPrice = currencyViewModel.formatPrice(product.price)
+                BottomBar(formattedPrice, isLoading.value) {
 
                     if (!product.availableForSale) {
                         scope.launch {
@@ -320,9 +322,6 @@ fun LoadData(
                 }
                 Spacer(Modifier.height(16.dp))
             }
-            LaunchedEffect(selectedColor) {
-                Log.i("TAG", "LoadData: $selectedColor")
-            }
 
             // Size
             if (product.sizes.isNotEmpty()) {
@@ -396,7 +395,6 @@ fun toggleFavorite(viewModel: ProductViewModel, isFavorite: Boolean, productId: 
 
 
 fun parseColorFromName(name: String): Color {
-    Log.i("TAG", "parseColorFromName: $name")
     return when (name.lowercase()) {
         "black" -> Color.Black
         "white" -> White

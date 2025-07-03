@@ -59,7 +59,6 @@ class CartViewModel @Inject constructor(
 
     suspend fun getCartById() {
 
-        resetCart()
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             _uiState.value = CartUiState.Guest
@@ -98,6 +97,16 @@ class CartViewModel @Inject constructor(
             isLoading = false
             _applyCouponLoading.emit(false)
         }
+    }
+    suspend fun resetCart() {
+        try {
+            applyCouponUseCase("").first()
+        } catch (e: Exception) {
+            _uiState.value = CartUiState.Error(e.message ?: "Apply failed")
+        }
+        isLoading = false
+        _applyCouponLoading.emit(false)
+
     }
 
     fun increaseQuantity(lineId: String) = viewModelScope.launch {
@@ -172,15 +181,6 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun resetCart() = viewModelScope.launch{
-        if (!isConnected()) return@launch
-
-        _applyCouponLoading.emit(true)
-        try {
-            applyCouponUseCase("").first()
-        } catch (e: Exception) {}
-    }
-
     fun applyCoupon(couponCode: String) = viewModelScope.launch {
         Log.i("TAG", "applyCoupon: ")
         if (!isConnected()) return@launch
@@ -192,9 +192,7 @@ class CartViewModel @Inject constructor(
                 if (success) {
                     getCartById()
                 } else {
-                    _snackBarFlow.emit(UiEvent.ShowSnackbar("Failed to apply coupon"))
-                    _applyCouponLoading.emit(false)
-
+                    _snackBarFlow.emit(UiEvent.ShowSnackbar("invalid coupon now"))
                 }
             }
         } catch (e: Exception) {
