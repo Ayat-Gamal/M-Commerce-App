@@ -19,7 +19,9 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    background = White,
+    surface = White,
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -34,6 +36,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun MCommerceTheme(
+    //TODO: Remove the "!"
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
@@ -50,7 +53,7 @@ fun MCommerceTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )
