@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.m_commerce.core.shared.components.Empty
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.default_top_bar.DefaultTopBar
 import com.example.m_commerce.core.shared.components.screen_cases.FailedScreenCase
@@ -37,41 +38,48 @@ fun UserOrdersScreenUI(
         viewModel.loadOrders()
     }
 
-    when (state) {
-        is OrderHistoryUiState.Error -> {
-            val msg = (state as OrderHistoryUiState.Error).message
-            Log.d("OrderHistory", "UserOrdersScreenUI: ${msg}")
 
-            FailedScreenCase(msg = msg)
 
+    Scaffold(topBar = {
+        DefaultTopBar(title = "My Orders", navController = navController)
+    }) { padding ->
+        when (state) {
+            is OrderHistoryUiState.Error -> {
+                val msg = (state as OrderHistoryUiState.Error).message
+                Log.d("OrderHistory", "UserOrdersScreenUI: ${msg}")
+
+                FailedScreenCase(msg = msg)
+
+            }
+
+            OrderHistoryUiState.Loading -> {
+                Loading()
+            }
+
+            is OrderHistoryUiState.Success -> {
+                val orders = (state as OrderHistoryUiState.Success).orders
+                Log.d("OrderHistory", "UserOrdersScreenUI: ${orders}")
+                LoadedData(padding, navController = navController, orders = orders)
+            }
+
+            OrderHistoryUiState.NoNetwork -> NoNetwork()
+            OrderHistoryUiState.Empty -> Empty("No orders Found")
         }
-
-        OrderHistoryUiState.Loading -> {
-            Loading()
-        }
-
-        is OrderHistoryUiState.Success -> {
-            val orders = (state as OrderHistoryUiState.Success).orders
-            Log.d("OrderHistory", "UserOrdersScreenUI: ${orders}")
-            LoadedData(navController = navController, orders = orders)
-        }
-
-        OrderHistoryUiState.NoNetwork -> NoNetwork()
     }
 
 }
 
 @Composable
-private fun LoadedData(navController: NavHostController, orders: List<OrderHistory>) {
-    Scaffold(topBar = {
-        DefaultTopBar(title = "My Orders", navController = navController)
-    }) { padding ->
-        LazyColumn(
-            modifier = Modifier.padding(padding), contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            items(orders.size) {
-                OrderTrackingCard(order = orders[it])
-            }
+private fun LoadedData(
+    padding: PaddingValues,
+    navController: NavHostController,
+    orders: List<OrderHistory>
+) {
+    LazyColumn(
+        modifier = Modifier.padding(padding), contentPadding = PaddingValues(vertical = 8.dp)
+    ) {
+        items(orders.size) {
+            OrderTrackingCard(order = orders[it])
         }
     }
 }

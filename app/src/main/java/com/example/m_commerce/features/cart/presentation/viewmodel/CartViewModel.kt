@@ -99,6 +99,7 @@ class CartViewModel @Inject constructor(
         }
     }
     suspend fun resetCart() {
+        if (FirebaseAuth.getInstance().currentUser == null) return
         try {
             applyCouponUseCase("").first()
         } catch (e: Exception) {
@@ -182,6 +183,8 @@ class CartViewModel @Inject constructor(
     }
 
     fun applyCoupon(couponCode: String) = viewModelScope.launch {
+
+        if (FirebaseAuth.getInstance().currentUser == null) return@launch
         Log.i("TAG", "applyCoupon: ")
         if (!isConnected()) return@launch
 
