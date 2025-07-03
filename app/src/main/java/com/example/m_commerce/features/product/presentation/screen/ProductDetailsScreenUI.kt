@@ -1,5 +1,6 @@
 package com.example.m_commerce.features.product.presentation.screen
 
+import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,7 +50,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,9 +61,8 @@ import com.example.m_commerce.core.shared.components.Failed
 import com.example.m_commerce.core.shared.components.NetworkImage
 import com.example.m_commerce.core.shared.components.NoNetwork
 import com.example.m_commerce.core.shared.components.TagWithText
-import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
-import com.example.m_commerce.core.shared.components.default_top_bar.BackButton
 import com.example.m_commerce.core.shared.components.screen_cases.Loading
+import com.example.m_commerce.core.utils.extentions.capitalizeFirstLetters
 import com.example.m_commerce.features.product.domain.entities.Product
 import com.example.m_commerce.features.product.presentation.ProductUiState
 import com.example.m_commerce.features.product.presentation.ProductViewModel
@@ -222,7 +221,11 @@ fun LoadData(
 
         // Image Carousel
         Box(contentAlignment = Alignment.BottomCenter) {
-            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth().height(400.dp)) { page ->
+            HorizontalPager(
+                state = pagerState, modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+            ) { page ->
                 NetworkImage(
                     modifier = Modifier.fillMaxWidth(),
                     url = product.images[page],
@@ -248,8 +251,16 @@ fun LoadData(
                 .padding(vertical = 24.dp)
         ) {
             // Title & Category
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.Top) {
-                Column(Modifier.weight(1f).padding(end = 8.dp)) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp), verticalAlignment = Alignment.Top
+            ) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                ) {
                     Text(
                         product.title.capitalizeEachWord(),
                         fontSize = 20.sp,
@@ -309,21 +320,31 @@ fun LoadData(
                 }
                 Spacer(Modifier.height(16.dp))
             }
+            LaunchedEffect(selectedColor) {
+                Log.i("TAG", "LoadData: $selectedColor")
+            }
 
             // Size
             if (product.sizes.isNotEmpty()) {
-                Row( Modifier.padding(horizontal = 16.dp)) {
+                Row(Modifier.padding(horizontal = 16.dp)) {
                     VariantHeaderText("Size")
                     Spacer(Modifier.width(4.dp))
                     VariantValueText(selectedSize)
                 }
                 Spacer(Modifier.height(8.dp))
-                LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     items(product.sizes) { size ->
                         val isSelected = selectedSize == size
                         FilterChip(
                             selected = isSelected,
-                            onClick = { onSizeSelected(size) },
+                            onClick = {
+                                // TODO find variant
+                                // TODO check quantity and set if is in stock
+                                onSizeSelected(size)
+                            },
                             label = {
                                 Text(
                                     text = size.uppercase(),
@@ -375,6 +396,7 @@ fun toggleFavorite(viewModel: ProductViewModel, isFavorite: Boolean, productId: 
 
 
 fun parseColorFromName(name: String): Color {
+    Log.i("TAG", "parseColorFromName: $name")
     return when (name.lowercase()) {
         "black" -> Color.Black
         "white" -> White
@@ -385,10 +407,11 @@ fun parseColorFromName(name: String): Color {
         "red" -> Color.Red
         "gray" -> Color.Gray
         "yellow" -> Color.Yellow
+        "Army Green" -> Color(0xFF716c4e)
         else -> try {
             Color(android.graphics.Color.parseColor(name))
         } catch (e: Exception) {
-            Color.LightGray
+            Color(0xFF716c4e)
         }
     }
 }
