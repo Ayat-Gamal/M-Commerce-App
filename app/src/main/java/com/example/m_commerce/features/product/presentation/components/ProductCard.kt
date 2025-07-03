@@ -49,9 +49,10 @@ fun ProductCard(
     val formattedPrice = String.format("%.2f", product.price.toDouble())
     val parts = formattedPrice.split(".")
 //    val intPrice = parts[0]
-    val decPrice = parts[1]
     val currency = currencyViewModel.formatPrice(formattedPrice).split(" ").first()
-    val intPrice = currencyViewModel.formatPrice(formattedPrice).split(" ").last()
+    val price = currencyViewModel.formatPrice(formattedPrice).split(" ").last()
+    val decPrice = price.split(".").last()
+    val intPrice = price.split(".").first()
 
     val titleParts = product.title.split("|")
     val title: String = if (titleParts.size > 1) {
